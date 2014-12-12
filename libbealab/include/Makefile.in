@@ -1,0 +1,82 @@
+# @configure_input@
+
+# Install variables
+includedir = @includedir@
+DEFS       = @DEFS@ @MAXIMA@ @GNUPLOT@ @PYTHON2@ @MATLAB@
+config_hpp = @top_srcdir@/include/bealab/core/prelim/config.hpp
+
+# Targets
+all debug: $(config_hpp)
+
+$(config_hpp): ../config.status
+	-rm $(config_hpp) > /dev/null 2>&1
+	touch $(config_hpp)
+
+# Detect MPI functionality
+ifeq (,$(findstring HAVE_LIBBOOST_MPI, $(DEFS)))
+	echo "#define BEALAB_NOMPI" >> $(config_hpp)
+endif
+
+# Detect plotting
+ifeq (,$(findstring HAVE_GNUPLOT, $(DEFS)))
+	echo "#define BEALAB_NOGNUPLOT" >> $(config_hpp)
+endif
+
+# Detect symbolic functionality
+ifeq (,$(findstring HAVE_MAXIMA, $(DEFS)))
+	echo "#define BEALAB_NOSYMBOLIC" >> $(config_hpp)
+else
+ifeq (,$(findstring HAVE_LIBGINAC, $(DEFS)))
+	echo "#define BEALAB_NOSYMBOLIC" >> $(config_hpp)
+endif
+endif
+
+# Detect Python interface
+ifeq (,$(findstring HAVE_PYTHON2, $(DEFS)))
+	echo "#define BEALAB_NOPYTHON" >> $(config_hpp)
+else
+ifeq (,$(findstring HAVE_LIBPYTHON2_7, $(DEFS)))
+	echo "#define BEALAB_NOPYTHON" >> $(config_hpp)
+endif
+endif
+
+# Detect Matlab interface
+ifeq (,$(findstring HAVE_MATLAB, $(DEFS)))
+	echo "#define BEALAB_NOMATLAB" >> $(config_hpp)
+else
+ifeq (,$(findstring HAVE_LIBENG, $(DEFS)))
+	echo "#define BEALAB_NOMATLAB" >> $(config_hpp)
+endif
+endif
+
+# Detect Ipopt
+ifeq (,$(findstring HAVE_LIBCOINMETIS, $(DEFS)))
+	echo "#define BEALAB_NOIPOPT" >> $(config_hpp)
+else
+ifeq (,$(findstring HAVE_LIBCOINMUMPS, $(DEFS)))
+	echo "#define BEALAB_NOIPOPT" >> $(config_hpp)
+else
+ifeq (,$(findstring HAVE_LIBIPOPT, $(DEFS)))
+	echo "#define BEALAB_NOIPOPT" >> $(config_hpp)
+endif
+endif
+endif
+
+# Detect GClasses
+ifeq (,$(findstring HAVE_LIBGCLASSES, $(DEFS)))
+	echo "#define BEALAB_NOGCLASSES" >> $(config_hpp)
+endif
+
+clean:
+	-rm -f $(config_hpp)
+
+install:
+	mkdir -p $(DESTDIR)$(includedir)
+	cp bealab.hpp $(DESTDIR)$(includedir)
+	cp -r bealab $(DESTDIR)$(includedir)
+
+uninstall:
+	-rm $(DESTDIR)$(includedir)/bealab.hpp > /dev/null 2>&1
+	-rm -r $(DESTDIR)$(includedir)/bealab > /dev/null 2>&1
+
+.PHONY: all debug install uninstall

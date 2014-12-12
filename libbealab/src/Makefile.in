@@ -1,0 +1,60 @@
+# @configure_input@
+
+# Automatic variables
+targetdir = @top_builddir@/lib
+tempdir   = @top_builddir@/tmp/$(target)
+
+# Flags
+CFLAGS   += -std=c++11 -Wall -fPIC -fopenmp -I@top_srcdir@/include -I@top_builddir@/include
+ifeq (@DEBUG@,true)
+	CFLAGS  += -g
+else
+	CFLAGS  += -O3 -DNDEBUG
+endif
+LDFLAGS  += -shared -fopenmp
+
+# Build the list of *.o from *.cpp found
+OBJ  = $(patsubst @srcdir@/%.cpp,%.o,$(wildcard @srcdir@/*.cpp))
+
+# Build the list of *.o from *.c found
+OBJc = $(patsubst @srcdir@/%.c,%.o,$(wildcard @srcdir@/*.c))
+
+# Build the list of *.o from *.f found
+OBJf = $(patsubst @srcdir@/%.f,%.o,$(wildcard @srcdir@/*.f))
+
+# Build the list of *.d from *.cpp and *.c found
+DEP  = $(patsubst @srcdir@/%.cpp,%.d,$(wildcard @srcdir@/*.cpp))
+DEP += $(patsubst @srcdir@/%.c,%.d,$(wildcard @srcdir@/*.c))
+
+# Targets
+all: $(targetdir)/$(target)
+
+$(targetdir)/$(target): $(OBJ:%=$(tempdir)/%) $(OBJc:%=$(tempdir)/%) $(OBJf:%=$(tempdir)/%)
+	@mkdir -p $(targetdir)
+	@CXX@ $(LDFLAGS) $(OBJ:%=$(tempdir)/%) $(OBJc:%=$(tempdir)/%) $(OBJf:%=$(tempdir)/%) @LIBS@ -o $@
+
+-include $(DEP:%=$(tempdir)/%)
+
+$(OBJ:%=$(tempdir)/%): $(tempdir)/%.o: Makefile
+	@mkdir -p $(tempdir)
+	@CXX@ $(CFLAGS) -c @srcdir@/$*.cpp -o $@
+	@@CXX@ $(CFLAGS) -MM @srcdir@/$*.cpp -MT $@ > $(tempdir)/$*.d
+	@cp $(tempdir)/$*.d $(tempdir)/$*.d.tmp
+	@cat $(tempdir)/$*.d.tmp | sed -e 's/.*://' | sed -e 's/\\//' |\
+		fmt -1 | sed -e 's/ //' | sed -e 's/$$/:/' >> $(tempdir)/$*.d
+	@rm -f $(tempdir)/$*.d.tmp
+
+$(OBJc:%=$(tempdir)/%): $(tempdir)/%.o: Makefile
+	@mkdir -p $(tempdir)
+	@CC@ $(CFLAGS) -c @srcdir@/$*.c -o $@
+	@@CC@ $(CFLAGS) -MM @srcdir@/$*.c -MT $@ > $(tempdir)/$*.d
+	@cp $(tempdir)/$*.d $(tempdir)/$*.d.tmp
+	@cat $(tempdir)/$*.d.tmp | sed -e 's/.*://' | sed -e 's/\\//' |\
+		fmt -1 | sed -e 's/ //' | sed -e 's/$$/:/' >> $(tempdir)/$*.d
+	@rm -f $(tempdir)/$*.d.tmp
+
+$(OBJf:%=$(tempdir)/%): $(tempdir)/%.o: Makefile
+	@mkdir -p $(tempdir)
+	@FC@ -fPIC -c @srcdir@/$*.f -o $@
+
+.PHONY: all

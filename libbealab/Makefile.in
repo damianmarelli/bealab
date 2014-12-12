@@ -1,0 +1,48 @@
+# @configure_input@
+
+# Configurable variables
+target     = libbealab.so
+targetdirs = include src
+otherdirs  = doc
+
+# Automatic variables
+distdir = @PACKAGE_TARNAME@-@PACKAGE_VERSION@
+#ncores  = $(shell grep -c processor /proc/cpuinfo)
+ncores = 2
+
+# Targets
+all: $(targetdirs)
+
+include:
+	cd include && $(MAKE)
+
+src:
+	cd src && $(MAKE) -j$(ncores) target=$(target)
+
+html:
+	cd doc && $(MAKE) $@
+
+clean:
+distclean:
+	-rm -r tmp > /dev/null 2>&1
+
+install:
+
+uninstall:
+
+dist:
+	-rm $(distdir).tar.gz > /dev/null 2>&1
+	-rm -rf $(distdir) > /dev/null 2>&1
+	mkdir -p $(distdir)
+	cp @srcdir@/configure.ac $(distdir)
+	cp @srcdir@/configure $(distdir)
+	cp @srcdir@/Makefile.in $(distdir)
+	cp @srcdir@/README $(distdir)
+	cp @srcdir@/LICENSE $(distdir)
+	$(foreach dir, $(targetdirs), cp -r @srcdir@/$(dir) $(distdir);)
+	$(foreach dir, $(otherdirs), cp -r @srcdir@/$(dir) $(distdir);)
+	find $(distdir) -name Makefile -exec rm -f '{}' +
+	tar chof - $(distdir) | gzip -9 -c > $(distdir).tar.gz
+	rm -rf $(distdir)
+
+.PHONY: all $(targetdirs) clean install uninstall dist

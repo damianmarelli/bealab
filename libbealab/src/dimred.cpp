@@ -83,6 +83,48 @@ Vec<rvec> manifold_learning_b::run( const Vec<rvec>& points )
 }
 
 //------------------------------------------------------------------------------
+// Class isomap
+//------------------------------------------------------------------------------
+isomap::isomap( int nn, int td ) :
+	manifold_learning_b(nn,td)
+{
+	pmethod = new GIsomap( nn, td, reinterpret_cast<GRand*>(prng) );
+}
+
+isomap::~isomap()
+{
+	delete reinterpret_cast<GIsomap*>(pmethod);
+}
+
+void* isomap::run_mlearning( const void* cvpA )
+{
+	void* vpA   = const_cast<void*>(cvpA);
+	GMatrix* pA = reinterpret_cast<GMatrix*>(vpA);
+	return reinterpret_cast<GIsomap*>(pmethod)->doit( *pA );
+}
+
+//------------------------------------------------------------------------------
+// Class lle
+//------------------------------------------------------------------------------
+lle::lle( int nn, int td ) :
+	manifold_learning_b(nn,td)
+{
+	pmethod = new GLLE( nn, td, reinterpret_cast<GRand*>(prng) );
+}
+
+lle::~lle()
+{
+	delete reinterpret_cast<GLLE*>(pmethod);
+}
+
+void* lle::run_mlearning( const void* cvpA )
+{
+	void* vpA   = const_cast<void*>(cvpA);
+	GMatrix* pA = reinterpret_cast<GMatrix*>(vpA);
+	return reinterpret_cast<GLLE*>(pmethod)->doit( *pA );
+}
+
+//------------------------------------------------------------------------------
 // Class manifold_sculpting
 //------------------------------------------------------------------------------
 manifold_sculpting::manifold_sculpting( int nn, int td ) :
@@ -101,6 +143,27 @@ void* manifold_sculpting::run_mlearning( const void* cvpA )
 	void* vpA   = const_cast<void*>(cvpA);
 	GMatrix* pA = reinterpret_cast<GMatrix*>(vpA);
 	return reinterpret_cast<GManifoldSculpting*>(pmethod)->doit( *pA );
+}
+
+//------------------------------------------------------------------------------
+// Class breadth_first_unfolding
+//------------------------------------------------------------------------------
+breadth_first_unfolding::breadth_first_unfolding( int a, int nn, int td ) :
+	manifold_learning_b(nn,td)
+{
+	pmethod = new GBreadthFirstUnfolding( a, nn, td, reinterpret_cast<GRand*>(prng) );
+}
+
+breadth_first_unfolding::~breadth_first_unfolding()
+{
+	delete reinterpret_cast<GBreadthFirstUnfolding*>(pmethod);
+}
+
+void* breadth_first_unfolding::run_mlearning( const void* cvpA )
+{
+	void* vpA   = const_cast<void*>(cvpA);
+	GMatrix* pA = reinterpret_cast<GMatrix*>(vpA);
+	return reinterpret_cast<GBreadthFirstUnfolding*>(pmethod)->doit( *pA );
 }
 
 }

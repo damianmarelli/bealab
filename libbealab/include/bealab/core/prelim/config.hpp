@@ -1,2 +1,1 @@
-#define BEALAB_NOMPI
 #define BEALAB_NOMATLAB

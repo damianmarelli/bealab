@@ -1,35 +1,17 @@
-/// @file bealab/core/prelim/concurrency.hpp
-/// Support for concurrent programming.
+/// @file bealab/core/prelim/threads.hpp
+/// Support for multithreading.
 
-#ifndef _BEALAB_PRELIM_CONCURRENCY_
-#define	_BEALAB_PRELIM_CONCURRENCY_
+#ifndef _BEALAB_PRELIM_THREADS_
+#define	_BEALAB_PRELIM_THREADS_
 
-#ifndef BEALAB_NOMPI
-#include <boost/mpi.hpp>
-#endif
-#include <thread>
-#include <mutex>
-#include <future>
+#include <bealab/core/prelim/imports.hpp>
 
 namespace bealab
 {
-/// @defgroup prelim_concurrency Concurrency
-/// Support for concurrent programming.
+/// @defgroup prelim_threads Threads
+/// Support for multithreading.
 /// @{
 
-// Use namespace
-#ifndef BEALAB_NOMPI
-namespace mpi = boost::mpi;
-#endif
-
-// Use classes
-using std::thread;
-using std::mutex;
-using std::lock_guard;
-using std::unique_lock;
-using std::condition_variable;
-
-/*
 /// Thread queue manager with a maximum number of concurrent threads.
 class thread_queue {
 
@@ -107,40 +89,6 @@ public:
 	    wcondvar.wait( lock );
 	}
 };
-*/
-#ifndef BEALAB_NOMPI
-
-// Forward declarations
-template<class value_type> class vectorx;
-template<class base> class vector_interface;
-template<class value_type> using Vec = vector_interface<vectorx<value_type>>;
-
-/// Implements a for loop in parallel over a cluster.
-/// It evaluates fun(i), for i=0,...,I-1, and return a vector with the results.
-template<class T>
-Vec<T> parallel_for( int I, const function<T(int)>& fun )
-{
-	// Parallel processing
-	Vec<T> X(I);
-	mpi::communicator com;
-	#pragma omp parallel for
-	for( int i = com.rank(); i < I; i += com.size() )
-		X[i] = fun(i);
-
-	// Collect the result
-	vector<Vec<T>> XX;
-	mpi::gather( com, X, XX, 0 );
-	Vec<T> Y(I);
-	if( com.rank() == 0 )
-		for( int i = 0; i < I; i++ )
-			Y[i] = XX[ i % com.size() ](i);
-
-	// Share the result with the other nodes
-	mpi::broadcast( com, Y, 0 );
-
-	return Y;
-}
-#endif
 
 /// @}
 }

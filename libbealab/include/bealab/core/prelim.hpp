@@ -17,9 +17,6 @@
 /// @defgroup prelim_util
 #include <bealab/core/prelim/util.hpp>
 
-/// @defgroup prelim_concurrency
-#include <bealab/core/prelim/concurrency.hpp>
-
 /// @defgroup prelim_complex
 #include <bealab/core/prelim/complex.hpp>
 
@@ -31,6 +28,9 @@
 
 /// @defgroup prelim_algebra
 #include <bealab/core/prelim/algebra.hpp>
+
+/// @defgroup prelim_threads
+#include <bealab/core/prelim/threads.hpp>
 
 /// @}
 #endif

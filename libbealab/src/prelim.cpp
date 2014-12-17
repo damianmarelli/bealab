@@ -95,25 +95,4 @@ int rw_pipe( const string& program, const vector<string>& arguments,
 	// Return the result
 	return 0;
 }
-
-#ifndef BEALAB_NOMPI
-static
-class mpi_init{
-
-	mpi::environment* penv;
-
-public:
-	mpi_init()
-	{
-		int argc    = 0;
-		char **argv = 0;
-		penv = new mpi::environment(argc, argv);
-	}
-	~mpi_init()
-	{
-		delete penv;
-	}
-} _mpi_init;
-#endif
-
 }

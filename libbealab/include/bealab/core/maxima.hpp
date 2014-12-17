@@ -9,7 +9,6 @@
 
 #include <bealab/core/prelim.hpp>
 #include <ginac/ginac.h>
-//#include <fcntl.h>
 
 namespace bealab
 {

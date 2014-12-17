@@ -16,7 +16,7 @@ namespace bealab
 
 /// sequence + sequence
 template< class T1, class T2,
-	class R = decltype( temporary(T1()+T2()) ) >
+	class R = decltype( noproxy(T1()+T2()) ) >
 Seq<R> operator+( Seq<T1> X, Seq<T2> Y )
 {
 	if( X.size() == 0 )
@@ -70,7 +70,7 @@ Seq<T> operator-( const Seq<T> &X )
 
 /// sequence - sequence
 template< class T1, class T2,
-	class R = decltype( temporary(T1()-T2()) ) >
+	class R = decltype( noproxy(T1()-T2()) ) >
 Seq<R> operator-(const Seq<T1> &X, const Seq<T2> &Y )
 {
 	return X + (-Y);
@@ -78,7 +78,7 @@ Seq<R> operator-(const Seq<T1> &X, const Seq<T2> &Y )
 
 /// sequence * sequence
 template< class T1, class T2,
-	class R = decltype( temporary(T1()*T2()) ) >
+	class R = decltype( noproxy(T1()*T2()) ) >
 Seq<R> operator*( const Seq<T1> &X, const Seq<T2> &Y )
 {
 	if( X.size()==0 || Y.size()==0 )
@@ -90,8 +90,8 @@ Seq<R> operator*( const Seq<T1> &X, const Seq<T2> &Y )
 
 /// sequence * scalar
 template< class T1, class T2,
-	class R = decltype( temporary(T1()*T2()) ) >
-//	class R = decltype( temporary(T1()*T2()) ),
+	class R = decltype( noproxy(T1()*T2()) ) >
+//	class R = decltype( noproxy(T1()*T2()) ),
 //	class = typename enable_if<
 //		is_convertible<T2,T1>::value
 //	>::type >
@@ -102,8 +102,8 @@ Seq<R> operator*( const Seq<T1> &X, const T2 &a )
 
 /// scalar * sequence
 template< class T1, class T2,
-	class R = decltype( temporary(T1()*T2()) ) >
-//	class R = decltype( temporary(T1()*T2()) ),
+	class R = decltype( noproxy(T1()*T2()) ) >
+//	class R = decltype( noproxy(T1()*T2()) ),
 //	class = typename enable_if<
 //		is_convertible<T1,T2>::value
 //	>::type >
@@ -114,8 +114,8 @@ Seq<R> operator*( const T1 &a, const Seq<T2> &X )
 
 /// sequence / scalar
 template< class T1, class T2,
-	class R = decltype( temporary(T1()/T2()) ) >
-//	class R = decltype( temporary(T1()/T2()) ),
+	class R = decltype( noproxy(T1()/T2()) ) >
+//	class R = decltype( noproxy(T1()/T2()) ),
 //	class = typename enable_if<
 //		is_convertible<T2,T1>::value
 //	>::type >

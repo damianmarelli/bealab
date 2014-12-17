@@ -26,7 +26,7 @@ AC_CHECK_LIB([nlopt],[main],[],[echo "*** Library nlopt not found. Stop."; exit]
 AC_CHECK_LIB([boost_serialization],[main],[],[echo "*** Library boost_serialization not found. Stop."; exit])
 
 # Optional libraries
-#AC_CHECK_LIB([boost_mpi],[main],[],[echo "*** Library boost_mpi not found. MPI functionality disabled."])
+AC_CHECK_LIB([boost_mpi],[main],[],[echo "*** Library boost_mpi not found. MPI functionality disabled."])
 AC_CHECK_LIB([python2.7],[main],[],[echo "*** Library python2.7 not found. Python interface disabled."])
 AC_CHECK_LIB([eng],[main],[],[echo "*** Matlab library libeng not found. Matlab interface disabled."])
 AC_CHECK_LIB([ginac],[main],[],[echo "*** Library ginac not found. Symbolic module disabled."])

@@ -17,6 +17,9 @@
 #include <tuple>
 #include <functional>
 #include <exception>
+#include <thread>
+#include <mutex>
+#include <future>
 
 namespace bealab
 {
@@ -48,6 +51,12 @@ namespace bealab
 ///   - map
 /// - Algorithms
 ///   - sort
+/// - Threads
+///   - thread
+///   - mutex
+///   - lock_guard
+///   - unique_lock
+///   - condition_variable
 /// - Other
 ///   - tuple
 ///   - get
@@ -55,12 +64,6 @@ namespace bealab
 ///   - bitset
 ///   - function
 ///   - exception
-/// - Threads
-///   - thread
-///   - mutex
-///   - lock_guard
-///   - unique_lock
-///   - condition_variable
 /// @{
 
 // Type traits
@@ -97,6 +100,13 @@ using std::map;
 
 // Algorithms
 using std::sort;
+
+// Threads
+using std::thread;
+using std::mutex;
+using std::lock_guard;
+using std::unique_lock;
+using std::condition_variable;
 
 // Other
 using std::tuple;

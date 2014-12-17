@@ -65,21 +65,21 @@ template<class value_type> class vectorx;
 template<class value_type> class matrixx;
 
 template<class T>
-T temporary( const T& x )
+T noproxy( const T& x )
 {
 	return x;
 };
 
 template<class E>
 vector_interface<vectorx<typename E::value_type>>
-temporary( const vector_interface<E>& x )
+noproxy( const vector_interface<E>& x )
 {
 	return x;
 }
 
 template<class E>
 matrix_interface<matrixx<typename E::value_type>>
-temporary( const matrix_interface<E>& x )
+noproxy( const matrix_interface<E>& x )
 {
 	return x;
 }

@@ -13,80 +13,35 @@ namespace bealab
 /// Algebraic operations
 /// @{
 
-/*
- * Do this: If double or complex, use BLAS. Otherwise, use brute force.
- */
-
-/// Check for scalar types (i.e., bool, int, double complex)
-//template< class T >
-//struct is_scalar : std::integral_constant<
-//	   bool,
-//	   std::is_same<bool, typename std::remove_cv<T>::type>::value  ||
-//	   std::is_same<int, typename std::remove_cv<T>::type>::value  ||
-//	   std::is_same<double, typename std::remove_cv<T>::type>::value  ||
-//	   std::is_same<complex, typename std::remove_cv<T>::type>::value
-//   > {};
-
 /// @name Vector operations
 
 /// vector + vector
-template< class E1, class E2,
-		class R = decltype(typename E1::value_type()+typename E2::value_type()) >
-Vec<R> operator+( const vector_interface<E1>& x, const vector_interface<E2>& y )
+template< class E1, class E2>
+auto operator+( const vector_interface<E1>& x, const vector_interface<E2>& y ) ->
+vector_interface<decltype(ublas::operator+(x,y))>
 {
-	assert( x.size() == y.size() );
-	int I = x.size();
-	Vec<R> z(I);
-	for( int i = 0; i < I; i++ )
-		z(i) = x(i) + y(i);
-	return z;
+	return ublas::operator+(x,y);
 }
-//template< class E1, class E2,
-//	class R = decltype( declval<E1>() + declval<E2>() ) >
-//vector_interface<R> operator+( const vector_interface<E1>& x, const vector_interface<E2>& y )
-//{
-//	return dynamic_cast<const E1&>(x) + dynamic_cast<const E2&>(y);
-//}
 
 /// -vector
-template<class E, class R = typename E::value_type>
-Vec<R> operator-( const vector_interface<E>& x )
+template<class E>
+auto operator-( const vector_interface<E>& x ) ->
+vector_interface<decltype(ublas::operator-(x))>
 {
-	int I = x.size();
-	Vec<R> z(I);
-	for( int i = 0; i < I; i++ )
-		z(i) = -x(i);
-	return z;
+	return ublas::operator-(x);
 }
-//template<class E,
-//	class R = decltype( -declval<E>() ) >
-//vector_interface<R> operator-( const vector_interface<E>& x )
-//{
-//	return -dynamic_cast<const E&>(x);
-//}
 
 /// vector - vector
-template<class E1, class E2,
-	class R = decltype(typename E1::value_type()-typename E2::value_type())>
-Vec<R> operator-( const vector_interface<E1>& x, const vector_interface<E2>& y )
+template<class E1, class E2>
+auto operator-( const vector_interface<E1>& x, const vector_interface<E2>& y ) ->
+vector_interface<decltype(ublas::operator-(x,y))>
 {
-	assert( x.size() == y.size() );
-	int I = x.size();
-	Vec<R> z(I);
-	for( int i = 0; i < I; i++ )
-		z(i) = x(i) - y(i);
-	return z;
+	return ublas::operator-(x,y);
 }
-//template<class E1, class E2,
-//	class R = decltype( declval<E1>() - declval<E2>() ) >
-//vector_interface<R> operator-( const vector_interface<E1>& x, const vector_interface<E2>& y )
-//{
-//	return dynamic_cast<const E1&>(x) - dynamic_cast<const E2&>(y);
-//}
 
 /// vector * scalar
 template< class E, class T,
-	class R = decltype( typename E::value_type()*T() ) >
+	class R = decltype( noproxy( declval<typename E::value_type>()*declval<T>() ) )>
 Vec<R> operator*( const vector_interface<E>& x, const T& y )
 {
 	int I = x.size();
@@ -95,16 +50,10 @@ Vec<R> operator*( const vector_interface<E>& x, const T& y )
 		z(i) = x(i) * y;
 	return z;
 }
-//template<class E, class T,
-//	class R = decltype( declval<E>() * declval<T>() ) >
-//vector_interface<R> operator*( const vector_interface<E> &x, const T &y )
-//{
-//	return dynamic_cast<const E&>(x) * y;
-//}
 
 /// scalar * vector
 template< class T, class E,
-	class R = decltype( T()*typename E::value_type() )>
+	class R = decltype( noproxy( declval<T>()*declval<typename E::value_type>() ) ) >
 Vec<R> operator*( const T& x, const vector_interface<E>& y )
 {
 	int I = y.size();
@@ -113,11 +62,13 @@ Vec<R> operator*( const T& x, const vector_interface<E>& y )
 		z(i) = x * y(i);
 	return z;
 }
-//template<class T, class E,
-//	class R = decltype( declval<T>() * declval<E>() ) >
-//vector_interface<R> operator*( const T& x, const vector_interface<E> &y )
+
+/// scalar * vector (uBLAS version)
+//template<class T, class E>
+//auto operator*( const T& x, const vector_interface<E>& y ) ->
+//vector_interface<decltype(ublas::operator*(x,y))>
 //{
-//	return x * dynamic_cast<const E&>(y);
+//	return ublas::operator*(x,y);
 //}
 
 /// vector / scalar
@@ -137,67 +88,28 @@ Vec<R> operator/( const vector_interface<E>& x, const T& y )
 /// @name Matrix operations
 
 /// matrix + matrix
-template< class E1, class E2,
-	class R = decltype( typename E1::value_type() + typename E2::value_type() ) >
-Mat<R> operator+( const matrix_interface<E1>& x, const matrix_interface<E2>& y )
+template< class E1, class E2>
+auto operator+( const matrix_interface<E1>& x, const matrix_interface<E2>& y ) ->
+matrix_interface<decltype(ublas::operator+(x,y))>
 {
-	assert( x.size1() == y.size1() );
-	assert( x.size2() == y.size2() );
-	int I = x.size1();
-	int J = x.size2();
-	Mat<R> z(I,J);
-	for( int i = 0; i < I; i++ )
-		for( int j = 0; j < J; j++ )
-			z(i,j) = x(i,j) + y(i,j);
-	return z;
+	return ublas::operator+(x,y);
 }
-//template< class E1, class E2,
-//	class R = decltype( declval<E1>() + declval<E2>() ) >
-//matrix_interface<R> operator+( const matrix_interface<E1>& x, const matrix_interface<E2>& y )
-//{
-//	return dynamic_cast<const E1&>(x) + dynamic_cast<const E2&>(y);
-//}
 
 /// -matrix
-template< class E, class R = typename E::value_type >
-Mat<R> operator-( const matrix_interface<E>& x )
+template< class E>
+auto operator-( const matrix_interface<E>& x ) ->
+matrix_interface<decltype(ublas::operator-(x))>
 {
-	int I = x.size1();
-	int J = x.size2();
-	Mat<R> z(I,J);
-	for( int i = 0; i < I; i++ )
-		for( int j = 0; j < J; j++ )
-			z(i,j) = -x(i,j);
-	return z;
+	return ublas::operator-(x);
 }
-//template< class E,
-//	class R = decltype( -declval<E>() ) >
-//matrix_interface<R> operator-( const matrix_interface<E>& x )
-//{
-//	return -dynamic_cast<const E&>(x);
-//}
 
 /// matrix - matrix
-template< class E1, class E2,
-	class R = decltype( typename E1::value_type() - typename E2::value_type() ) >
-Mat<R> operator-( const matrix_interface<E1>& x, const matrix_interface<E2>& y )
+template< class E1, class E2>
+auto operator-( const matrix_interface<E1>& x, const matrix_interface<E2>& y ) ->
+matrix_interface<decltype(ublas::operator-(x,y))>
 {
-	assert( x.size1() == y.size1() );
-	assert( x.size2() == y.size2() );
-	int I = x.size1();
-	int J = x.size2();
-	Mat<R> z(I,J);
-	for( int i = 0; i < I; i++ )
-		for( int j = 0; j < J; j++ )
-			z(i,j) = x(i,j) - y(i,j);
-	return z;
+	return ublas::operator-(x,y);
 }
-//template< class E1, class E2,
-//	class R = decltype( declval<E1>() - declval<E2>() ) >
-//matrix_interface<R> operator-( const matrix_interface<E1>& x, const matrix_interface<E2>& y )
-//{
-//	return dynamic_cast<const E1&>(x) - dynamic_cast<const E2&>(y);
-//}
 
 /// matrix * scalar
 template< class E, class T,
@@ -250,7 +162,6 @@ template< class E1, class E2,
 	class R = decltype( typename E1::value_type() * typename E2::value_type() ) >
 Mat<R> operator*( const matrix_interface<E1>& A, const matrix_interface<E2>& B )
 {
-//	return ublas::prod(A,B);
 	assert( A.size2() == B.size1() );
 	int I = A.size1();
 	int J = B.size2();
@@ -402,14 +313,9 @@ Mat<R> element_div( const matrix_interface<T> &x, const matrix_interface<S> &y )
 /// @name Transpose and adjoint
 
 /// Transpose of a matrix
-//template<class T, class R = typename T::value_type>
-//Mat<R> trans( const matrix_interface<T>& A )
-//{
-//	return ublas::trans(A);
-//}
-template<class T,
-	class R = decltype( ublas::trans( declval<T>() ) )>
-matrix_interface<R> trans( const matrix_interface<T>& A )
+template<class T>
+auto trans( const matrix_interface<T>& A ) ->
+matrix_interface<decltype(ublas::trans(A))>
 {
 	return ublas::trans(A);
 }
@@ -464,15 +370,9 @@ R inner_prod( const matrix_interface<T> &x, const matrix_interface<S> &y )
 }
 
 /// Vector outer-product
-//template<class T, class S,
-//	class R = decltype(typename T::value_type()*typename S::value_type())>
-//Mat<R> outer_prod( const vector_interface<T> &x, const vector_interface<S> &y )
-//{
-//	return ublas::outer_prod( x, y );
-//}
-template<class T, class S,
-	class R = decltype( ublas::outer_prod( declval<T>(), declval<S>() ) )>
-matrix_interface<R> outer_prod( const vector_interface<T> &x, const vector_interface<S> &y )
+template<class T, class S>
+auto outer_prod( const vector_interface<T> &x, const vector_interface<S> &y ) ->
+matrix_interface<decltype(ublas::outer_prod( x, y ))>
 {
 	return ublas::outer_prod( x, y );
 }

@@ -60,7 +60,7 @@ R polyval( const Vec<T>& p, S x )
 
 /// Polynomial multiplication
 template<class T, class S,
-	class R = decltype( temporary(T()*S()) ) >
+	class R = decltype( noproxy(T()*S()) ) >
 Vec<R> conv( const Vec<T>& x, const Vec<S>& y )
 {
 	if( x.size() == 0 || y.size() == 0 )

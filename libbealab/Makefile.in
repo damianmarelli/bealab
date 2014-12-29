@@ -7,16 +7,12 @@ otherdirs  = doc
 
 # Automatic variables
 distdir = @PACKAGE_TARNAME@-@PACKAGE_VERSION@
-#ncores  = $(shell grep -c processor /proc/cpuinfo)
-ncores = 2
+prefix  = @prefix@
+ncores  = $(shell grep -c processor /proc/cpuinfo)
 
 # Targets
-all: $(targetdirs)
-
-include:
+all:
 	cd include && $(MAKE)
-
-src:
 	cd src && $(MAKE) -j$(ncores) target=$(target)
 
 html:
@@ -27,8 +23,16 @@ distclean:
 	-rm -r tmp > /dev/null 2>&1
 
 install:
+	install -d $(prefix)/lib
+	install -m 0755 lib/libbealab.so $(prefix)/lib
+	install -d $(prefix)/include
+	install @srcdir@/include/bealab.hpp $(prefix)/include
+	cp -R --no-preserve=ownership @srcdir@/include/bealab $(prefix)/include
 
 uninstall:
+	rm $(prefix)/lib/libbealab.so
+	rm $(prefix)/include/bealab.hpp
+	rm -R $(prefix)/include/bealab
 
 dist:
 	-rm $(distdir).tar.gz > /dev/null 2>&1

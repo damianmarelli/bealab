@@ -37,6 +37,10 @@ ifeq (,$(findstring HAVE_PYTHON2, $(DEFS)))
 else
 ifeq (,$(findstring HAVE_LIBPYTHON2_7, $(DEFS)))
 	echo "#define BEALAB_NOPYTHON" >> $(config_hpp)
+else
+ifeq (,$(findstring -DHAVE_PYTHON2_7_NUMPY_ARRAYOBJECT_H, $(DEFS)))
+	echo "#define BEALAB_NOPYTHON" >> $(config_hpp)
+endif
 endif
 endif
 

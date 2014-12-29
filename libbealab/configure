@@ -590,6 +590,7 @@ GNUPLOT
 ac_ct_CC
 CFLAGS
 CC
+FCFLAGS_f
 ac_ct_FC
 FCFLAGS
 FC
@@ -1520,6 +1521,37 @@ fi
   as_fn_set_status $ac_retval
 
 } # ac_fn_c_try_link
+
+# ac_fn_c_check_header_compile LINENO HEADER VAR INCLUDES
+# -------------------------------------------------------
+# Tests whether HEADER exists and can be compiled using the include files in
+# INCLUDES, setting the cache variable VAR accordingly.
+ac_fn_c_check_header_compile ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
+$as_echo_n "checking for $2... " >&6; }
+if eval \${$3+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+#include <$2>
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$3=yes"
+else
+  eval "$3=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$3
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_header_compile
 cat >config.log <<_ACEOF
 This file contains any messages produced by compilers while
 running configure, to aid debugging if configure makes a mistake.
@@ -2395,6 +2427,8 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+
+# Required Fortran compiler
 ac_ext=${ac_fc_srcext-f}
 ac_compile='$FC -c $FCFLAGS $ac_fcflags_srcext conftest.$ac_ext >&5'
 ac_link='$FC -o conftest$ac_exeext $FCFLAGS $LDFLAGS $ac_fcflags_srcext conftest.$ac_ext $LIBS >&5'
@@ -2607,7 +2641,63 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-# Essential libraries
+ac_ext=${ac_fc_srcext-f}
+ac_compile='$FC -c $FCFLAGS $ac_fcflags_srcext conftest.$ac_ext >&5'
+ac_link='$FC -o conftest$ac_exeext $FCFLAGS $LDFLAGS $ac_fcflags_srcext conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_fc_compiler_gnu
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Fortran flag to compile .f files" >&5
+$as_echo_n "checking for Fortran flag to compile .f files... " >&6; }
+if ${ac_cv_fc_srcext_f+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_ext=f
+ac_fcflags_srcext_save=$ac_fcflags_srcext
+ac_fcflags_srcext=
+ac_cv_fc_srcext_f=unknown
+case $ac_ext in #(
+  [fF]77) ac_try=f77;; #(
+  *) ac_try=f95;;
+esac
+for ac_flag in none -qsuffix=f=f -Tf "-x $ac_try"; do
+  test "x$ac_flag" != xnone && ac_fcflags_srcext="$ac_flag"
+  cat > conftest.$ac_ext <<_ACEOF
+      program main
+
+      end
+_ACEOF
+if ac_fn_fc_try_compile "$LINENO"; then :
+  ac_cv_fc_srcext_f=$ac_flag; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+rm -f conftest.$ac_objext conftest.f
+ac_fcflags_srcext=$ac_fcflags_srcext_save
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_fc_srcext_f" >&5
+$as_echo "$ac_cv_fc_srcext_f" >&6; }
+if test "x$ac_cv_fc_srcext_f" = xunknown; then
+  echo "*** No compatible Fortran compiler found. Stop."; exit
+else
+  ac_fc_srcext=f
+  if test "x$ac_cv_fc_srcext_f" = xnone; then
+    ac_fcflags_srcext=""
+    FCFLAGS_f=""
+  else
+    ac_fcflags_srcext=$ac_cv_fc_srcext_f
+    FCFLAGS_f=$ac_cv_fc_srcext_f
+  fi
+
+
+fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+# Required libraries
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -3230,88 +3320,6 @@ else
   echo "*** Library lapack not found. Stop."; exit
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgslcblas" >&5
-$as_echo_n "checking for main in -lgslcblas... " >&6; }
-if ${ac_cv_lib_gslcblas_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lgslcblas  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_gslcblas_main=yes
-else
-  ac_cv_lib_gslcblas_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gslcblas_main" >&5
-$as_echo "$ac_cv_lib_gslcblas_main" >&6; }
-if test "x$ac_cv_lib_gslcblas_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBGSLCBLAS 1
-_ACEOF
-
-  LIBS="-lgslcblas $LIBS"
-
-else
-  echo "*** Library gslcblas not found. Stop."; exit
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgsl" >&5
-$as_echo_n "checking for main in -lgsl... " >&6; }
-if ${ac_cv_lib_gsl_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lgsl  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_gsl_main=yes
-else
-  ac_cv_lib_gsl_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gsl_main" >&5
-$as_echo "$ac_cv_lib_gsl_main" >&6; }
-if test "x$ac_cv_lib_gsl_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBGSL 1
-_ACEOF
-
-  LIBS="-lgsl $LIBS"
-
-else
-  echo "*** Library gsl not found. Stop."; exit
-fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lnlopt" >&5
 $as_echo_n "checking for main in -lnlopt... " >&6; }
 if ${ac_cv_lib_nlopt_main+:} false; then :
@@ -3395,6 +3403,174 @@ else
 fi
 
 
+# Required libraries: gsl
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgslcblas" >&5
+$as_echo_n "checking for main in -lgslcblas... " >&6; }
+if ${ac_cv_lib_gslcblas_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgslcblas  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_gslcblas_main=yes
+else
+  ac_cv_lib_gslcblas_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gslcblas_main" >&5
+$as_echo "$ac_cv_lib_gslcblas_main" >&6; }
+if test "x$ac_cv_lib_gslcblas_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGSLCBLAS 1
+_ACEOF
+
+  LIBS="-lgslcblas $LIBS"
+
+else
+  echo "*** Library gslcblas not found. Stop."; exit
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgsl" >&5
+$as_echo_n "checking for main in -lgsl... " >&6; }
+if ${ac_cv_lib_gsl_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgsl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_gsl_main=yes
+else
+  ac_cv_lib_gsl_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gsl_main" >&5
+$as_echo "$ac_cv_lib_gsl_main" >&6; }
+if test "x$ac_cv_lib_gsl_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGSL 1
+_ACEOF
+
+  LIBS="-lgsl $LIBS"
+
+else
+  echo "*** Library gsl not found. Stop."; exit
+fi
+
+
+# Required libraries: libmatio
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lhdf5" >&5
+$as_echo_n "checking for main in -lhdf5... " >&6; }
+if ${ac_cv_lib_hdf5_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lhdf5  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_hdf5_main=yes
+else
+  ac_cv_lib_hdf5_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_hdf5_main" >&5
+$as_echo "$ac_cv_lib_hdf5_main" >&6; }
+if test "x$ac_cv_lib_hdf5_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBHDF5 1
+_ACEOF
+
+  LIBS="-lhdf5 $LIBS"
+
+else
+  echo "*** Library hdf5 not found. Stop."; exit
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lmatio" >&5
+$as_echo_n "checking for main in -lmatio... " >&6; }
+if ${ac_cv_lib_matio_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lmatio  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_matio_main=yes
+else
+  ac_cv_lib_matio_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_matio_main" >&5
+$as_echo "$ac_cv_lib_matio_main" >&6; }
+if test "x$ac_cv_lib_matio_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBMATIO 1
+_ACEOF
+
+  LIBS="-lmatio $LIBS"
+
+else
+  echo "*** Library matio not found. Stop."; exit
+fi
+
+
 # Optional libraries
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_mpi" >&5
 $as_echo_n "checking for main in -lboost_mpi... " >&6; }
@@ -3435,47 +3611,6 @@ _ACEOF
 
 else
   echo "*** Library boost_mpi not found. MPI functionality disabled."
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lpython2.7" >&5
-$as_echo_n "checking for main in -lpython2.7... " >&6; }
-if ${ac_cv_lib_python2_7_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpython2.7  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_python2_7_main=yes
-else
-  ac_cv_lib_python2_7_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_python2_7_main" >&5
-$as_echo "$ac_cv_lib_python2_7_main" >&6; }
-if test "x$ac_cv_lib_python2_7_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBPYTHON2_7 1
-_ACEOF
-
-  LIBS="-lpython2.7 $LIBS"
-
-else
-  echo "*** Library python2.7 not found. Python interface disabled."
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -leng" >&5
@@ -3602,14 +3737,14 @@ else
 fi
 
 
-# Essential libraries: libmatio
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lhdf5" >&5
-$as_echo_n "checking for main in -lhdf5... " >&6; }
-if ${ac_cv_lib_hdf5_main+:} false; then :
+# Optional libraries: python2.7
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lpython2.7" >&5
+$as_echo_n "checking for main in -lpython2.7... " >&6; }
+if ${ac_cv_lib_python2_7_main+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lhdf5  $LIBS"
+LIBS="-lpython2.7  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3623,70 +3758,44 @@ return main ();
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_hdf5_main=yes
+  ac_cv_lib_python2_7_main=yes
 else
-  ac_cv_lib_hdf5_main=no
+  ac_cv_lib_python2_7_main=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_hdf5_main" >&5
-$as_echo "$ac_cv_lib_hdf5_main" >&6; }
-if test "x$ac_cv_lib_hdf5_main" = xyes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_python2_7_main" >&5
+$as_echo "$ac_cv_lib_python2_7_main" >&6; }
+if test "x$ac_cv_lib_python2_7_main" = xyes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBHDF5 1
+#define HAVE_LIBPYTHON2_7 1
 _ACEOF
 
-  LIBS="-lhdf5 $LIBS"
+  LIBS="-lpython2.7 $LIBS"
 
 else
-  echo "*** Library hdf5 not found. Stop."; exit
+  echo "*** Library python2.7 not found. Python interface disabled."
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lmatio" >&5
-$as_echo_n "checking for main in -lmatio... " >&6; }
-if ${ac_cv_lib_matio_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lmatio  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_matio_main=yes
-else
-  ac_cv_lib_matio_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_matio_main" >&5
-$as_echo "$ac_cv_lib_matio_main" >&6; }
-if test "x$ac_cv_lib_matio_main" = xyes; then :
+for ac_header in python2.7/numpy/arrayobject.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "python2.7/numpy/arrayobject.h" "ac_cv_header_python2_7_numpy_arrayobject_h" "#include <python2.7/Python.h>
+"
+if test "x$ac_cv_header_python2_7_numpy_arrayobject_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBMATIO 1
+#define HAVE_PYTHON2_7_NUMPY_ARRAYOBJECT_H 1
 _ACEOF
 
-  LIBS="-lmatio $LIBS"
-
 else
-  echo "*** Library matio not found. PUTA!!!. Stop."; exit
+  echo "*** Header python2.7/numpy/arrayobject.h not found. Python interface disabled."
 fi
 
+done
 
-# Optional library: libipopt
+
+# Optional libraries: libipopt
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lcoinmetis" >&5
 $as_echo_n "checking for main in -lcoinmetis... " >&6; }
 if ${ac_cv_lib_coinmetis_main+:} false; then :
@@ -3811,7 +3920,7 @@ else
 fi
 
 
-# External programs
+# Optional external programs
 # Extract the first word of "gnuplot", so it can be a program name with args.
 set dummy gnuplot; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5

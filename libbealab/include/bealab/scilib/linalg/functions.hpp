@@ -19,7 +19,7 @@ namespace bealab
 /// Call: X = lls( A, Y ). The returned matrix X is the minimum norm solution
 /// of || Y - A * X ||
 template<class E, class F,
-	class R = decltype(typename E::value_type()*typename F::value_type())>
+	class R = decltype( noproxy( declval<typename E::value_type>()*declval<typename F::value_type>() ) ) >
 Mat<R> lls( const matrix_interface<E>& A, const matrix_interface<F>& Y )
 {
 	// Assert dimensions
@@ -75,7 +75,7 @@ Mat<R> lls( const matrix_interface<E>& A, const matrix_interface<F>& Y )
 /// Call: x = lls( A, y ). The returned vector x is the minimum norm solution
 /// of || y - A * x ||
 template<class E, class F,
-	class R = decltype(typename E::value_type()*typename F::value_type())>
+	class R = decltype( noproxy( declval<typename E::value_type>()*declval<typename F::value_type>() ) ) >
 Vec<R> lls( const matrix_interface<E>& A, const vector_interface<F>& y )
 {
 	typedef typename F::value_type U;
@@ -87,7 +87,7 @@ Vec<R> lls( const matrix_interface<E>& A, const vector_interface<F>& y )
 /// Solve linear system of equations.
 /// Call: X = linsolve( A, Y ). Returns a matrix X such that Y = A * X.
 template<class E, class F,
-	class R = decltype(typename E::value_type()*typename F::value_type())>
+	class R = decltype( noproxy( declval<typename E::value_type>()*declval<typename F::value_type>() ) ) >
 Mat<R> linsolve( const matrix_interface<E>& A, const matrix_interface<F>& Y )
 {
 	// Convert to column major storage
@@ -117,7 +117,7 @@ Mat<R> linsolve( const matrix_interface<E>& A, const matrix_interface<F>& Y )
 /// Solve linear system of equations.
 /// Call: x = lsolve( A, b ). Returns a vector x such that y = A * x.
 template<class E, class F,
-	class R = decltype(typename E::value_type()*typename F::value_type())>
+	class R = decltype( noproxy( declval<typename E::value_type>()*declval<typename F::value_type>() ) ) >
 Vec<R> linsolve( const matrix_interface<E>& A, const vector_interface<F>& x )
 {
 	typedef typename F::value_type U;
@@ -427,7 +427,7 @@ cmat matrix_function( const F& fun, const matrix_interface<E>& A )
 /// Converts a scalar function 'fun' into a matrix one 'mfun'
 #define _MATRIX_FUNCTION( fun )													\
 template<class E>																\
-cmat m##fun( const matrix_interface<E>& A )									\
+cmat m##fun( const matrix_interface<E>& A )										\
 {																				\
 	auto functor = []( complex x ){ return fun(x); };							\
 	return matrix_function( functor, A );										\

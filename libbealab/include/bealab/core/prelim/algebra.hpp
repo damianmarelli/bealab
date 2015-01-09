@@ -27,6 +27,10 @@ double norm( double x, int p=2 ) { return p!=0 ? abs(x) : (x==0 ? 0 : 1); }
 /// Inner product
 inline
 double inner_prod( double x, double y ) { return x*y; }
+
+/// Outer product
+inline
+double outer_prod( double x, double y ) { return x*y; }
 /// @}
 
 /// @name Complex numbers
@@ -46,6 +50,10 @@ double norm( const complex &x, int p=2 ) { return p!=0 ? abs(x) : (abs(x)==0 ? 0
 /// Inner product
 inline
 complex inner_prod( const complex &x, const complex &y ) { return x*conj(y); }
+
+/// Outer product
+inline
+complex outer_prod( const complex &x, const complex &y ) { return x*conj(y); }
 /// @}
 
 /// @}

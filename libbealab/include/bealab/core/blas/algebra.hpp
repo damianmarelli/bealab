@@ -13,6 +13,18 @@ namespace bealab
 /// Algebraic operations
 /// @{
 
+using std::is_convertible;
+
+/// Check for scalar types (i.e., bool, int, double complex)
+template< class T >
+struct is_scalar : std::integral_constant<
+	   bool,
+	   std::is_same<bool, typename std::remove_cv<T>::type>::value  ||
+	   std::is_same<int, typename std::remove_cv<T>::type>::value  ||
+	   std::is_same<double, typename std::remove_cv<T>::type>::value  ||
+	   std::is_same<complex, typename std::remove_cv<T>::type>::value
+   > {};
+
 /// @name Vector operations
 
 /// vector + vector
@@ -20,7 +32,7 @@ template< class E1, class E2>
 auto operator+( const vector_interface<E1>& x, const vector_interface<E2>& y ) ->
 vector_interface<decltype(ublas::operator+(x,y))>
 {
-	return ublas::operator+(x,y);
+	return ublas::operator+( x, y );
 }
 
 /// -vector
@@ -28,7 +40,7 @@ template<class E>
 auto operator-( const vector_interface<E>& x ) ->
 vector_interface<decltype(ublas::operator-(x))>
 {
-	return ublas::operator-(x);
+	return ublas::operator-( x );
 }
 
 /// vector - vector
@@ -36,12 +48,28 @@ template<class E1, class E2>
 auto operator-( const vector_interface<E1>& x, const vector_interface<E2>& y ) ->
 vector_interface<decltype(ublas::operator-(x,y))>
 {
-	return ublas::operator-(x,y);
+	return ublas::operator-( x, y );
 }
 
-/// vector * scalar
+/// vector * scalar (scalar entries)
 template< class E, class T,
-	class R = decltype( noproxy( declval<typename E::value_type>()*declval<T>() ) )>
+	class = typename enable_if< is_scalar<typename E::value_type>::value &&
+								is_scalar<T>::value &&
+								is_convertible<T,typename E::value_type>::value
+							  >::type >
+auto operator*( const vector_interface<E>& x, const T& y ) ->
+vector_interface<decltype(ublas::operator*(x,y))>
+{
+	return ublas::operator*( x, y );
+}
+
+/// vector * scalar (non-scalar entries)
+template< class E, class T,
+	class R = decltype( noproxy( declval<typename E::value_type>()*declval<T>() ) ),
+	class   = typename enable_if< !is_scalar<typename E::value_type>::value ||
+								  !is_scalar<T>::value ||
+								  !is_convertible<T,typename E::value_type>::value
+								>::type >
 Vec<R> operator*( const vector_interface<E>& x, const T& y )
 {
 	int I = x.size();
@@ -51,9 +79,25 @@ Vec<R> operator*( const vector_interface<E>& x, const T& y )
 	return z;
 }
 
-/// scalar * vector
+/// scalar * vector (scalar entries)
 template< class T, class E,
-	class R = decltype( noproxy( declval<T>()*declval<typename E::value_type>() ) ) >
+	class = typename enable_if< is_scalar<T>::value &&
+								is_scalar<typename E::value_type>::value &&
+								is_convertible<T,typename E::value_type>::value
+					    	  >::type >
+auto operator*( const T& x, const vector_interface<E>& y ) ->
+vector_interface<decltype(ublas::operator*(x,y))>
+{
+	return ublas::operator*( x, y );
+}
+
+/// scalar * vector (non-scalar entries)
+template< class T, class E,
+	class R = decltype( noproxy( declval<T>()*declval<typename E::value_type>() ) ),
+	class   = typename enable_if< !is_scalar<T>::value ||
+								  !is_scalar<typename E::value_type>::value ||
+								  !is_convertible<T,typename E::value_type>::value
+								>::type >
 Vec<R> operator*( const T& x, const vector_interface<E>& y )
 {
 	int I = y.size();
@@ -63,17 +107,25 @@ Vec<R> operator*( const T& x, const vector_interface<E>& y )
 	return z;
 }
 
-/// scalar * vector (uBLAS version)
-//template<class T, class E>
-//auto operator*( const T& x, const vector_interface<E>& y ) ->
-//vector_interface<decltype(ublas::operator*(x,y))>
-//{
-//	return ublas::operator*(x,y);
-//}
-
-/// vector / scalar
+/// vector / scalar (scalar entries)
 template< class E, class T,
-	class R = decltype( typename E::value_type()/T() ) >
+	class = typename enable_if< is_scalar<typename E::value_type>::value &&
+								is_scalar<T>::value &&
+								is_convertible<T,typename E::value_type>::value
+							  >::type >
+auto operator/( const vector_interface<E>& x, const T& y ) ->
+vector_interface<decltype(ublas::operator/(x,y))>
+{
+	return ublas::operator/( x, y );
+}
+
+/// vector / scalar (non-scalar entries)
+template< class E, class T,
+	class R = decltype( typename E::value_type()/T() ),
+	class   = typename enable_if< !is_scalar<T>::value ||
+								  !is_scalar<typename E::value_type>::value ||
+								  !is_convertible<T,typename E::value_type>::value
+								>::type >
 Vec<R> operator/( const vector_interface<E>& x, const T& y )
 {
 	int I = x.size();
@@ -111,9 +163,25 @@ matrix_interface<decltype(ublas::operator-(x,y))>
 	return ublas::operator-(x,y);
 }
 
-/// matrix * scalar
+/// matrix * scalar (scalar version)
 template< class E, class T,
-	class R = decltype( typename E::value_type()*T() ) >
+	class = typename enable_if< is_scalar<typename E::value_type>::value &&
+								is_scalar<T>::value &&
+								is_convertible<T,typename E::value_type>::value
+							  >::type >
+auto operator*( const matrix_interface<E>& x, const T& y ) ->
+matrix_interface<decltype(ublas::operator*(x,y))>
+{
+	return ublas::operator*( x, y );
+}
+
+/// matrix * scalar (non-scalar version)
+template< class E, class T,
+	class R = decltype( noproxy( declval<typename E::value_type>()*declval<T>() ) ),
+	class   = typename enable_if< !is_scalar<typename E::value_type>::value ||
+								  !is_scalar<T>::value ||
+								  !is_convertible<T,typename E::value_type>::value
+								>::type >
 Mat<R> operator*( const matrix_interface<E>& x, const T& y )
 {
 	int I = x.size1();
@@ -125,9 +193,25 @@ Mat<R> operator*( const matrix_interface<E>& x, const T& y )
 	return z;
 }
 
-/// scalar * matrix
+/// scalar * matrix (scalar entries)
 template< class T, class E,
-	class R = decltype( T() * typename E::value_type() ) >
+	class = typename enable_if< is_scalar<T>::value &&
+								is_scalar<typename E::value_type>::value &&
+								is_convertible<T,typename E::value_type>::value
+					    	  >::type >
+auto operator*( const T& x, const matrix_interface<E>& y ) ->
+matrix_interface<decltype(ublas::operator*(x,y))>
+{
+	return ublas::operator*( x, y );
+}
+
+/// scalar * matrix (non-scalar entries)
+template< class T, class E,
+	class R = decltype( noproxy( declval<T>()*declval<typename E::value_type>() ) ),
+	class   = typename enable_if< !is_scalar<T>::value ||
+								  !is_scalar<typename E::value_type>::value ||
+								  !is_convertible<T,typename E::value_type>::value
+								>::type >
 Mat<R> operator*( const T& x, const matrix_interface<E>& y )
 {
 	int I = y.size1();
@@ -139,9 +223,25 @@ Mat<R> operator*( const T& x, const matrix_interface<E>& y )
 	return z;
 }
 
-/// matrix / scalar
+/// matrix / scalar (scalar entries)
 template< class E, class T,
-	class R = decltype( typename E::value_type() / T() ) >
+	class = typename enable_if< is_scalar<typename E::value_type>::value &&
+								is_scalar<T>::value &&
+								is_convertible<T,typename E::value_type>::value
+							  >::type >
+auto operator/( const matrix_interface<E>& x, const T& y ) ->
+matrix_interface<decltype(ublas::operator/(x,y))>
+{
+	return ublas::operator/( x, y );
+}
+
+/// matrix / scalar (non-scalar entries)
+template< class E, class T,
+	class R = decltype( typename E::value_type()/T() ),
+	class   = typename enable_if< !is_scalar<T>::value ||
+								  !is_scalar<typename E::value_type>::value ||
+								  !is_convertible<T,typename E::value_type>::value
+								>::type >
 Mat<R> operator/( const matrix_interface<E>& x, const T& y )
 {
 	int I = x.size1();
@@ -157,65 +257,107 @@ Mat<R> operator/( const matrix_interface<E>& x, const T& y )
 //------------------------------------------------------------------------------
 /// @name Vector-matrix products
 
-/// matrix * matrix
+/// matrix * matrix (scalar version)
 template< class E1, class E2,
-	class R = decltype( typename E1::value_type() * typename E2::value_type() ) >
-Mat<R> operator*( const matrix_interface<E1>& A, const matrix_interface<E2>& B )
+	class = typename enable_if< is_scalar<typename E1::value_type>::value &&
+								is_scalar<typename E2::value_type>::value
+							  >::type >
+auto operator*( const matrix_interface<E1>& x, const matrix_interface<E2>& y ) ->
+matrix_interface<decltype(ublas::prod(x,y))>
 {
-	assert( A.size2() == B.size1() );
-	int I = A.size1();
-	int J = B.size2();
-	int K = A.size2();
+	return ublas::prod( x, y );
+}
+
+/// matrix * matrix (non-scalar version)
+template< class E1, class E2,
+	class R = decltype( noproxy( declval<typename E1::value_type>()*declval<typename E2::value_type>() ) ),
+	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
+								  !is_scalar<typename E2::value_type>::value
+								>::type >
+Mat<R> operator*( const matrix_interface<E1>& x, const matrix_interface<E2>& y )
+{
+	assert( x.size2() == y.size1() );
+	int I = x.size1();
+	int J = y.size2();
+	int K = x.size2();
 	Mat<R> M(I,J);
 	for( int i = 0; i < I; i++ ) {
 		for( int j = 0; j < J; j++ ) {
 			M(i,j) = R();
 			for( int k = 0; k < K; k++ )
 				if( k == 0 )
-					M(i,j)  = A(i,k) * B(k,j);
+					M(i,j)  = x(i,k) * y(k,j);
 				else
-					M(i,j) += A(i,k) * B(k,j);
+					M(i,j) += x(i,k) * y(k,j);
 		}
 	}
 	return M;
 }
 
-/// matrix * vector
+/// matrix * vector (scalar version)
 template< class E1, class E2,
-	class R = decltype( typename E1::value_type() * typename E2::value_type() ) >
-Vec<R> operator*( const matrix_interface<E1>& A, const vector_interface<E2>& x )
+	class = typename enable_if< is_scalar<typename E1::value_type>::value &&
+								is_scalar<typename E2::value_type>::value
+							  >::type >
+auto operator*( const matrix_interface<E1>& x, const vector_interface<E2>& y ) ->
+vector_interface<decltype(ublas::prod(x,y))>
 {
-	assert( A.size2() == x.size() );
-	int I = A.size1();
-	int K = A.size2();
+	return ublas::prod( x, y );
+}
+
+/// matrix * vector (non-scalar version)
+template< class E1, class E2,
+	class R = decltype( noproxy( declval<typename E1::value_type>()*declval<typename E2::value_type>() ) ),
+	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
+								  !is_scalar<typename E2::value_type>::value
+								>::type >
+Vec<R> operator*( const matrix_interface<E1>& x, const vector_interface<E2>& y )
+{
+	assert( x.size2() == y.size() );
+	int I = x.size1();
+	int K = x.size2();
 	Vec<R> v(I);
 	for( int i = 0; i < I; i++ ) {
 		v(i) = R();
 		for( int k = 0; k < K; k++ )
 			if( k == 0 )
-				v(i)  = A(i,k) * x(k);
+				v(i)  = x(i,k) * y(k);
 			else
-				v(i) += A(i,k) * x(k);
+				v(i) += x(i,k) * y(k);
 	}
 	return v;
 }
 
-/// vector * matrix
+/// vector * matrix (scalar version)
 template< class E1, class E2,
-	class R = decltype( typename E1::value_type() * typename E2::value_type() ) >
-Vec<R> operator*( const vector_interface<E1>& x, const matrix_interface<E2>& B )
+	class = typename enable_if< is_scalar<typename E1::value_type>::value &&
+								is_scalar<typename E2::value_type>::value
+							  >::type >
+auto operator*( const vector_interface<E1>& x, const matrix_interface<E2>& y ) ->
+vector_interface<decltype(ublas::prod(x,y))>
 {
-	assert( x.size() == B.size1() );
-	int J = B.size2();
+	return ublas::prod( x, y );
+}
+
+/// vector * matrix (non-scalar version)
+template< class E1, class E2,
+	class R = decltype( noproxy( declval<typename E1::value_type>()*declval<typename E2::value_type>() ) ),
+	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
+								  !is_scalar<typename E2::value_type>::value
+								>::type >
+Vec<R> operator*( const vector_interface<E1>& x, const matrix_interface<E2>& y )
+{
+	assert( x.size() == y.size1() );
+	int J = y.size2();
 	int K = x.size();
 	Vec<R> v(J);
 	for( int j = 0; j < J; j++ ) {
 		v(j) = R();
 		for( int k = 1; k < K; k++ )
 			if( k == 0 )
-				v(j)  = x(k) * B(k,j);
+				v(j)  = x(k) * y(k,j);
 			else
-				v(j) += x(k) * B(k,j);
+				v(j) += x(k) * y(k,j);
 	}
 	return v;
 }
@@ -225,10 +367,24 @@ Vec<R> operator*( const vector_interface<E1>& x, const matrix_interface<E2>& B )
 
 /// @name Element-wise product/division
 
-/// Vector-vector element-wise product
-template<class T, class S,
-	class R = decltype(typename T::value_type()*typename S::value_type())>
-Vec<R> element_prod( const vector_interface<T> &x, const vector_interface<S> &y )
+/// Vector-vector element-wise product (scalar version)
+template< class E1, class E2,
+	class = typename enable_if< is_scalar<typename E1::value_type>::value &&
+								is_scalar<typename E2::value_type>::value
+							  >::type >
+auto element_prod( const vector_interface<E1>& x, const vector_interface<E2>& y ) ->
+vector_interface<decltype(ublas::element_prod(x,y))>
+{
+	return ublas::element_prod( x, y );
+}
+
+/// Vector-vector element-wise product (scalar version)
+template< class E1, class E2,
+	class R = decltype( noproxy( declval<typename E1::value_type>()*declval<typename E2::value_type>() ) ),
+	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
+								  !is_scalar<typename E2::value_type>::value
+								>::type >
+Vec<R> element_prod( const vector_interface<E1> &x, const vector_interface<E2> &y )
 {
 	assert( x.size() == y.size() );
 	int I = x.size();
@@ -239,8 +395,8 @@ Vec<R> element_prod( const vector_interface<T> &x, const vector_interface<S> &y 
 }
 
 /// Vector element-wise inversion
-template<class T, class R = typename T::value_type>
-Vec<R> element_inv( const vector_interface<T> &x )
+template<class E, class R = typename E::value_type>
+Vec<R> element_inv( const vector_interface<E> &x )
 {
 	int I = x.size();
 	Vec<R> r(I);
@@ -249,10 +405,24 @@ Vec<R> element_inv( const vector_interface<T> &x )
 	return r;
 }
 
-/// Vector-vector element-wise division
-template<class T, class S,
-	class R = decltype(typename T::value_type()*typename S::value_type())>
-Vec<R> element_div( const vector_interface<T> &x, const vector_interface<S> &y )
+/// Vector-vector element-wise division (scalar version)
+template< class E1, class E2,
+	class = typename enable_if< is_scalar<typename E1::value_type>::value &&
+								is_scalar<typename E2::value_type>::value
+							  >::type >
+auto element_div( const vector_interface<E1>& x, const vector_interface<E2>& y ) ->
+vector_interface<decltype(ublas::element_div(x,y))>
+{
+	return ublas::element_div( x, y );
+}
+
+/// Vector-vector element-wise division (scalar version)
+template< class E1, class E2,
+	class R = decltype( noproxy( declval<typename E1::value_type>()/declval<typename E2::value_type>() ) ),
+	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
+								  !is_scalar<typename E2::value_type>::value
+								>::type >
+Vec<R> element_div( const vector_interface<E1> &x, const vector_interface<E2> &y )
 {
 	assert( x.size() == y.size() );
 	int I = x.size();
@@ -262,10 +432,24 @@ Vec<R> element_div( const vector_interface<T> &x, const vector_interface<S> &y )
 	return r;
 }
 
-/// Matrix-matrix element-wise product
-template<class T, class S,
-	class R = decltype(typename T::value_type()*typename S::value_type())>
-Mat<R> element_prod( const matrix_interface<T> &x, const matrix_interface<S> &y )
+/// Matrix-matrix element-wise product (scalar version)
+template< class E1, class E2,
+	class = typename enable_if< is_scalar<typename E1::value_type>::value &&
+								is_scalar<typename E2::value_type>::value
+							  >::type >
+auto element_prod( const matrix_interface<E1>& x, const matrix_interface<E2>& y ) ->
+matrix_interface<decltype(ublas::element_prod(x,y))>
+{
+	return ublas::element_prod( x, y );
+}
+
+/// Matrix-matrix element-wise product (scalar version)
+template< class E1, class E2,
+	class R = decltype( noproxy( declval<typename E1::value_type>()*declval<typename E2::value_type>() ) ),
+	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
+								  !is_scalar<typename E2::value_type>::value
+								>::type >
+Mat<R> element_prod( const matrix_interface<E1> &x, const matrix_interface<E2> &y )
 {
 	assert( x.size1() == y.size1() );
 	assert( x.size2() == y.size2() );
@@ -279,8 +463,8 @@ Mat<R> element_prod( const matrix_interface<T> &x, const matrix_interface<S> &y 
 };
 
 /// Matrix element-wise inversion
-template<class T, class R = typename T::value_type>
-Mat<R> element_inv( const matrix_interface<T> &x )
+template<class E, class R = typename E::value_type>
+Mat<R> element_inv( const matrix_interface<E> &x )
 {
 	int I = x.size1();
 	int J = x.size2();
@@ -291,10 +475,24 @@ Mat<R> element_inv( const matrix_interface<T> &x )
 	return r;
 }
 
-/// Vector-vector element-wise division
-template<class T, class S,
-	class R = decltype(typename T::value_type()*typename S::value_type())>
-Mat<R> element_div( const matrix_interface<T> &x, const matrix_interface<S> &y )
+/// Matrix-matrix element-wise division (scalar version)
+template< class E1, class E2,
+	class = typename enable_if< is_scalar<typename E1::value_type>::value &&
+								is_scalar<typename E2::value_type>::value
+							  >::type >
+auto element_div( const matrix_interface<E1>& x, const matrix_interface<E2>& y ) ->
+matrix_interface<decltype(ublas::element_div(x,y))>
+{
+	return ublas::element_div( x, y );
+}
+
+/// Vector-vector element-wise division (scalar version)
+template< class E1, class E2,
+	class R = decltype( noproxy( declval<typename E1::value_type>()/declval<typename E2::value_type>() ) ),
+	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
+								  !is_scalar<typename E2::value_type>::value
+								>::type >
+Mat<R> element_div( const matrix_interface<E1> &x, const matrix_interface<E2> &y )
 {
 	assert( x.size1() == y.size1() );
 	assert( x.size2() == y.size2() );
@@ -341,9 +539,9 @@ Mat<R> adjoint( const matrix_interface<T>& A )
 /// @name Inner-product, outer-product and norm
 
 /// Vector inner-product
-template<class T, class S,
-	class R = decltype(typename T::value_type()*typename S::value_type())>
-R inner_prod( const vector_interface<T> &x, const vector_interface<S> &y )
+template<class E1, class E2,
+	class R = decltype( noproxy( inner_prod( declval<typename E1::value_type>(), declval<typename E2::value_type>() ) ) ) >
+R inner_prod( const vector_interface<E1> &x, const vector_interface<E2> &y )
 {
 	assert(x.size() == y.size());
 	int I = x.size();
@@ -354,9 +552,9 @@ R inner_prod( const vector_interface<T> &x, const vector_interface<S> &y )
 }
 
 /// Matrix inner-product
-template<class T, class S,
-	class R = decltype(typename T::value_type()*typename S::value_type())>
-R inner_prod( const matrix_interface<T> &x, const matrix_interface<S> &y )
+template<class E1, class E2,
+	class R = decltype( inner_prod( declval<typename E1::value_type>(),declval<typename E2::value_type>() ) ) >
+R inner_prod( const matrix_interface<E1> &x, const matrix_interface<E2> &y )
 {
 	assert(x.size1() == y.size1());
 	assert(x.size2() == y.size2());
@@ -370,11 +568,17 @@ R inner_prod( const matrix_interface<T> &x, const matrix_interface<S> &y )
 }
 
 /// Vector outer-product
-template<class T, class S>
-auto outer_prod( const vector_interface<T> &x, const vector_interface<S> &y ) ->
-matrix_interface<decltype(ublas::outer_prod( x, y ))>
+template<class E1, class E2,
+	class R = decltype( outer_prod( declval<typename E1::value_type>(), declval<typename E2::value_type>() ) ) >
+Mat<R> outer_prod( const vector_interface<E1> &x, const vector_interface<E2> &y )
 {
-	return ublas::outer_prod( x, y );
+	assert(x.size() == y.size());
+	int I = x.size();
+	Mat<R> op(I,I);
+	for( int i = 0; i < I; i++ )
+		for( int j = 0; j < I; j++ )
+			op(i,j) = outer_prod( x(i), y(j) );
+	return op;
 }
 
 /// Vector p-norm

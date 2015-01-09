@@ -237,7 +237,7 @@ lp_relaxation_vector::lp_relaxation_vector()
 	};
 
 	// Gradient of the approximation error function
-	errfun_gradient = [this]( const rvec& x )
+	errfun_gradient = [this]( const rvec& x ) -> rvec
 	{
 		return 2 * ( this->gramian*x - this->innerprods );
 	};

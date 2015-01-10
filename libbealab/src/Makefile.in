@@ -5,7 +5,7 @@ targetdir = @top_builddir@/lib
 tempdir   = @top_builddir@/tmp/$(target)
 
 # Flags
-CFLAGS   += -std=c++11 -Wall -fPIC -fopenmp -I@top_srcdir@/include -I@top_builddir@/include
+CFLAGS   += -std=c++11 -Wall -fPIC -fopenmp -I@top_srcdir@/include
 ifeq (@DEBUG@,true)
 	CFLAGS  += -g
 else

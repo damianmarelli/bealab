@@ -14,29 +14,6 @@ namespace bealab
 /// Some general purpose functions and classes.
 /// @{
 
-/// Macro to inherit constructors, until GCC implements it
-#define INHERIT_CONSTRUCTORS( dervied, base )                \
-    template<typename ...Args,                               \
-             typename = typename std::enable_if              \
-             <                                               \
-                std::is_constructible<base, Args...>::value  \
-             >::type>                                        \
-    dervied( Args &&...args )                                \
-        : base( std::forward<Args>(args)... ) {}             \
-
-/// Macro to inherit assignment operators
-#define INHERIT_ASSIGNMENTS( dervied, base )                 \
-    template<typename ...Args,                               \
-             typename = typename std::enable_if              \
-             <                                               \
-                std::is_assignable<base, Args...>::value     \
-             >::type>                                        \
-    dervied& operator=( const Args&... args )                \
-    {                                                        \
-		base::operator=( args... );                          \
-		return *this;                                        \
-	}                                                        \
-
 /// Returns a string with the type of a variable.
 template<class T>
 string type_name( const T &x )

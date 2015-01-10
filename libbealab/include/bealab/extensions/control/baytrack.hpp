@@ -44,7 +44,7 @@ public:
 	rvec prediction( const rvec& u )
 	{
 		x = A * x + B * u;
-		P = A * P * trans(A) + Q;
+		P = noproxy(A * P) * trans(A) + Q;
 		return x;
 	}
 
@@ -52,7 +52,7 @@ public:
 	rvec update( const rvec& y )
 	{
 		int N  = A.size1();
-		rmat K = trans( linsolve( C * P * trans(C) + R, C * P ) );
+		rmat K = trans( linsolve( noproxy(C * P) * trans(C) + R, C * P ) );
 		x      = x + K * ( y - C * x );
 		P      = (eye(N) - K * C) * P;
 		return x;
@@ -359,7 +359,7 @@ class RB_particle_filter_b : public particle_filter_b< RB_state_t, rvec, rvec > 
 
 		// Non-linear prediction
 		rvec nlp_mean   = f_ + F_ * p.state.mean;
-		rmat nlp_cov    = F_ * p.state.covariance * trans(F_) + U_;
+		rmat nlp_cov    = noproxy(F_ * p.state.covariance) * trans(F_) + U_;
 		rmat nlp_cov_h  = real(msqrt(nlp_cov));
 		rvec nlp        = rand( multivariate_normal( nlp_mean, nlp_cov_h ) );
 		pp.state.position = nlp;
@@ -375,11 +375,11 @@ class RB_particle_filter_b : public particle_filter_b< RB_state_t, rvec, rvec > 
 
 			// Prediction
 			pp.state.mean       = g_ + G_ * lfu_mean;
-			pp.state.covariance = G_ * lfu_cov * trans(G_) + V_;
+			pp.state.covariance = noproxy(G_ * lfu_cov) * trans(G_) + V_;
 		}
 		else {
 			pp.state.mean       = g_ + G_ * p.state.mean;
-			pp.state.covariance = G_ * p.state.covariance * trans(G_) + V_;
+			pp.state.covariance = noproxy(G_ * p.state.covariance) * trans(G_) + V_;
 		}
 
 		// Weight
@@ -401,7 +401,7 @@ class RB_particle_filter_b : public particle_filter_b< RB_state_t, rvec, rvec > 
 
 		// Linear output prediction
 		rvec lop_mean = H_ * p.state.mean + h_;
-		rmat lop_cov  = H_ * p.state.covariance * trans(H_) + W_;
+		rmat lop_cov  = noproxy(H_ * p.state.covariance) * trans(H_) + W_;
 
 		// Check the singularity of lop_cov
 		double singular = (det(lop_cov) == 0);
@@ -860,7 +860,7 @@ class maximum_likelihood_kalman_filter_b {
 	{
 		state p;
 		p.x = A * s.x;
-		p.P = A * s.P * trans(A) + Q;
+		p.P = noproxy(A * s.P) * trans(A) + Q;
 		return p;
 	}
 

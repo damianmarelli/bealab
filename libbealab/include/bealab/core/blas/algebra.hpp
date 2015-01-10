@@ -13,18 +13,6 @@ namespace bealab
 /// Algebraic operations
 /// @{
 
-using std::is_convertible;
-
-/// Check for scalar types (i.e., bool, int, double complex)
-template< class T >
-struct is_scalar : std::integral_constant<
-	   bool,
-	   std::is_same<bool, typename std::remove_cv<T>::type>::value  ||
-	   std::is_same<int, typename std::remove_cv<T>::type>::value  ||
-	   std::is_same<double, typename std::remove_cv<T>::type>::value  ||
-	   std::is_same<complex, typename std::remove_cv<T>::type>::value
-   > {};
-
 /// @name Vector operations
 
 /// vector + vector

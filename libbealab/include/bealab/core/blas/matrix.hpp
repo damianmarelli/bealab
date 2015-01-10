@@ -12,21 +12,16 @@ namespace bealab
 /// Matrix modeling
 /// @{
 
-
 /// Matrix class with extended construction
 template<class value_type>
-class matrixx : public ublas::matrix<value_type> {
+class matrixx : public ublas::matrix<value_type,ublas::column_major> {
 public:
 
-	using ublas::matrix<value_type>::matrix;
-	using ublas::matrix<value_type>::operator=;
+	using ublas::matrix<value_type,ublas::column_major>::matrix;
+	using ublas::matrix<value_type,ublas::column_major>::operator=;
 
 	/// Default constructor
 	matrixx() = default;
-
-//	/// Copy constructor using the base
-//	matrixx( const ublas::matrix<value_type>& m ) :
-//		ublas::matrix<value_type>(m) {}
 
 	/// Construct a matrix with the data given in two nested
 	/// initializer_list's
@@ -276,6 +271,14 @@ typedef	SMat<bool> bsmat;														///< Boolean sparse matrix
 typedef	SMat<int> ismat;														///< Integer sparse matrix
 typedef SMat<double> rsmat;														///< Real sparse matrix
 typedef	SMat<complex> csmat;													///< Complex sparse matrix
+
+/// Convert an expression template into a temporary
+template<class E>
+matrix_interface<matrixx<typename E::value_type>>
+noproxy( const matrix_interface<E>& x )
+{
+	return x;
+}
 
 /// Displays a matrix in the console
 template<class A, class B, class T>

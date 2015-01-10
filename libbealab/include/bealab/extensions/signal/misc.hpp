@@ -1,5 +1,5 @@
 /// @file bealab/extensions/signal/misc.hpp
-/// Signal processing routines.
+/// Miscellaneous signal processing routines.
 
 #ifndef _BEALAB_EXTENSIONS_SIGNAL_MISC_
 #define	_BEALAB_EXTENSIONS_SIGNAL_MISC_
@@ -11,8 +11,8 @@
 namespace bealab
 {
 //------------------------------------------------------------------------------
-/// @defgroup misc Signal processing
-/// Signal processing routines.
+/// @defgroup misc Miscellaneous
+/// Miscellaneous signal processing routines.
 /// @{
 
 template<class VAL>

@@ -332,7 +332,7 @@ Mat<T> pinv( const matrix_interface<E>& A, double tol=-1 )
 		else
 			Sp(n,n) = 0;
 	}
-	return V * Sp * adjoint(U);
+	return noproxy(V * Sp) * adjoint(U);
 }
 /// @}
 

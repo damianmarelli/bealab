@@ -13,7 +13,7 @@ void matfile::_open()
 {
     pfile = Mat_Open( filename.data(), MAT_ACC_RDWR );
     if( pfile == NULL )
-		error( "file::open() - Error opening file " + filename );
+		error( "matfile::_open() - Error opening file " + filename );
 }
 
 void matfile::_close()
@@ -36,7 +36,7 @@ void* matfile::_read( const string& varname )
 void matfile::_write( void* pmatvar )
 {
 	if( Mat_VarWrite ( (mat_t*)pfile, (matvar_t*)pmatvar, MAT_COMPRESSION_NONE ) != 0 )
-		error("file::save() - Error writing variable");
+		error("matfile::_write() - Error writing variable");
 }
 
 // XXX This function needs to free the members of a struct/cell
@@ -109,7 +109,7 @@ matfile::matfile( const string& filename_, bool create ) : filename(filename_)
 	else
 		pfile = Mat_Open( filename.data(), MAT_ACC_RDWR );
 	if( pfile == NULL )
-        	error( "file::file() - Error creating file " + filename );
+        	error( "matfile::matfile() - Error creating/opening file " + filename );
 	Mat_Close( (mat_t*)pfile );
 }
 

@@ -9,11 +9,20 @@
 /// @defgroup scilib Scientific library
 /// @{
 
-/// @defgroup linalg
-#include <bealab/scilib/linalg.hpp>
-
 /// @defgroup poly
 #include <bealab/scilib/poly.hpp>
+
+/// @defgroup sequences
+#include <bealab/scilib/sequences.hpp>
+
+/// @defgroup functors
+#include <bealab/scilib/functors.hpp>
+
+/// @defgroup arrays
+#include<bealab/scilib/arrays.hpp>
+
+/// @defgroup linalg
+#include <bealab/scilib/linalg.hpp>
 
 /// @defgroup calculus
 #include <bealab/scilib/calculus.hpp>
@@ -23,15 +32,6 @@
 
 /// @defgroup cepstrum
 #include <bealab/scilib/cepstrum.hpp>
-
-/// @defgroup sequences
-#include <bealab/scilib/sequences.hpp>
-
-/// @defgroup arrays
-#include<bealab/scilib/arrays.hpp>
-
-/// @defgroup functors
-#include <bealab/scilib/functors.hpp>
 
 /// @defgroup rootfind
 #include <bealab/scilib/rootfind.hpp>

@@ -23,10 +23,6 @@ public:
 	/// Default constructor
 	vectorx() = default;
 
-//	/// Copy constructor using the base
-//	vectorx( const ublas::vector<value_type>& v ) :
-//		ublas::vector<value_type>(v) {}
-
 	/// Construct a vector with the data between two given iterators
 	template<class It>
 	vectorx( It first, It last )
@@ -159,6 +155,14 @@ typedef	Vec<bool> bvec;															///< Boolean vector
 typedef	Vec<int> ivec;															///< Integer vector
 typedef Vec<double> rvec;														///< Real vector
 typedef	Vec<complex> cvec;														///< Complex vector
+
+/// Convert an expression template into a temporary
+template<class E>
+vector_interface<vectorx<typename E::value_type>>
+noproxy( const vector_interface<E>& x )
+{
+	return x;
+}
 
 /// Displays a vector in the console
 template<class A, class B, class T>

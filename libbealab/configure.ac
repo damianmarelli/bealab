@@ -36,7 +36,6 @@ AC_CHECK_LIB([matio],[main],[],[echo "*** Library matio not found. Stop."; exit]
 
 # Optional libraries
 AC_CHECK_LIB([boost_mpi],[main],[],[echo "*** Library boost_mpi not found. MPI functionality disabled."])
-AC_CHECK_LIB([eng],[main],[],[echo "*** Matlab library libeng not found. Matlab interface disabled."])
 AC_CHECK_LIB([ginac],[main],[],[echo "*** Library ginac not found. Symbolic module disabled."])
 AC_CHECK_LIB([GClasses],[main],[],[echo "*** Library GClasses not found. Machine learning  module disabled."])
 
@@ -53,6 +52,7 @@ AC_CHECK_LIB([ipopt],[main],[],[echo "*** Library ipopt not found. Optimization 
 AC_CHECK_PROG([GNUPLOT],[gnuplot],[-DHAVE_GNUPLOT])
 AC_CHECK_PROG([MAXIMA],[maxima],[-DHAVE_MAXIMA])
 AC_CHECK_PROG([PYTHON2],[python2],[-DHAVE_PYTHON2])
+AC_CHECK_PROG([OCTAVE],[octave],[-DHAVE_OCTAVE])
 AC_CHECK_PROG([MATLAB],[matlab],[-DHAVE_MATLAB])
 
 # Generate the outout ----------------------------------------------------------

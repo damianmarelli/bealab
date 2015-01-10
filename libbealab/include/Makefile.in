@@ -2,7 +2,7 @@
 
 # Install variables
 includedir = @includedir@
-DEFS       = @DEFS@ @MAXIMA@ @GNUPLOT@ @PYTHON2@ @MATLAB@
+DEFS       = @DEFS@ @MAXIMA@ @GNUPLOT@ @PYTHON2@ @OCTAVE@ @MATLAB@
 config_hpp = @top_srcdir@/include/bealab/core/prelim/config.hpp
 
 # Targets
@@ -44,13 +44,14 @@ endif
 endif
 endif
 
+# Detect Octave interface
+ifeq (,$(findstring HAVE_OCTAVE, $(DEFS)))
+	echo "#define BEALAB_NOOCTAVE" >> $(config_hpp)
+endif
+
 # Detect Matlab interface
 ifeq (,$(findstring HAVE_MATLAB, $(DEFS)))
 	echo "#define BEALAB_NOMATLAB" >> $(config_hpp)
-else
-ifeq (,$(findstring HAVE_LIBENG, $(DEFS)))
-	echo "#define BEALAB_NOMATLAB" >> $(config_hpp)
-endif
 endif
 
 # Detect Ipopt

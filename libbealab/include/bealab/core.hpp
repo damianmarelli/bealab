@@ -25,6 +25,9 @@
 /// @defgroup interfaces_python
 #include <bealab/core/python.hpp>
 
+/// @defgroup interfaces_octave
+#include <bealab/core/octave.hpp>
+
 /// @defgroup interfaces_matlab
 #include <bealab/core/matlab.hpp>
 

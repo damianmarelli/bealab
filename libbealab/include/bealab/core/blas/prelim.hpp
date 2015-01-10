@@ -52,38 +52,22 @@ public:
 	}
 };
 
-/// Enable a template definition if _expression::value_type == _type
-#define ENABLE_IF_VALUE_TYPE( _expression_, _type_ ) 							\
-	typename enable_if< 														\
-		is_same< typename _expression_::value_type, _type_ >::value				\
-	>::type* = 0
-
-/// @name Convert expression templates into temporaries
-template<class> class vector_interface;
-template<class> class matrix_interface;
-template<class value_type> class vectorx;
-template<class value_type> class matrixx;
-
+/// Default conversion of an expression template into a temporary
 template<class T>
 T noproxy( const T& x )
 {
 	return x;
 };
 
-template<class E>
-vector_interface<vectorx<typename E::value_type>>
-noproxy( const vector_interface<E>& x )
-{
-	return x;
-}
-
-template<class E>
-matrix_interface<matrixx<typename E::value_type>>
-noproxy( const matrix_interface<E>& x )
-{
-	return x;
-}
-/// @}
+/// Check for scalar types (i.e., bool, int, double complex)
+template< class T >
+struct is_scalar : std::integral_constant<
+	   bool,
+	   std::is_same<bool, typename std::remove_cv<T>::type>::value  ||
+	   std::is_same<int, typename std::remove_cv<T>::type>::value  ||
+	   std::is_same<double, typename std::remove_cv<T>::type>::value  ||
+	   std::is_same<complex, typename std::remove_cv<T>::type>::value
+   > {};
 
 /// @}
 }

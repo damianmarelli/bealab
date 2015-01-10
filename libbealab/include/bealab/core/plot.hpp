@@ -1,5 +1,5 @@
 /// @file bealab/core/plot.hpp
-/// Library for plotting using Gnuplot.
+/// Plotting using Gnuplot.
 
 #ifndef _BEALAB_PLOT_
 #define	_BEALAB_PLOT_
@@ -10,7 +10,7 @@
 namespace bealab
 {
 /// @defgroup plot Plot
-/// Library for plotting using Gnuplot.
+/// Plotting using Gnuplot.
 /// @{
 
 /// @name Plotting style attributes

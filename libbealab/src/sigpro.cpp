@@ -8,31 +8,31 @@ namespace bealab
 {
 
 #ifndef BEALAB_NOMATLAB
-state_space spectral_realization( const Mat<rseq> &Rx )
-{
-	// 3D array for matlab call
-	Seq<rmat> Rx1 = ms2sm( Rx );
-	Rx1   = Rx1.trunc( 0, Rx1.t2() );
-	int I = Rx.size1();
-	int J = Rx.size2();
-	int K = Rx1.size();
-	ivec dims = { I, J, K };
-	double a[I][J][K];
-	for( int i = 0; i < I; i++ )
-		for( int j = 0; j < J; j++ )
-			for( int k = 0; k < K; k++ )
-				a[i][j][k] = Rx1(k)(i,j);
-
-	// Matlab call
-	matlab::object b( (double*)a, dims );
-	auto rv = matlab::functor<3>( "spectral_realization" )( b, 1e-3 );
-	rmat A = rv[0];
-	rmat B = rv[1];
-	rmat C = rv[2];
-
-	// Return ss model
-	return state_space( A, B, C, zeros(C.size1(),B.size2()) );
-}
+//state_space spectral_realization( const Mat<rseq> &Rx )
+//{
+//	// 3D array for matlab call
+//	Seq<rmat> Rx1 = ms2sm( Rx );
+//	Rx1   = Rx1.trunc( 0, Rx1.t2() );
+//	int I = Rx.size1();
+//	int J = Rx.size2();
+//	int K = Rx1.size();
+//	ivec dims = { I, J, K };
+//	double a[I][J][K];
+//	for( int i = 0; i < I; i++ )
+//		for( int j = 0; j < J; j++ )
+//			for( int k = 0; k < K; k++ )
+//				a[i][j][k] = Rx1(k)(i,j);
+//
+//	// Matlab call
+//	matlab::object b( (double*)a, dims );
+//	auto rv = matlab::functor<3>( "spectral_realization" )( b, 1e-3 );
+//	rmat A = rv[0];
+//	rmat B = rv[1];
+//	rmat C = rv[2];
+//
+//	// Return ss model
+//	return state_space( A, B, C, zeros(C.size1(),B.size2()) );
+//}
 #endif
 
 Mat<cseq> spectral_factorization( const Mat<cseq>& X, double tol )

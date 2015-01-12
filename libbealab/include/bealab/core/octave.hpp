@@ -12,6 +12,7 @@
 
 namespace bealab
 {
+/// Octave interface
 namespace octave
 {
 /// @defgroup interfaces_octave Octave interface

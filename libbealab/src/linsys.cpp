@@ -2,6 +2,8 @@
 
 namespace bealab
 {
+namespace control
+{
 
 state_space discretize_sampling( const state_space& ss, double T )
 {
@@ -130,4 +132,5 @@ arma<rmat,rvec> mtf2tfm( const Mat<transfer_function> &M )
 	return S;
 }
 
+}
 }

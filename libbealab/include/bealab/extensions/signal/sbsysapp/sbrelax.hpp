@@ -8,6 +8,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 namespace sbsysapp
 {
 /// @defgroup sbsysapp_sbrelax Relaxation methods
@@ -143,6 +145,7 @@ public:
 };
 
 /// @}
+}
 }
 }
 #endif

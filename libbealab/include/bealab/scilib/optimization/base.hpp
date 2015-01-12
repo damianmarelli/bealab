@@ -8,6 +8,7 @@
 
 namespace bealab
 {
+/// Parameter optimization routines.
 namespace optimization
 {
 /// @defgroup optimization-base Base

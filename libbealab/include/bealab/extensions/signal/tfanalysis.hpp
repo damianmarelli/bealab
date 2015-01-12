@@ -8,6 +8,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 //------------------------------------------------------------------------------
 /// @defgroup tfanalysis Time-frequency analysis
 /// Routines for time-frequency analysis.
@@ -164,7 +166,7 @@ cmat spectrogram( rseq x, int M, int D, int N );
 /// @}
 
 /// @}
-
+}
 }
 
 #endif

@@ -8,6 +8,7 @@
 
 namespace bealab
 {
+/// Networks module
 namespace networks
 {
 /// @defgroup networks Networks

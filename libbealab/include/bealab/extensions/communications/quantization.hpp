@@ -10,6 +10,8 @@
 
 namespace bealab
 {
+namespace comms
+{
 //------------------------------------------------------------------------------
 /// @defgroup quantization Quantization
 /// Routines for analysis and implementation of scalar and vector quantizers.
@@ -95,7 +97,7 @@ Vec<rseq> KL_filterbank( const rseq &, int, rvec* =NULL, double=1e-4 );
 //rseq lpc( const rseq&, rarma, const quantizer& );
 
 /// @name Linear predictive quantization
-arma<rmat,rvec> lpc_predictor( const Seq<rmat> &Fx_, int N );
+control::arma<rmat,rvec> lpc_predictor( const Seq<rmat> &Fx_, int N );
 vector_quantizer lpc_quantizer_openloop( int L, const function<Seq<rvec>(Seq<rvec>)>& P,
 		const Seq<rmat> &Fx, int K );
 vector_quantizer lpc_quantizer_closedloop( int L, const function<Seq<rvec>(Seq<rvec>)>& P,
@@ -110,5 +112,5 @@ Vec<rseq> lpc( const Vec<rseq> &x, const Mat<rseq> &Fx, int P, int L, int K,
 /// @}
 
 }
-
+}
 #endif

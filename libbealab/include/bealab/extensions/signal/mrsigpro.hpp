@@ -8,6 +8,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 //------------------------------------------------------------------------------
 /// @defgroup mrsigpro Multirate signal processing
 /// Routines for downsampling, upsampling and polyphase representation.
@@ -157,7 +159,6 @@ Vec<Seq<T>> pp2fb_system( const Mat<Seq<T>> &G )
 /// @}
 
 /// @}
-
 }
-
+}
 #endif

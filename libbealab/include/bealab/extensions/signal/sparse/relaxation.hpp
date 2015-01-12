@@ -8,6 +8,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 namespace sparse
 {
 /// @defgroup sparse-relaxation Relaxation algorithms
@@ -129,6 +131,7 @@ protected:
 //};
 
 /// @}
+}
 }
 }
 #endif

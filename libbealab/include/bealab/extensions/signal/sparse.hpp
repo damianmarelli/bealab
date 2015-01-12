@@ -8,6 +8,15 @@
 /// Algorithms for sparse approximations.
 /// @{
 
+namespace bealab
+{
+namespace signal
+{
+/// Sparse approximation module
+namespace sparse {}
+}
+}
+
 /// @defgroup sparse-base
 #include <bealab/extensions/signal/sparse/base.hpp>
 

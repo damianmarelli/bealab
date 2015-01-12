@@ -5,6 +5,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 
 #ifndef BEALAB_NOPYTHON
 cmat spectrogram( rseq x, int M, int D, int N )
@@ -129,4 +131,5 @@ cseq connonical_dual_window( const cseq& h0, int M, int D, double tol )
 	return f0;
 }
 
+}
 }

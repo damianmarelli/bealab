@@ -11,6 +11,7 @@
 
 namespace bealab
 {
+/// Dimensionality reduction module
 namespace dimred
 {
 /// @defgroup dimred Dimensionality reduction

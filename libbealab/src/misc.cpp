@@ -6,6 +6,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 
 #ifndef BEALAB_NOMATLAB
 //state_space spectral_realization( const Mat<rseq> &Rx )
@@ -94,13 +96,13 @@ Mat<cseq> spectral_factorization( const Mat<cseq>& X, double tol )
 // FIR Filter design
 //------------------------------------------------------------------------------
 #ifndef BEALAB_NOPYTHON
-transfer_function butter( int order, double bandwidth, bool analog )
+control::transfer_function butter( int order, double bandwidth, bool analog )
 {
 	python::functor butter( "scipy.signal", "butter" );
 	rmat r  = butter( order, bandwidth, "low", analog );
 	rvec b  = r.row(0);
 	rvec a  = r.row(1);
-	return transfer_function( b, a );
+	return control::transfer_function( b, a );
 }
 #endif
 
@@ -200,4 +202,5 @@ rseq hamming( int N )
 }
 #endif
 
+}
 }

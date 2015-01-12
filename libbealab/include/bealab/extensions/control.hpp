@@ -7,6 +7,12 @@
 /// @defgroup control Automatic control
 /// @{
 
+namespace bealab
+{
+/// Automatic control module
+namespace control {}
+}
+
 /// @defgroup linsys
 #include <bealab/extensions/control/linsys.hpp>
 

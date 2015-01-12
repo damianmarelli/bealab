@@ -2,6 +2,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 namespace sparse
 {
 
@@ -465,5 +467,6 @@ rvec shrinking_gaussian::optimize()
 //	return wstart;
 //}
 
+}
 }
 }

@@ -7,6 +7,8 @@
 
 namespace bealab
 {
+namespace comms
+{
 
 //============================================================================
 // Quantizer class
@@ -442,7 +444,7 @@ double distortion_rate_function( double R, const function<double(double)>& phi )
 //---------------------------------------------------------------------------
 // Compute predictor
 //---------------------------------------------------------------------------
-arma<rmat,rvec> lpc_predictor( const Seq<rmat> &Fx_, int N )
+control::arma<rmat,rvec> lpc_predictor( const Seq<rmat> &Fx_, int N )
 {
 	Mat<rseq> Fx = sm2ms(Fx_);
 
@@ -482,7 +484,7 @@ arma<rmat,rvec> lpc_predictor( const Seq<rmat> &Fx_, int N )
 	}
 
 	// Build arma model
-	Mat<transfer_function> P(L,L);
+	Mat<control::transfer_function> P(L,L);
 	for( int i = 0; i < L; i++ )
 		for( int j = 0; j < L; j++ )
 			P(i,j).set_coeffs( B(i,j), rvec({1}) );
@@ -580,7 +582,7 @@ Vec<rseq> lpc( const Vec<rseq> &x, const Mat<rseq> &Fx, int P, int L, int K,
 {
 	// compute the predictor
 	Seq<rmat> Fx_                  = ms2sm(Fx);
-	arma<rmat,rvec> p = lpc_predictor( Fx_, P );
+	control::arma<rmat,rvec> p = lpc_predictor( Fx_, P );
 
 	// Quantizer design
 	vector_quantizer q;
@@ -600,4 +602,5 @@ Vec<rseq> lpc( const Vec<rseq> &x, const Mat<rseq> &Fx, int P, int L, int K,
 	return xq_;
 }
 
+}
 }

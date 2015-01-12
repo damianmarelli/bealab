@@ -4,6 +4,8 @@
 
 namespace bealab
 {
+namespace control
+{
 namespace sysid
 {
 //------------------------------------------------------------------------------
@@ -356,5 +358,6 @@ void plinreg::identify()
 }
 */
 
+}
 }
 }

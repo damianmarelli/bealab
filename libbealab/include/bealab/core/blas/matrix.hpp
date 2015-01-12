@@ -14,11 +14,12 @@ namespace bealab
 
 /// Matrix class with extended construction
 template<class value_type>
-class matrixx : public ublas::matrix<value_type,ublas::column_major> {
+//class matrixx : public ublas::matrix<value_type,ublas::column_major> {
+class matrixx : public ublas::matrix<value_type> {
 public:
 
-	using ublas::matrix<value_type,ublas::column_major>::matrix;
-	using ublas::matrix<value_type,ublas::column_major>::operator=;
+	using ublas::matrix<value_type>::matrix;
+	using ublas::matrix<value_type>::operator=;
 
 	/// Default constructor
 	matrixx() = default;

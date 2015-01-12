@@ -8,6 +8,7 @@
 
 namespace bealab
 {
+/// Lapack interface
 namespace lapack
 {
 

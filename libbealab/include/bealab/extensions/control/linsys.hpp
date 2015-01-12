@@ -10,6 +10,8 @@
 
 namespace bealab
 {
+namespace control
+{
 //------------------------------------------------------------------------------
 /// @defgroup linsys Linear systems
 /// Linear system models.
@@ -291,5 +293,6 @@ arma<rmat,rvec> mtf2tfm( const Mat<transfer_function> &M );
 /// @}
 
 /// @}
+}
 }
 #endif

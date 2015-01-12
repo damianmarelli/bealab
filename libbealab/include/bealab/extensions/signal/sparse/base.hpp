@@ -12,6 +12,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 namespace sparse
 {
 /// @defgroup sparse-base Base
@@ -55,6 +57,7 @@ public:
 };
 
 /// @}
+}
 }
 }
 #endif

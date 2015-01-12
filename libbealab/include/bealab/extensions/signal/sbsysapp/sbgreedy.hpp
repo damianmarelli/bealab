@@ -10,6 +10,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 namespace sbsysapp
 {
 /// @defgroup sbsysapp_sbgreedy Greedy methods
@@ -772,6 +774,7 @@ public:
 };
 
 /// @}
+}
 }
 }
 #endif

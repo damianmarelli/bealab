@@ -4,6 +4,12 @@
 #ifndef _BEALAB_EXTENSIONS_SIGNAL_HPP_
 #define	_BEALAB_EXTENSIONS_SIGNAL_HPP_
 
+namespace bealab
+{
+/// Signal processing module
+namespace signal {}
+}
+
 /// @defgroup signal Signal processing
 /// @{
 

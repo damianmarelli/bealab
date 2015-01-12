@@ -11,7 +11,7 @@ double fzero( function<double(double)> fun, double x_lo, double x_hi,
 		int max_iter, double epsabs, double epsrel )
 {
 	// Allocate
-	gsl_function F = { _gsl::sfunction_proxy, &fun };
+	gsl_function F = { gsl::sfunction_proxy, &fun };
 	const gsl_root_fsolver_type *T = gsl_root_fsolver_brent;
 	gsl_root_fsolver *s = gsl_root_fsolver_alloc (T);
 	gsl_root_fsolver_set( s, &F, x_lo, x_hi );

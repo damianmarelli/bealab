@@ -11,6 +11,7 @@
 
 namespace bealab
 {
+/// Python interface
 namespace python
 {
 

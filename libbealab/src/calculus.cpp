@@ -25,7 +25,7 @@ double integral( const function<double(double)>& fun, double from, double to,
 			gsl_integration_workspace_alloc(ip.subintervals);
 
 	// Call parameters
-	gsl_function F = { _gsl::sfunction_proxy, &const_cast<function<double(double)>&>(fun) };
+	gsl_function F = { bealab::gsl::sfunction_proxy, &const_cast<function<double(double)>&>(fun) };
 	int key;
 	switch( ip.key ) {
 	case ip.gauss15:
@@ -148,7 +148,7 @@ double integral( const function<double(const rvec&)>& fun, const rvec& xl, const
 	// Parameters
 	double result, err;
 	size_t dim = xl.size();
-	gsl_monte_function G = { _gsl::vfunction_proxy, dim,
+	gsl_monte_function G = { bealab::gsl::vfunction_proxy, dim,
 			&const_cast<function<double(const rvec&)>&>(fun) };
 
 	// Prepare environment
@@ -243,7 +243,7 @@ double derivative( const function<double(double)>& fun, int n, double x )
 		fund = derivative( fun, n-1 );
 
 	// Call parameters
-	gsl_function F = { _gsl::sfunction_proxy, &fund };
+	gsl_function F = { bealab::gsl::sfunction_proxy, &fund };
 	double result, abserr;
 	double stepsize = 1e-4*abs(x)+1e-4;
 

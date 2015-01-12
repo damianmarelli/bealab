@@ -8,6 +8,9 @@
 
 namespace bealab
 {
+namespace control
+{
+/// System identification module
 namespace sysid
 {
 //------------------------------------------------------------------------------
@@ -145,6 +148,7 @@ public:
 */
 
 /// @}
+}
 }
 }
 #endif

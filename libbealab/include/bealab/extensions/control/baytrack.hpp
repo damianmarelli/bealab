@@ -12,6 +12,8 @@
 
 namespace bealab
 {
+namespace control
+{
 //------------------------------------------------------------------------------
 /// @defgroup baytrack Bayesian tracking
 /// Implementation of Bayesian tracking techniques.
@@ -913,5 +915,6 @@ public:
 };
 
 /// @}
+}
 }
 #endif

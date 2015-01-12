@@ -9,7 +9,8 @@
 
 namespace bealab
 {
-namespace _gsl
+/// GSL interface
+namespace gsl
 {
 
 /// @defgroup interfaces_gsl GSL interface

@@ -12,6 +12,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 namespace sbsysapp
 {
 /// @defgroup sbsysapp_sbconfig Subband modeling
@@ -261,13 +263,14 @@ public:
 
 /// @}
 }
+}
 
 /// Specialization of matvar for sbindex
 template<>
-struct matvar<sbsysapp::sbindex> {
+struct matvar<signal::sbsysapp::sbindex> {
 
 	static
-	void* create( const string& varname, const sbsysapp::sbindex& x )
+	void* create( const string& varname, const signal::sbsysapp::sbindex& x )
 	{
 		Vec<void*> fields(5);
 		fields(0) = matvar<double>::create( "m",      x.m );
@@ -279,14 +282,14 @@ struct matvar<sbsysapp::sbindex> {
 	}
 
 	static
-	sbsysapp::sbindex parse( void* pvar )
+	signal::sbsysapp::sbindex parse( void* pvar )
 	{
 		void* pm      = matfile::parse_struct( pvar, "m" );
 		void* pn      = matfile::parse_struct( pvar, "n" );
 		void* pt      = matfile::parse_struct( pvar, "t" );
 		void* preal_f = matfile::parse_struct( pvar, "real_f" );
 		void* pnum_f  = matfile::parse_struct( pvar, "num_f" );
-		sbsysapp::sbindex x;
+		signal::sbsysapp::sbindex x;
 		x.m      = matvar<double>::parse( pm );
 		x.n      = matvar<double>::parse( pn );
 		x.t      = matvar<double>::parse( pt );
@@ -298,12 +301,12 @@ struct matvar<sbsysapp::sbindex> {
 
 /// Specialization of matvar for sbmodel
 template<>
-struct matvar<sbsysapp::sbmodel> {
+struct matvar<signal::sbsysapp::sbmodel> {
 
-	typedef Vec<sbsysapp::sbindex> sbivec;
+	typedef Vec<signal::sbsysapp::sbindex> sbivec;
 
 	static
-	void* create( const string& varname, const sbsysapp::sbmodel& x )
+	void* create( const string& varname, const signal::sbsysapp::sbmodel& x )
 	{
 		Vec<void*> fields(4);
 		fields(0) = matvar<double>::create( "real_target_f", x.real_target_f );
@@ -314,13 +317,13 @@ struct matvar<sbsysapp::sbmodel> {
 	}
 
 	static
-	sbsysapp::sbmodel parse( void* pvar )
+	signal::sbsysapp::sbmodel parse( void* pvar )
 	{
 		void* prtf = matfile::parse_struct( pvar, "real_target_f" );
 		void* pM   = matfile::parse_struct( pvar, "M" );
 		void* psi  = matfile::parse_struct( pvar, "sbindexes" );
 		void* psv  = matfile::parse_struct( pvar, "sbvalues" );
-		sbsysapp::sbmodel x;
+		signal::sbsysapp::sbmodel x;
 		x.real_target_f = matvar<double>::parse( prtf );
 		x.M             = matvar<double>::parse( pM );
 		x.sbindexes     = matvar<sbivec>::parse( psi );

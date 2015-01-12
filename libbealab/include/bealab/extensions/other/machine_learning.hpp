@@ -11,6 +11,7 @@
 
 namespace bealab
 {
+/// Machine learning module
 namespace machine_learning
 {
 /// @defgroup machine_learning Machine learning

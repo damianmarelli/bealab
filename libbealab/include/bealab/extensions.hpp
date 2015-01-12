@@ -7,11 +7,11 @@
 /// @defgroup extensions Extension modules
 /// @{
 
-/// @defgroup signal
-#include <bealab/extensions/signal.hpp>
-
 /// @defgroup control
 #include <bealab/extensions/control.hpp>
+
+/// @defgroup signal
+#include <bealab/extensions/signal.hpp>
 
 /// @defgroup communications
 #include <bealab/extensions/communications.hpp>

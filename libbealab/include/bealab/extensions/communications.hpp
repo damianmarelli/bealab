@@ -7,6 +7,12 @@
 /// @defgroup communications Communication
 /// @{
 
+namespace bealab
+{
+/// Communications module
+namespace comms {}
+}
+
 /// @defgroup quantization
 #include <bealab/extensions/communications/quantization.hpp>
 

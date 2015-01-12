@@ -8,6 +8,15 @@
 /// Subband method for system approximation.
 /// @{
 
+namespace bealab
+{
+namespace signal
+{
+/// Subband system approximation module
+namespace sbsysapp {}
+}
+}
+
 /// @defgroup sbsysapp_sbconfig
 #include <bealab/extensions/signal/sbsysapp/sbconfig.hpp>
 

@@ -11,6 +11,7 @@
 
 namespace bealab
 {
+/// Matlab interface
 namespace matlab
 {
 /// @defgroup interfaces_matlab Matlab interface

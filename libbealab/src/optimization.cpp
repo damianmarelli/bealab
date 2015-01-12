@@ -494,20 +494,20 @@ rvec barrier::optimize()
 //==============================================================================================
 double gsl::objective_proxy( const void* x, void* par )
 {
-	return ((functors*)par)->fun( _gsl::vector( x ) );
+	return ((functors*)par)->fun( bealab::gsl::vector( x ) );
 }
 
 void gsl::gradient_proxy( const void* x, void* par, void* gr )
 {
-	_gsl::vector g(gr);
-	g = ((functors*)par)->grad( _gsl::vector( x ) );
+	bealab::gsl::vector g(gr);
+	g = ((functors*)par)->grad( bealab::gsl::vector( x ) );
 }
 
 void gsl::objgrad_proxy( const void* x, void* par, double* f, void* gr )
 {
 	rvec g;
-	*f = ((functors*)par)->fungrad( _gsl::vector( x ), g );
-	_gsl::vector gm( gr );
+	*f = ((functors*)par)->fungrad( bealab::gsl::vector( x ), g );
+	bealab::gsl::vector gm( gr );
 	gm = g;
 }
 
@@ -590,7 +590,7 @@ rvec gsl_noder::optimize()
 	// Set minimization algorithm
 	const gsl_multimin_fminimizer_type *T = reinterpret_cast<gsl_multimin_fminimizer_type*>(pproblem);
 	gsl_multimin_fminimizer *s            = gsl_multimin_fminimizer_alloc( T, guess.size() );
-	gsl_multimin_fminimizer_set( s, &objfunc, _gsl::vector(guess), _gsl::vector(.1*guess) );
+	gsl_multimin_fminimizer_set( s, &objfunc, bealab::gsl::vector(guess), bealab::gsl::vector(.1*guess) );
 
 	// Main loop
 	size_t iter = 0;
@@ -617,7 +617,7 @@ rvec gsl_noder::optimize()
 	} while( status == GSL_CONTINUE && iter < 1e6 );
 
 	// Finish
-	rvec rv = _gsl::vector( s->x );
+	rvec rv = bealab::gsl::vector( s->x );
 	gsl_multimin_fminimizer_free (s);
 	return rv;
 }
@@ -646,7 +646,7 @@ rvec gsl_der::optimize()
 	gsl_multimin_fdfminimizer *s                    = gsl_multimin_fdfminimizer_alloc( algorithm, dim );
 	double tol       = 0.1;
 	double step_size = 1;
-	gsl_multimin_fdfminimizer_set( s, &objfunc, _gsl::vector(guess), step_size, tol );
+	gsl_multimin_fdfminimizer_set( s, &objfunc, bealab::gsl::vector(guess), step_size, tol );
 
 	// Main loop
 	fx     = inf;
@@ -655,9 +655,9 @@ rvec gsl_der::optimize()
 		fx0    = fx;
 		x0     = x;
 		status = gsl_multimin_fdfminimizer_iterate( s );
-		x      = _gsl::vector( s->x );
+		x      = bealab::gsl::vector( s->x );
 		fx     = s->f;
-		grad   = _gsl::vector( s->gradient );
+		grad   = bealab::gsl::vector( s->gradient );
 		Nfeval = i;
 
 		// Test gradient

@@ -8,6 +8,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 namespace sparse
 {
 /// @defgroup sparse-greedy Greedy algorithms
@@ -417,6 +419,7 @@ public:
 };
 
 /// @}
+}
 }
 }
 #endif

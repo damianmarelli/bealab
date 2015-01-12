@@ -10,6 +10,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 //------------------------------------------------------------------------------
 /// @defgroup misc Miscellaneous
 /// Miscellaneous signal processing routines.
@@ -30,12 +32,12 @@ Mat<VAL> convmat(const Vec<VAL> &X, int J)
     return M;
 }
 
-state_space spectral_realization( const Mat<rseq> &Rx );
+control::state_space spectral_realization( const Mat<rseq> &Rx );
 
 /// Computes Y such that X = Y*Y.A(), within tolerance tol
 Mat<cseq> spectral_factorization( const Mat<cseq>& X, double tol );
 
-transfer_function butter( int order, double bandwidth, bool analog=false );
+control::transfer_function butter( int order, double bandwidth, bool analog=false );
 double raisedcosine( double t, double Fs, double beta );
 double root_raisedcosine( double t, double Fs, double beta );
 rseq raisedcosine( int order, double ws, double beta );
@@ -73,5 +75,6 @@ double bark2hertz( double b )
 //	return pcs;
 //}
 /// @}
+}
 }
 #endif

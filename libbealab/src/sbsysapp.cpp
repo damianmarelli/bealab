@@ -2,6 +2,8 @@
 
 namespace bealab
 {
+namespace signal
+{
 namespace sbsysapp
 {
 //==============================================================================
@@ -180,7 +182,7 @@ Mat<cseq> sbmodel::inv_ImP( const Mat<cseq>& P_ ) const
 	if( P.size() == 0 )
 		return sm2ms(I);
 	Seq<cmat> A = I - P;
-	arma<cmat> H( B.vec(), A.vec() );
+	control::arma<cmat> H( B.vec(), A.vec() );
 
 	// Compute IR length
 	int L = inv_ImP_irlength( P.vec() );
@@ -951,6 +953,7 @@ void frequency_domain::approximate()
 	greedy::approximate();
 }
 
+}
 }
 }
 }

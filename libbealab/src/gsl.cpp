@@ -5,7 +5,7 @@
 
 namespace bealab
 {
-namespace _gsl
+namespace gsl
 {
 //------------------------------------------------------------------------------
 // Functor manager

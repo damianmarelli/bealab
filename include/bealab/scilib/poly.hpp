@@ -77,6 +77,22 @@ Vec<R> conv( const Vec<T>& x, const Vec<S>& y )
     return rv;
 }
 
+/// Convolutional matrix
+template<class VAL>
+Mat<VAL> convmat(const Vec<VAL> &X, int J)
+{
+    int L = X.size();
+    int I = L + J - 1;
+    Mat<VAL> M = zeros(I,J);
+    Vec<VAL> Z = zeros(J-1);
+    Vec<VAL> B = { Z, flip(X), Z };
+
+    for(int i=0; i<I; i++)
+        M.row(i) = B.range( L+J-2-i, L+2*J-3-i );
+
+    return M;
+}
+
 //// XXX esta delcaracion se necesita aca abajo
 //template<class T>
 //cvec ifft( const ublas::vector_expression<T>& x );

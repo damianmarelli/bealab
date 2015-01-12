@@ -17,21 +17,6 @@ namespace signal
 /// Miscellaneous signal processing routines.
 /// @{
 
-template<class VAL>
-Mat<VAL> convmat(const Vec<VAL> &X, int J)
-{
-    int L = X.size();
-    int I = L + J - 1;
-    Mat<VAL> M = zeros(I,J);
-    Vec<VAL> Z = zeros(J-1);
-    Vec<VAL> B = { Z, flip(X), Z };
-
-    for(int i=0; i<I; i++)
-        M.row(i) = B.range( L+J-2-i, L+2*J-3-i );
-
-    return M;
-}
-
 control::state_space spectral_realization( const Mat<rseq> &Rx );
 
 /// Computes Y such that X = Y*Y.A(), within tolerance tol
@@ -58,23 +43,6 @@ double bark2hertz( double b )
 	return fzero( [b](double f){ return hertz2bark(f) - b; }, 0, 25e3 );
 }
 
-///// Compute the N principal components of the vectors in the columns of the
-///// matrix X.
-//template<class T>
-//Mat<T> pca( const Mat<T>& X, int N )
-//{
-//	// Compute principal components
-//	Mat<T> XX = X * trans(X);
-//	auto DU   = eig( XX );
-//	rvec d    = real(diag( get<0>(DU) ));
-//	rmat U    = real(get<1>(DU));
-//	int I     = X.size1();
-//	Mat<T> pcs(I,N);
-//	for( int n = 0; n < N; n++ )
-//		pcs.column(n) = U.column(n);
-//	return pcs;
-//}
-/// @}
 }
 }
 #endif

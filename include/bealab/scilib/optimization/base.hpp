@@ -60,7 +60,7 @@ public:
 	/// Stop codes
 	enum stopcode { none, error, fvalue, fincrement, fincrement_relative,
 		fincrement_absolute, xincrement, xincrement_relative,
-		xincrement_absolute, gradient, feval, time };
+		xincrement_absolute, gradient, feval, time, force };
 
 	/// @name Optimization parameters
 	int dim;																	///< Dimension of the parameter vector
@@ -80,6 +80,7 @@ public:
 	double stop_xincrement_relative  = 0;
 	rvec  stop_xincrement_absolute;
 	double stop_constraint_tolerance = 1e-8;
+	bool stop_force                  = false;
 	/// @}
 
 	/// @name Result

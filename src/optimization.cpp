@@ -565,11 +565,18 @@ bool gsl::check_stopping_condition()
 		return true;
 	}
 
-	// Stop number of function evaluations
+	// Stop if number of function evaluations
 	if( Nfeval > stop_feval ) {
 		stopreason = xincrement_relative;
 		if(trace) cout << "GSLOPT: Stopping because of relative parameter increment: ||x(t-1)-x(t)|| / ||x(t-1)|| = "
 				       << norm(x0-x)/norm(x0) << endl;
+		return true;
+	}
+
+	// Stop if forced
+	if( stop_force ) {
+		stopreason = force;
+		if(trace) cout << "GSLOPT: Stopping because of forced by user" << endl;
 		return true;
 	}
 

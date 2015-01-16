@@ -2,13 +2,23 @@
 #ifndef BEALAB_NOSYMBOLIC
 
 #include <bealab/core/prelim.hpp>
-#include <bealab/core/maxima.hpp>
+#include <bealab/scilib/symbolic/maxima.hpp>
 #include <ginac/ginac.h>
 
 namespace bealab
 {
 namespace symbolic
 {
+
+// Maxima symbols
+symbol plus("plus");
+symbol minus("minus");
+symbol inf("inf","\\infty");
+symbol minf("minf","-\\infty");
+symbol und("und");
+symbol ind("ind");
+symbol infinity("infinity");
+
 namespace maxima
 {
 

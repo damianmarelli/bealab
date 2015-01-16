@@ -62,7 +62,7 @@ public:
 	void async( const F& fun, const A&... args )
 	{
 		// Make a task
-		function<void()> task = std::bind( fun, args... );						//XXX Binding to avoid a bug in gcc when passing variadic arguments to a lambda
+		function<void()> task = std::bind( fun, args... );
 
 		// Enqueue the task
 		{

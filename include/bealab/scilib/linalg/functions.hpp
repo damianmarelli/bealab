@@ -47,7 +47,6 @@ Mat<R> lls( const matrix_interface<E>& A, const matrix_interface<F>& Y )
 	rvec s(minmn);
 	double rcond = -1;
 	int rank;
-//	int smlsiz = 25;	// XXX Should be obtained from ilaenv
 	int smlsiz = lapack::ilaenv<R>( 9, "GELSD", "", 0, 0, 0, 0 );
 	int nlvl = max( 0, int( log2( min( M,N )/(smlsiz+1) ) ) + 1 );
 	int liwork = 3 * minmn * nlvl + 11 * minmn;

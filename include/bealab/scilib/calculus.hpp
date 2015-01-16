@@ -49,8 +49,6 @@ struct integration_parameters {
 /// Exception thrown by integral functions
 class integral_error : public exception {};
 
-//XXX Add functor versions for integrals from -inf
-
 /// Numeric integration of a function R->R.
 double integral( const function<double(double)>&, double, double,
 		integration_parameters=integration_parameters() );

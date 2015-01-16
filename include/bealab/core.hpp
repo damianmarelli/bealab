@@ -31,9 +31,6 @@
 /// @defgroup interfaces_matlab
 #include <bealab/core/matlab.hpp>
 
-/// @defgroup maxima
-//#include <bealab/core/maxima.hpp>
-
 /// @defgroup mpi
 //#include <bealab/core/mpi.hpp>
 

@@ -1,11 +1,11 @@
-///@file bealab/core/maxima.hpp
+///@file bealab/scilib/symbolic/maxima.hpp
 /// Interface to call Maxima functions.
 
 #include <bealab/core/prelim/config.hpp>
 #ifndef BEALAB_NOSYMBOLIC
 
-#ifndef _BEALAB_MAXIMA_
-#define	_BEALAB_MAXIMA_
+#ifndef _BEALAB_SYMBOLIC_MAXIMA_
+#define	_BEALAB_SYMBOLIC_MAXIMA_
 
 #include <bealab/core/prelim.hpp>
 #include <ginac/ginac.h>
@@ -14,7 +14,7 @@ namespace bealab
 {
 namespace symbolic
 {
-///@defgroup maxima Maxima interface
+///@defgroup symbolic_maxima Maxima interface
 /// Interface to call Maxima functions.
 ///@{
 

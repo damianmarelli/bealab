@@ -514,7 +514,10 @@ vector_quantizer lpc_quantizer_openloop( int L, const function<Seq<rvec>(Seq<rve
 }
 
 //---------------------------------------------------------------------------
-// Compute the quantizer using the closed loop algorithm in XXX
+// Compute the quantizer using the closed loop algorithm in:
+// H. Khalil, K. Rose, and S. Regunathan, “The asymptotic closed-loop
+// approach to predictive vector quantizer design with application in video
+// coding,” IEEE Trans. Image Process., vol. 10, no. 1, pp. 15–23, Jan. 2001.
 //---------------------------------------------------------------------------
 vector_quantizer lpc_quantizer_closedloop( int L, const function<Seq<rvec>(Seq<rvec>)>& P,
 		const Seq<rmat> &Fx, int K )

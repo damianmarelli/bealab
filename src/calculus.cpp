@@ -17,7 +17,7 @@ namespace bealab
 double integral( const function<double(double)>& fun, double from, double to,
 		integration_parameters ip )
 {
-	// Turn off error handling XXX Put this an initialization
+	// Turn off error handling
 	gsl_set_error_handler_off();
 
 	// Allocate workspace
@@ -104,41 +104,6 @@ complex integral( const function<complex(double)>& fun, double from, double to,
 
 	return integral( fun_real, from, to, ip ) + i * integral( fun_imag, from, to, ip );
 }
-
-////XXX Replace it by a multidimensional integration method
-//double integral( const function<double(const rvec&)>& fun, const rvec& a, const rvec& b,
-//		integration_parameters ip )
-//{
-//	// Number of variables
-//	assert( a.size() == b.size() );
-//	int N = a.size();
-//
-//	// Partial integrals
-//	typedef function<double(const rvec&)> VF;
-//	VF partial_integral[N+1];
-//	partial_integral[0] = fun;
-//
-//	// Form the partial integrals
-//	for( int n = 0; n < N; n++ ) {
-//
-//		double an      = a(n);
-//		double bn      = b(n);
-//		VF& pintegraln = partial_integral[n];
-//
-//		partial_integral[n+1] = [&pintegraln,an,bn,&ip]( const rvec& x ) {
-//
-//			// Function of the first variable
-//			function<double(double)> fn = [&](double y) {
-//				rvec z = { {y}, x };
-//				return pintegraln( z );
-//			};
-//
-//			return integral( fn, an, bn, ip );
-//		};
-//	}
-//
-//	return partial_integral[N]( rvec() );
-//}
 
 double integral( const function<double(const rvec&)>& fun, const rvec& xl, const rvec& xu,
 		integration_parameters ip )

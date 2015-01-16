@@ -44,15 +44,6 @@ int symbol_nc::compare_same_type( const basic& other ) const
 }
 /// @endcond
 
-// Maxima symbols --------------------------------------------------------------
-symbol plus("plus");
-symbol minus("minus");
-symbol inf("inf","\\infty");
-symbol minf("minf","-\\infty");
-symbol und("und");
-symbol ind("ind");
-symbol infinity("infinity");
-
 // Numeric evaluation-----------------------------------------------------------
 template<>
 double numeval( const ex& x )

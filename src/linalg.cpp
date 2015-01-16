@@ -129,7 +129,6 @@ int gelsd( int M, int N, int Nrhs, complex* A, int lda,
 	int info;
 	int lrwork;
 	int smlsiz = lapack::ilaenv<complex>( 9, "GELSD", "", 0, 0, 0, 0 );
-//	int smlsiz = 25;	// XXX Should be obtained from ilaenv
 	int nlvl   = max( 0, int( log2( min( M, N ) / (smlsiz+1) ) ) + 1 );
 	if( M >= N )
 		lrwork = 10*N + 2*N*smlsiz + 8*N*nlvl + 3*smlsiz*Nrhs + pow( smlsiz+1, 2 );
@@ -161,7 +160,7 @@ int gesv( int N, int Nrhs, complex* A, int lda, int* ipiv, complex* B,
 	return info;
 }
 
-/// Eigenvalue decomposition (real) XXX DOESN'T WORK
+/// Eigenvalue decomposition (real) XXX Doesn't work
 template<>
 int geev( char jobl, char jobr, int N, double* A, int lda, complex* W, complex* VL,
 		int ldvl, complex* VR, int ldvr, double* work, int lwork )

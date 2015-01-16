@@ -1,2 +1,1 @@
-#define BEALAB_NOSYMBOLIC
 #define BEALAB_NOIPOPT

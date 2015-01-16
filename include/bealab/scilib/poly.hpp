@@ -93,35 +93,6 @@ Mat<VAL> convmat(const Vec<VAL> &X, int J)
     return M;
 }
 
-//// XXX esta delcaracion se necesita aca abajo
-//template<class T>
-//cvec ifft( const ublas::vector_expression<T>& x );
-//
-//template<class T, class S>
-//auto convf( const ublas::vector_expression<T>& xe, const ublas::vector_expression<S>& ye ) ->
-//Vec<decltype(xe()(0)*ye()(0))>
-//{
-//	// XXX eliminar estos casts cuando la ifft accepte un vector_expression
-//	Vec<typename T::value_type> x = xe();
-//	Vec<typename T::value_type> y = ye();
-//	if( x.size() == 0 || y.size() == 0 )
-//		error("conv() - vector with zero size");
-//	typedef decltype(xe()(0)*ye()(0)) R;
-//	int N = x.size() + y.size() - 1;
-//
-//	const cvec& xf = dtft( x, N );
-//	const cvec& yf = dtft( y, N );
-//	const cvec& zf = element_prod( xf, yf );
-//	return ifft( zf );
-//}
-
-//template<class T, class S>
-//auto conv( const ublas::vector_expression<T>& xe, const ublas::vector_expression<S>& ye ) ->
-//Vec<decltype(xe()(0)*ye()(0))>
-//{
-//	const int conv_switch
-//}
-
 /// @}
 }
 #endif

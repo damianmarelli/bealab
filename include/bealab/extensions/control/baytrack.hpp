@@ -30,17 +30,20 @@ public:
 
 	/// Constructor
 	kalman_filter( const rmat& A, const rmat& B, const rmat& C, const rmat& D,
-			const rmat& Q, const rmat& R ) :
+			const rmat& Q, const rmat& R, const rmat& P_ = rmat() ) :
 				state_space(A,B,C,D,Q,R)
 	{
 		int N = A.size1();
 		x     = zeros(N);
-		P     = zeros(N,N);
+		if( P_.size1() == 0 )
+			P = zeros(N,N);
+		else
+			P = P_;
 	}
 
 	/// Constructor
-	kalman_filter( const state_space& ss ) :
-		kalman_filter( ss.A, ss.B, ss.C, ss.D, ss.Q, ss.R) {}
+	kalman_filter( const state_space& ss, const rmat& P = rmat() ) :
+		kalman_filter( ss.A, ss.B, ss.C, ss.D, ss.Q, ss.R, P) {}
 
 	/// Prediction step
 	rvec prediction( const rvec& u )
@@ -112,7 +115,6 @@ protected:
 		double weight;
 	};
 
-	vector<particle_path> x;													///< Particles of the current predicted or updated state
 	rvec old_weights;															///< Weights before the last update step
 	bool init_f = false;														///< Flag to indicate that the filter was initialized
 	int time    = 0;															///< The current time used when running the filter
@@ -156,6 +158,26 @@ protected:
 	/// Output function
 	virtual
 	out_t output_function( const state_t& state ) = 0;
+
+public:
+
+	vector<particle_path> x;													///< Particles of the current predicted or updated state
+	const int I;																///< Number of particles
+	const int lag;																///< Amount of lag used for smoothing.
+	double resample_period = 1;
+
+	/// Constructor
+	particle_filter_b( int I_, int lag_=0 ) :
+		old_weights(I_), x(I_), I(I_), lag(lag_)
+	{
+		assert( I > 0 );
+		for( int i = 0; i < I; i++ )
+			x[i].trajectory = circular_buffer<state_t>(lag+1);
+	}
+
+	/// Destructor
+	virtual
+	~particle_filter_b() {}
 
 	/// Implements the prediction step
 	virtual
@@ -239,25 +261,6 @@ protected:
 		return sum(o);
 	}
 
-public:
-
-	const int I;																///< Number of particles
-	const int lag;																///< Amount of lag used for smoothing.
-	double resample_period = 1;
-
-	/// Constructor
-	particle_filter_b( int I_, int lag_=0 ) :
-		x(I_), old_weights(I_), I(I_), lag(lag_)
-	{
-		assert( I > 0 );
-		for( int i = 0; i < I; i++ )
-			x[i].trajectory = circular_buffer<state_t>(lag+1);
-	}
-
-	/// Destructor
-	virtual
-	~particle_filter_b() {}
-
 	/// Draw the particles of the initial state
 	void initialize()
 	{
@@ -293,12 +296,63 @@ public:
 	}
 };
 
+/// Particle approximation to a Kalman filter (for testing purposes)
+class particle_kalman_filter : public particle_filter_b<rvec,rvec,rvec>, public kalman_filter {
+
+	int N;
+	rmat Qh, Rh, Ph;
+
+	rvec draw_initial_sample() override
+	{
+		return Ph * randn(N);
+	}
+
+	rvec state_transition( const rvec& x ) override
+	{
+		return A * x + Qh * randn(N);
+	}
+
+	double likelihood_function( const rvec& y, const rvec& x ) override
+	{
+		return pdf( multivariate_normal( C*x, Rh ), y );
+	}
+
+	rvec output_function( const rvec& x ) override
+	{
+		return C*x;
+	}
+
+public:
+
+	using particle_filter_b::prediction;
+	using particle_filter_b::update;
+	using particle_filter_b::operator();
+
+	particle_kalman_filter( int I, const rmat& A, const rmat& B, const rmat& C, const rmat& D,
+			const rmat& Q, const rmat& R, const rmat& P_ = rmat() ) :
+				particle_filter_b(I),
+				kalman_filter(A,B,C,D,Q,R,P_)
+	{
+		N  = A.size1();
+		Qh = real(msqrt(Q));
+		Rh = real(msqrt(R));
+		Ph = real(msqrt(P));
+	}
+
+	particle_kalman_filter( int I, const state_space& ss, const rmat& P = rmat() ) :
+		particle_kalman_filter(I,ss.A,ss.B,ss.C,ss.D,ss.Q,ss.R,P)
+	{}
+};
+
+/// State associated to a Rao-Blackwellized particle filter.
 struct RB_state_t {
 	rvec position;
 	rvec mean;
 	rmat covariance;
 };
 
+/// Base class for implementing Rao-Blackwellized particle filters.
+/// The virtual member functions  need to be implemented in a derived class.
 class RB_particle_filter_b : public particle_filter_b< RB_state_t, rvec, rvec > {
 
 	/// Non-linear state transition function
@@ -455,282 +509,6 @@ public:
 	virtual
 	~RB_particle_filter_b() {}
 };
-
-/// Base class for implementing Rao-Blackwellized particle filters.
-/// The virtual member functions  need to be implemented in a derived class.
-//class RB_particle_filter_b {
-//
-//protected:
-//
-//	int N;																		///< Dimension of the non-linear component
-//	int L;																		///< Dimension of the linear component
-//	int I;																		///< Number of particles
-//	rvec x0;																	///< Initial mean of the linear component
-//	rmat P;																		///< Initial covariance of the linear component
-//
-//	/// A particles with it's associated weight
-//	struct particle {
-//		rvec position;
-//		double weight;
-//		rvec mean;
-//		rmat covariance;
-//	};
-//
-//	/// A set of particles
-//	typedef Vec<particle> particles;
-//
-//	/// Draw a sample from the initial non-linear distribution
-//	virtual
-//	rvec draw_initial_sample() = 0;
-//
-//	/// Non-linear state transition function
-//	virtual
-//	rvec f( const rvec& x, int time ) = 0;
-//
-//	/// Linear state transition function
-//	virtual
-//	rvec g( const rvec& x, int time ) = 0;
-//
-//	/// Measurement non-linear component
-//	virtual
-//	rvec h( const rvec& x, int time ) = 0;
-//
-//	/// Output non-linear component
-//	virtual
-//	rvec o( const rvec& x, int time ) = 0;
-//
-//	/// Non-linear state transition matrix
-//	virtual
-//	rmat F( const rvec& x, int time ) = 0;
-//
-//	/// Linear state transition matrix
-//	virtual
-//	rmat G( const rvec& x, int time ) = 0;
-//
-//	/// Measurement linear component
-//	virtual
-//	rmat H( const rvec& x, int time ) = 0;
-//
-//	/// Output linear component
-//	virtual
-//	rmat O( const rvec& x, int time ) = 0;
-//
-//	/// Non-linear process noise covariance
-//	virtual
-//	rmat U( const rvec& x, int time ) = 0;
-//
-//	/// Linear process noise covariance
-//	virtual
-//	rmat V( const rvec& x, int time ) = 0;
-//
-//	/// Output noise covariance
-//	virtual
-//	rmat W( const rvec& x, int time ) = 0;
-//
-//private:
-//
-//	bool init_f = false;														///< Flag to indicate that the filter was initialized
-//	int time = 0;																///< The current time used when running the filter
-//	particles p;																///< Particles of the current (updated) state
-//
-//	/// Implements the update step
-//	virtual
-//	particles update( const particles& p, rvec z )
-//	{
-//		// Update particles
-//		particles pu = p;
-//		#pragma omp parallel for schedule(dynamic)
-//		for( int i = 0; i < I; i++ ) {
-//
-//			// Aliases
-//			const rvec& x  = p(i).position;
-//			const rvec& my = p(i).mean;
-//			const rmat& Py = p(i).covariance;
-//
-//			// Non-linear elements
-//			rvec h_ = h( x, time );
-//			rmat H_ = H( x, time );
-//			rmat W_ = W( x, time );
-//
-//			// Linear output prediction
-//			rvec mz = H_ * my + h_;
-//			rmat Pz = H_ * Py * trans(H_) + W_;
-//
-//			// Non-linear state update
-//			int N         = mz.size();
-//			rvec delta    = z - mz;
-////			pu(i).weight *= 1/sqrt(pow(2*pi,N)*det(Pz)) * exp( -inner_prod( delta, linsolve( Pz, delta ) ) / 2 );
-//			double a      = inner_prod( delta, linsolve( Pz, delta ) );
-//			double b      = log( pow(2*pi,N) * det(Pz) );
-//			pu(i).weight *= exp( -0.5 * (a+b) );
-//			if( isnan(pu(i).weight) )
-//				error("Weight is nan");
-//
-//			// Linear state update
-//			rvec zt          = z - h_;
-//			rmat K           = trans( linsolve( Pz, H_ * Py ) );
-//			pu(i).mean       = my + K * ( zt - H_ * my );
-//			pu(i).covariance = (eye(L) - K * H_) * Py;
-//		}
-//
-//		// Normalization
-//		double K = 0;
-//		int count = 0;
-//		for( int i = 0; i < I; i++ ) {
-//			K += pu(i).weight;
-//			if( pu(i).weight > 0 )
-//				count++;
-//		}
-//		if( K == 0 )
-//			warning("Ran out of particles");
-////		cout << count << " particles" << endl;
-//		for( int i = 0; i < I; i++ )
-//			pu(i).weight /= K;
-//
-//		return pu;
-//}
-//
-//	/// Generates the output particles
-//	rvec output( const particles& p )
-//	{
-//		rvec yh;
-//		for( int i = 0; i < I; i++ ) {
-//
-//			// Aliases
-//			const rvec& x  = p(i).position;
-//			const rvec& my = p(i).mean;
-//
-//			// Non-linear elements
-//			rvec o_ = o( x, time );
-//			rmat O_ = O( x, time );
-//
-//			// Linear output prediction
-//			rvec mz = O_ * my + o_;
-//
-//			// Means
-//			if( i == 0 )
-//				yh  = mz * p(i).weight;
-//			else
-//				yh += mz * p(i).weight;
-//		}
-//		return yh;
-//	}
-//
-//	/// Pick particle randomly, using the weights to define the probabilities
-//	/// of each particle
-//	int random_sample( const particles& p )
-//	{
-//		double rnd = randu();
-//		int i = 0;
-//		while( rnd > 0 ) {
-//			rnd -= p(i).weight;
-//			i++;
-//		}
-//		return i - 1;
-//	}
-//
-//	/// Re-sampling step
-//	particles resample( const particles& p )
-//	{
-//		particles pr(I);
-//		for( int i = 0; i < I; i++ ) {
-//			pr(i) = p(random_sample(p));
-//			pr(i).weight   = 1./I;
-//		}
-//		return pr;
-//	}
-//
-//	/// Implements the prediction step
-//	particles prediction( const particles& p )
-//	{
-//		particles pp = p;
-//		#pragma omp parallel for schedule(dynamic)
-//		for( int i = 0; i < I; i++ ) {
-//
-//			// Aliases
-//			const rvec& x  = p(i).position;
-//			const rvec& my = p(i).mean;
-//			const rmat& Py = p(i).covariance;
-//
-//			// Non-linear elements
-//			rvec f_ = f( x, time );
-//			rmat F_ = F( x, time );
-//			rmat U_ = U( x, time );
-//			rvec g_ = g( x, time );
-//			rmat G_ = G( x, time );
-//			rmat V_ = V( x, time );
-//
-//			// Non-linear prediction
-//			rvec mxp = f_ + F_ * my;
-//			rmat Pxp = F_ * Py * trans(F_) + U_;
-//			rmat Pxph= real(msqrt(Pxp));
-//			rvec xp  = rand( multivariate_normal(mxp,Pxph) );
-//			pp(i).position = xp;
-//
-//			// Linear false update
-//			rvec xt  = xp - f_;
-//			rmat K   = trans( linsolve( Pxp, F_ * Py ) );
-//			rvec my1 = my + K * ( xt - F_ * my );
-//			rmat Py1 = (eye(L) - K * F_) * Py;
-//
-//			// Linear prediction
-//			rvec myp = g_ + G_ * my1;
-//			rmat Pyp = G_ * Py1 * trans(G_) + V_;
-//			pp(i).mean       = myp;
-//			pp(i).covariance = Pyp;
-//		}
-//		return pp;
-//}
-//
-//public:
-//
-//	/// Constructor
-//	RB_particle_filter_b( int I_ ) :
-//		I(I_), p(I_)
-//	{
-//		assert( I > 0 );
-//	}
-//
-//	/// Destructor
-//	virtual
-//	~RB_particle_filter_b() {}
-//
-//	/// Draw the particles of the initial state
-//	void initialize()
-//	{
-//		init_f = true;
-//		for( int i = 0; i < I; i++ ) {
-//			p(i).position   = draw_initial_sample();
-//			p(i).weight     = 1./I;
-//			p(i).mean       = x0;
-//			p(i).covariance = P;
-//		}
-//		L = x0.size();
-//	}
-//
-//	/// Filter one sample
-//	rvec operator()( const rvec& z )
-//	{
-//		if( !init_f )
-//			initialize();
-//		particles pu = update( p, z );
-//		rvec y       = output(pu);
-//		particles pr = resample( pu );
-//		p            = prediction( pr );
-//		time++;
-//		return y;
-//	}
-//
-//	/// Filter a vector of samples
-//	Vec<rvec> operator()( const Vec<rvec>& Z )
-//	{
-//		int T = Z.size();
-//		Vec<rvec> Yh(T);
-//		for( int t = 0; t < T; t++ )
-//			Yh(t) = (*this)( Z(t) );
-//		return Yh;
-//	}
-//};
 
 /// Base class for implementing a particle smoother.
 /// The virtual member functions  need to be implemented in a derived class.

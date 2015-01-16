@@ -117,7 +117,6 @@ Vec<decltype(T()*complex(0))> dtft( const Seq<T>& X, const rvec& W )
 /// DTFT of a sequence evaluated at a regular grid of frequencies
 /// with a given number of points.
 /// The grid is over [-pi,pi) and has M points.
-// XXX This doesn't work if M = 0
 template<class T>
 Vec<decltype(T()*complex(0))> dtft( Seq<T> X, int M )
 {
@@ -125,7 +124,7 @@ Vec<decltype(T()*complex(0))> dtft( Seq<T> X, int M )
     int K = ceil( (double)L/M );
     int N = K*M;
 
-	// XXX Patch to deal with M = 0
+	// Deal with M = 0
     typedef decltype(T()*complex(0)) R;
     if( L == 0 )
     	return zeros(M);

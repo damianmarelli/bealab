@@ -257,21 +257,36 @@ public:
 	/// @}
 };
 
-// Types for dense matrices
+/// Dense matrix template
 template<class value_type>
-using Mat = matrix_interface<matrixx<value_type>>;								///< Template dense matrix
+using Mat = matrix_interface<matrixx<value_type>>;
+
+/// Triangular matrix template
+template<class value_type, class LU>
+using triangular_matrix = matrix_interface<
+		ublas::triangular_matrix<value_type,LU>>;
+
+/// Symmetric matrix template
+template<class value_type>
+using symmetric_matrix = matrix_interface<ublas::symmetric_matrix<value_type>>;
+
+/// Hermitian matrix template
+template<class value_type>
+using hermitial_matrix = matrix_interface<ublas::hermitian_matrix<value_type>>;
+
+/// Banded matrix template
+template<class value_type>
+using banded_matrix = matrix_interface<ublas::banded_matrix<value_type>>;
+
+/// Sparse matrix template
+template<class value_type>
+using sparse_matrix = matrix_interface<ublas::compressed_matrix<value_type>>;
+
+// Shorthand expressions for dense matrices
 typedef	Mat<bool> bmat;															///< Boolean dense matrix
 typedef	Mat<int> imat;															///< Integer dense matrix
 typedef Mat<double> rmat;														///< Real dense matrix
 typedef	Mat<complex> cmat;														///< Complex dense matrix
-
-// Types for sparse matrices
-template<class value_type>
-using SMat = ublas::compressed_matrix<value_type>;								///< Template sparse matrix
-typedef	SMat<bool> bsmat;														///< Boolean sparse matrix
-typedef	SMat<int> ismat;														///< Integer sparse matrix
-typedef SMat<double> rsmat;														///< Real sparse matrix
-typedef	SMat<complex> csmat;													///< Complex sparse matrix
 
 /// Convert an expression template into a temporary
 template<class E>

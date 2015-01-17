@@ -74,7 +74,7 @@ void base::add_equality_vconstraint( const function<rvec(const rvec&)>& fun,
 }
 
 void base::add_inequality_vsconstraint( const function<rvec(const rvec&)>& fun,
-					const function<rsmat(const rvec&)>& jacob )
+					const function<sparse_matrix<double>(const rvec&)>& jacob )
 {
 	inequality_vsconstraints.push_back( vsfunjac() );
 	inequality_vsconstraints.back().function = fun;
@@ -82,7 +82,7 @@ void base::add_inequality_vsconstraint( const function<rvec(const rvec&)>& fun,
 }
 
 void base::add_equality_vsconstraint( const function<rvec(const rvec&)>& fun,
-					const function<rsmat(const rvec&)>& jacob )
+					const function<sparse_matrix<double>(const rvec&)>& jacob )
 {
 	equality_vsconstraints.push_back( vsfunjac() );
 	equality_vsconstraints.back().function = fun;
@@ -404,10 +404,9 @@ rvec barrier::barrier_gradient( const rvec& x )
 		int N = c.size();
 		if( sum(c >= 0) )
 			return -inf * ones(I);
-		rsmat J = inequality_vsconstraints[i].jacobian(x);
+		sparse_matrix<double> J = inequality_vsconstraints[i].jacobian(x);
 		for( int n = 0; n < N; n++ )
-//			g -= J.row(n) / c(n);
-			g -= ublas::matrix_row<rsmat>(J,n) / c(n);
+			g -= J.row(n) / c(n);
 	}
 
 	return g;

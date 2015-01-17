@@ -148,9 +148,15 @@ public:
 	}
 };
 
-// Types
+/// Dense vector template
 template<class value_type>
 using Vec = vector_interface<vectorx<value_type>>;
+
+/// Sparse vector template
+template<class value_type>
+using sparse_vector = vector_interface<ublas::compressed_vector<value_type>>;
+
+// Shorthand expressions for dense vectors
 typedef	Vec<bool> bvec;															///< Boolean vector
 typedef	Vec<int> ivec;															///< Integer vector
 typedef Vec<double> rvec;														///< Real vector

@@ -128,8 +128,8 @@ struct breadth_first_unfolding : public manifold_learning_b
 	void* run_mlearning( const void* cvpA );
 };
 
-/// Multi-dimensional scalling method
-Vec<rvec> multidimensional_scalling( const rmat& distances, int target_dimensions );
+/// Multi-dimensional scaling method
+Vec<rvec> multidimensional_scaling( const rmat& distances, int target_dimensions );
 
 /// @}
 }

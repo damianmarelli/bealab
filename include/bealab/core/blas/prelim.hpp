@@ -12,10 +12,12 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_proxy.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/matrix_proxy.hpp>
-#include <boost/numeric/ublas/banded.hpp>
 #include <boost/numeric/ublas/triangular.hpp>
+#include <boost/numeric/ublas/symmetric.hpp>
+#include <boost/numeric/ublas/hermitian.hpp>
+#include <boost/numeric/ublas/banded.hpp>
 #include <boost/numeric/ublas/matrix_sparse.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <bealab/core/prelim.hpp>
 
 namespace bealab
@@ -28,6 +30,8 @@ namespace bealab
 namespace ublas = boost::numeric::ublas;
 using ublas::slice;
 using ublas::range;
+using ublas::lower;
+using ublas::upper;
 
 /// Indirect indexing
 class indirect : public ublas::indirect_array<> {

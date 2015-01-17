@@ -11,9 +11,9 @@ namespace bealab
 namespace dimred
 {
 //------------------------------------------------------------------------------
-// Function multidimensional_scalling()
+// Function multidimensional_scaling()
 //------------------------------------------------------------------------------
-Vec<rvec> multidimensional_scalling( const rmat& distances, int target_dimensions )
+Vec<rvec> multidimensional_scaling( const rmat& distances, int target_dimensions )
 {
 	assert( distances.size1() == distances.size2() );
 

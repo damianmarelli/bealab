@@ -34,7 +34,7 @@ protected:
 	/// Function / gradient pair (vector / sparse version)
 	struct vsfunjac {
 		std::function<rvec(const rvec&)> function;
-		std::function<rsmat(const rvec&)> jacobian;
+		std::function<sparse_matrix<double>(const rvec&)> jacobian;
 	};
 
 	/// @name Objective and constraints
@@ -123,10 +123,10 @@ public:
 						  const function<rmat(const rvec&)>& jacob=0 );
 
 	void add_inequality_vsconstraint( const function<rvec(const rvec&)>& fun,
-						  const function<rsmat(const rvec&)>& jacob );
+						  const function<sparse_matrix<double>(const rvec&)>& jacob );
 
 	void add_equality_vsconstraint( const function<rvec(const rvec&)>& fun,
-						  const function<rsmat(const rvec&)>& jacob );
+						  const function<sparse_matrix<double>(const rvec&)>& jacob );
 	/// @}
 
 	/// @name Optimize

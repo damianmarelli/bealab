@@ -13,8 +13,8 @@
 /// @defgroup dimred
 #include <bealab/extensions/other/dimred.hpp>
 
-/// @defgroup machine_learning
-#include <bealab/extensions/other/machine_learning.hpp>
+/// @defgroup mlearn
+#include <bealab/extensions/other/mlearn.hpp>
 
 /// @}
 #endif

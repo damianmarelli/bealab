@@ -1,7 +1,7 @@
 #include <bealab/core/prelim/config.hpp>
 #ifndef BEALAB_NOGCLASSES
 
-#include <bealab/extensions/other/machine_learning.hpp>
+#include <bealab/extensions/other/mlearn.hpp>
 #include <GClasses/GNeuralNet.h>
 #include <GClasses/GActivation.h>
 #include <GClasses/GRand.h>

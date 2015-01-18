@@ -352,7 +352,6 @@ Vec<R> operator*( const vector_interface<E1>& x, const matrix_interface<E2>& y )
 /// @}
 
 //------------------------------------------------------------------------------
-
 /// @name Element-wise product/division
 
 /// Vector-vector element-wise product (scalar version)
@@ -366,7 +365,7 @@ vector_interface<decltype(ublas::element_prod(x,y))>
 	return ublas::element_prod( x, y );
 }
 
-/// Vector-vector element-wise product (scalar version)
+/// Vector-vector element-wise product (non-scalar version)
 template< class E1, class E2,
 	class R = decltype( noproxy( declval<typename E1::value_type>()*declval<typename E2::value_type>() ) ),
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
@@ -404,7 +403,7 @@ vector_interface<decltype(ublas::element_div(x,y))>
 	return ublas::element_div( x, y );
 }
 
-/// Vector-vector element-wise division (scalar version)
+/// Vector-vector element-wise division (non-scalar version)
 template< class E1, class E2,
 	class R = decltype( noproxy( declval<typename E1::value_type>()/declval<typename E2::value_type>() ) ),
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
@@ -431,7 +430,7 @@ matrix_interface<decltype(ublas::element_prod(x,y))>
 	return ublas::element_prod( x, y );
 }
 
-/// Matrix-matrix element-wise product (scalar version)
+/// Matrix-matrix element-wise product (non-scalar version)
 template< class E1, class E2,
 	class R = decltype( noproxy( declval<typename E1::value_type>()*declval<typename E2::value_type>() ) ),
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
@@ -474,7 +473,7 @@ matrix_interface<decltype(ublas::element_div(x,y))>
 	return ublas::element_div( x, y );
 }
 
-/// Vector-vector element-wise division (scalar version)
+/// Matrix-matrix  element-wise division (non-scalar version)
 template< class E1, class E2,
 	class R = decltype( noproxy( declval<typename E1::value_type>()/declval<typename E2::value_type>() ) ),
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
@@ -519,16 +518,30 @@ template<class T, class R = typename T::value_type>
 Mat<R> adjoint( const matrix_interface<T>& A )
 {
 	auto afun = [](const R& x) -> R {return adjoint(x);};
-	return trans( entrywise(afun)( A ) );
+	return entrywise(afun)( trans( A ) );
 }
 /// @}
 
 //------------------------------------------------------------------------------
 /// @name Inner-product, outer-product and norm
 
-/// Vector inner-product
+/// Vector inner-product (scalar version)
 template<class E1, class E2,
-	class R = decltype( noproxy( inner_prod( declval<typename E1::value_type>(), declval<typename E2::value_type>() ) ) ) >
+	class = typename enable_if< is_scalar<typename E1::value_type>::value &&
+								is_scalar<typename E2::value_type>::value
+							  >::type >
+auto inner_prod( const vector_interface<E1> &x, const vector_interface<E2> &y ) ->
+decltype(ublas::inner_prod(x,y))
+{
+	return ublas::inner_prod(x,y);
+}
+
+/// Vector inner-product (non-scalar version)
+template<class E1, class E2,
+	class R = decltype( noproxy( inner_prod( declval<typename E1::value_type>(), declval<typename E2::value_type>() ) ) ),
+	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
+								  !is_scalar<typename E2::value_type>::value
+								>::type >
 R inner_prod( const vector_interface<E1> &x, const vector_interface<E2> &y )
 {
 	assert(x.size() == y.size());
@@ -541,7 +554,7 @@ R inner_prod( const vector_interface<E1> &x, const vector_interface<E2> &y )
 
 /// Matrix inner-product
 template<class E1, class E2,
-	class R = decltype( inner_prod( declval<typename E1::value_type>(),declval<typename E2::value_type>() ) ) >
+	class R = decltype( noproxy( inner_prod( declval<typename E1::value_type>(),declval<typename E2::value_type>() ) ) ) >
 R inner_prod( const matrix_interface<E1> &x, const matrix_interface<E2> &y )
 {
 	assert(x.size1() == y.size1());
@@ -555,9 +568,23 @@ R inner_prod( const matrix_interface<E1> &x, const matrix_interface<E2> &y )
 	return r;
 }
 
-/// Vector outer-product
+/// Vector outer-product (scalar version)
+template< class E1, class E2,
+	class = typename enable_if< is_scalar<typename E1::value_type>::value &&
+								is_scalar<typename E2::value_type>::value
+							  >::type >
+auto outer_prod( const vector_interface<E1>& x, const vector_interface<E2>& y ) ->
+matrix_interface<decltype(ublas::outer_prod(x,y))>
+{
+	return ublas::outer_prod( x, y );
+}
+
+/// Vector outer-product (non-scalar version)
 template<class E1, class E2,
-	class R = decltype( outer_prod( declval<typename E1::value_type>(), declval<typename E2::value_type>() ) ) >
+	class R = decltype( noproxy( outer_prod( declval<typename E1::value_type>(), declval<typename E2::value_type>() ) ) ),
+	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
+								  !is_scalar<typename E2::value_type>::value
+								>::type >
 Mat<R> outer_prod( const vector_interface<E1> &x, const vector_interface<E2> &y )
 {
 	assert(x.size() == y.size());

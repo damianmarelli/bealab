@@ -26,13 +26,18 @@ using ofunctor = octave::functor<oargs...>;
 template<class... oargs>
 class functor : public ofunctor<oargs...> {
 
-	string call()
+	string call_prefix() override
 	{
-		return "matlab -nosplash -r ";
+		return "matlab -nodesktop -nosplash -r";
+	}
+
+	string call_suffix() override
+	{
+		return "> /dev/null 2> /dev/null";
 	}
 
 public:
-	using ofunctor<oargs...>::ofunctor;
+	using ofunctor<oargs...>::functor;
 };
 
 /// @}

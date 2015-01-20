@@ -24,6 +24,7 @@ template<class... oargs>
 class functor {
 
 	string mfilename;															///< Name of the *.m file to containing the Octave function
+	string tmpfilename;															///< Name of the associated temporary file
 	string matfilename;															///< Name of the *.mat file to exchange data
 	matfile mf;																	///< Handler of the *.mat file
 
@@ -56,41 +57,82 @@ class functor {
 	{
 		string varlist;
 		parse_input_( 0, varlist, X... );
-		varlist.pop_back();
-		varlist.pop_back();
+		if( sizeof...(X) > 0 ) {
+			varlist.pop_back();
+			varlist.pop_back();
+		}
 		return varlist;
+	}
+
+	template<class R = void>
+	typename enable_if<std::is_void<R>::value,tuple<>>::type
+	parse_output_( int n )
+	{
+		return tuple<>();
+	}
+
+	template<class T, class... S>
+	tuple<T,S...> parse_output_( int n )
+	{
+		ostringstream varname;
+		varname << "Y" << n;
+		T x           = mf.load<T>(varname.str());
+		tuple<S...> X = parse_output_<S...>( n+1 );
+		return tuple_cat( tuple<T>(x), X );
+	}
+
+	tuple<oargs...> parse_output()
+	{
+		return parse_output_<oargs...>( 0 );
 	}
 
 protected:
 
-	string call()
+	virtual
+	string call_prefix()
 	{
 		return "octave -q --eval";
+	}
+
+	virtual
+	string call_suffix()
+	{
+		return string();
 	}
 
 public:
 
 	/// Constructor
 	functor( const string& funname ) :
-		mfilename(funname), matfilename(create_tmpfile()), mf( matfilename, true ) {}
+		mfilename(funname),
+		tmpfilename(create_tmpfile()),
+		matfilename(tmpfilename + ".mat"),
+		mf( matfilename, true )
+	{}
 
 	/// Destructor
-	~functor() { std::remove( matfilename.data() ); }
+	~functor()
+	{
+		std::remove( tmpfilename.data() );
+		std::remove( matfilename.data() );
+	}
 
 	/// Constructor
 	template<class... iargs>
-	typename std::tuple_element<0,std::tuple<oargs...>>::type
-	operator()( const iargs&... X )
+	tuple<oargs...> operator()( const iargs&... X )
 	{
 		// Parse input parameters
 		string ivarlist = parse_input( X... );
 
 		// Prepare output parameters
 		int N = sizeof...(oargs);
-		ostringstream osovarlist;
-		for( int n = 0; n < N; n++ )
+		ostringstream osovarlist, ossvarlist;
+		for( int n = 0; n < N; n++ ) {
 			osovarlist << "Y" << n << ", ";
+			ossvarlist << "Y" << n << " ";
+		}
 		string ovarlist = osovarlist.str();
+		string svarlist = ossvarlist.str();
 		if( N > 0 ) {
 			ovarlist.pop_back();
 			ovarlist.pop_back();
@@ -98,17 +140,19 @@ public:
 
 		// Octave command
 		ostringstream cmd;
-		cmd << call() << " '"
-			<< "load " << matfilename << "; "
-			<< "[" << ovarlist << "] = " << mfilename << "( " << ivarlist << " ); "
-			<< "save -v6 " << matfilename << " " << ovarlist << ";"
-			<< "'";
+		cmd << call_prefix() << " '"
+			<< "load " << matfilename << "; " ;
+		if( N > 0 )
+			cmd<< "[" << ovarlist << "] = ";
+		cmd << mfilename << "( " << ivarlist << " ); ";
+		if( N > 0 )
+			cmd << "save -v6 " << matfilename << " " << svarlist << ";";
+		cmd << "exit;' " << call_suffix();
 //		cout << cmd.str() << endl;
 		system(cmd.str());
 
 		// Parse result
-		typedef typename std::tuple_element<0,std::tuple<oargs...>>::type R;
-		return mf.load<R>("Y0");
+		return parse_output();
 	}
 };
 

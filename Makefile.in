@@ -6,9 +6,8 @@ targetdirs = include src
 otherdirs  = doc
 
 # Automatic variables
-distdir = @PACKAGE_TARNAME@-@PACKAGE_VERSION@
-prefix  = @prefix@
-ncores  = $(shell grep -c processor /proc/cpuinfo)
+distname = @PACKAGE_TARNAME@-@PACKAGE_VERSION@
+ncores   = $(shell grep -c processor /proc/cpuinfo)
 
 # Targets
 all:
@@ -23,30 +22,30 @@ distclean:
 	-rm -r tmp > /dev/null 2>&1
 
 install:
-	install -d $(prefix)/lib
-	install -m 0755 lib/libbealab.so $(prefix)/lib
-	install -d $(prefix)/include
-	install @srcdir@/include/bealab.hpp $(prefix)/include
-	cp -R --no-preserve=ownership @srcdir@/include/bealab $(prefix)/include
+	install -d @prefix@/lib
+	install -m 0755 lib/libbealab.so @prefix@/lib
+	install -d @prefix@/include
+	install @srcdir@/include/bealab.hpp @prefix@/include
+	cp -R --no-preserve=ownership @srcdir@/include/bealab @prefix@/include
 
 uninstall:
-	rm $(prefix)/lib/libbealab.so
-	rm $(prefix)/include/bealab.hpp
-	rm -R $(prefix)/include/bealab
+	rm @prefix@/lib/libbealab.so
+	rm @prefix@/include/bealab.hpp
+	rm -R @prefix@/include/bealab
 
 dist:
-	-rm $(distdir).tar.gz > /dev/null 2>&1
-	-rm -rf $(distdir) > /dev/null 2>&1
-	mkdir -p $(distdir)
-	cp @srcdir@/configure.ac $(distdir)
-	cp @srcdir@/configure $(distdir)
-	cp @srcdir@/Makefile.in $(distdir)
-	cp @srcdir@/README $(distdir)
-	cp @srcdir@/LICENSE $(distdir)
-	$(foreach dir, $(targetdirs), cp -r @srcdir@/$(dir) $(distdir);)
-	$(foreach dir, $(otherdirs), cp -r @srcdir@/$(dir) $(distdir);)
-	find $(distdir) -name Makefile -exec rm -f '{}' +
-	tar chof - $(distdir) | gzip -9 -c > $(distdir).tar.gz
-	rm -rf $(distdir)
+	-rm $(distname).tar.gz > /dev/null 2>&1
+	-rm -rf $(distname) > /dev/null 2>&1
+	mkdir -p $(distname)
+	cp @srcdir@/configure.ac $(distname)
+	cp @srcdir@/configure $(distname)
+	cp @srcdir@/Makefile.in $(distname)
+	cp @srcdir@/README $(distname)
+	cp @srcdir@/LICENSE $(distname)
+	$(foreach dir, $(targetdirs), cp -r @srcdir@/$(dir) $(distname);)
+	$(foreach dir, $(otherdirs), cp -r @srcdir@/$(dir) $(distname);)
+	find $(distname) -name Makefile -exec rm -f '{}' +
+	tar chof - $(distname) | gzip -9 -c > $(distname).tar.gz
+	rm -rf $(distname)
 
 .PHONY: all $(targetdirs) clean install uninstall dist

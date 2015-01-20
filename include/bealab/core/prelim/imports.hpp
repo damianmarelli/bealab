@@ -57,9 +57,12 @@ namespace bealab
 ///   - lock_guard
 ///   - unique_lock
 ///   - condition_variable
-/// - Other
+/// - Tuples
 ///   - tuple
 ///   - get
+///   - tie
+///   - tuple_cat
+/// - Other
 ///   - initializer_list
 ///   - bitset
 ///   - function
@@ -108,9 +111,13 @@ using std::lock_guard;
 using std::unique_lock;
 using std::condition_variable;
 
-// Other
+// Tuples
 using std::tuple;
 using std::get;
+using std::tie;
+using std::tuple_cat;
+
+// Other
 using std::initializer_list;
 using std::bitset;
 using std::function;

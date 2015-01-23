@@ -1,3 +1,12 @@
+// This software is licensed under the BSD 3-Clause License with the possibily to obtain a commercial license, if you cannot abide by the terms of the BSD 3-Clause license.
+// You may not use this work except in compliance with the License.
+// You may obtain a copy of the License at: http://opensource.org/licenses/BSD-3-Clause
+// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the file License for the specific language governing permissions and limitations under the License. 
+// If you wish to obtain a commercial license, please contact the authors via e-mail.
+//
+// Copyright (c) 2015, Damian Marelli (Damian.Marelli@newcastle.edu.au)
+
 /// @file bealab/core/blas/matrix.hpp
 /// Matrix modeling
 
@@ -14,19 +23,19 @@ namespace bealab
 
 /// Matrix class with extended construction
 template<class value_type>
-//class matrixx : public ublas::matrix<value_type,ublas::column_major> {
-class matrixx : public ublas::matrix<value_type> {
+//class dense_matrix : public ublas::matrix<value_type,ublas::column_major> {
+class dense_matrix : public ublas::matrix<value_type> {
 public:
 
 	using ublas::matrix<value_type>::matrix;
 	using ublas::matrix<value_type>::operator=;
 
 	/// Default constructor
-	matrixx() = default;
+	dense_matrix() = default;
 
 	/// Construct a matrix with the data given in two nested
 	/// initializer_list's
-	matrixx( const initializer_list<initializer_list<value_type>> &l )
+	dense_matrix( const initializer_list<initializer_list<value_type>> &l )
 	{
 		// Compute sizes
 		const initializer_list<value_type>* prow = l.begin();
@@ -44,15 +53,15 @@ public:
 
 	/// Construct a matrix by concatenating the sub-matrices given in two
 	/// nested initializer_list's
-	matrixx( const initializer_list<initializer_list<matrixx<value_type>>> &list )
+	dense_matrix( const initializer_list<initializer_list<dense_matrix<value_type>>> &list )
 	{
 		// Compute sizes
-		const initializer_list<matrixx<value_type>>* prow = list.begin();
+		const initializer_list<dense_matrix<value_type>>* prow = list.begin();
 		int	Ib = list.size();
 		int I  = 0;
 		int J  = 0;
 		for( int ib = 0; ib < Ib; ib++ ) {										// For each block row
-			const matrixx<value_type>* pblock = prow[ib].begin();				// Pointer to a block matrix in this row
+			const dense_matrix<value_type>* pblock = prow[ib].begin();				// Pointer to a block matrix in this row
 			int Il = pblock[0].size1();											// Number of rows in this block row
 			I     += Il;														// Update the total number of rows
 			int Jb = prow[ib].size();											// Number of block columns in this row
@@ -74,14 +83,14 @@ public:
 		int cursor_I = 0;
 		for( int ib = 0; ib < Ib; ib++ ) {
 			int Jb = prow[ib].size();											// Number of block columns in this row
-			const matrixx<value_type>* pblock = prow[ib].begin();				// Pointer to a block matrix in this row
+			const dense_matrix<value_type>* pblock = prow[ib].begin();				// Pointer to a block matrix in this row
 			int cursor_J = 0;
 			int Il = pblock[0].size1();
 			for( int jb = 0; jb < Jb; jb++ ) {
 				int Jl = pblock[jb].size2();
 				auto rI = range( cursor_I, cursor_I + Il );
 				auto rJ = range( cursor_J, cursor_J + Jl );
-				ublas::matrix_range<matrixx<value_type>>(*this,rI,rJ)
+				ublas::matrix_range<dense_matrix<value_type>>(*this,rI,rJ)
 						= pblock[jb];
 				cursor_J += Jl;
 			}
@@ -90,19 +99,19 @@ public:
 	}
 
 	/// Copy into the matrix the data given in two nested initializer_list's
-	matrixx<value_type>& operator=(
+	dense_matrix<value_type>& operator=(
 			const initializer_list<initializer_list<value_type>> &list )
 	{
-		*this = matrixx<value_type>(list);
+		*this = dense_matrix<value_type>(list);
 		return *this;
 	}
 
 	/// Copy into the matrix the data obtained by concatenating the sub-matrices
 	/// given in two nested initializer_list's
-	matrixx<value_type>& operator=(
-			const initializer_list<initializer_list<matrixx<value_type>>> &list )
+	dense_matrix<value_type>& operator=(
+			const initializer_list<initializer_list<dense_matrix<value_type>>> &list )
 	{
-		*this = matrixx<value_type>(list);
+		*this = dense_matrix<value_type>(list);
 		return *this;
 	}
 };
@@ -259,7 +268,7 @@ public:
 
 /// Dense matrix template
 template<class value_type>
-using Mat = matrix_interface<matrixx<value_type>>;
+using Mat = matrix_interface<dense_matrix<value_type>>;
 
 /// Triangular matrix template
 template<class value_type, class LU>
@@ -290,7 +299,7 @@ typedef	Mat<complex> cmat;														///< Complex dense matrix
 
 /// Convert an expression template into a temporary
 template<class E>
-matrix_interface<matrixx<typename E::value_type>>
+matrix_interface<dense_matrix<typename E::value_type>>
 noproxy( const matrix_interface<E>& x )
 {
 	return x;

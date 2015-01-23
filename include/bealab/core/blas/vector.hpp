@@ -1,3 +1,12 @@
+// This software is licensed under the BSD 3-Clause License with the possibily to obtain a commercial license, if you cannot abide by the terms of the BSD 3-Clause license.
+// You may not use this work except in compliance with the License.
+// You may obtain a copy of the License at: http://opensource.org/licenses/BSD-3-Clause
+// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the file License for the specific language governing permissions and limitations under the License. 
+// If you wish to obtain a commercial license, please contact the authors via e-mail.
+//
+// Copyright (c) 2015, Damian Marelli (Damian.Marelli@newcastle.edu.au)
+
 /// @file bealab/core/blas/vector.hpp
 /// Vector modeling
 
@@ -14,18 +23,18 @@ namespace bealab
 
 /// Vector class with extended construction
 template<class value_type>
-class vectorx : public ublas::vector<value_type> {
+class dense_vector : public ublas::vector<value_type> {
 public:
 
 	using ublas::vector<value_type>::vector;
 	using ublas::vector<value_type>::operator=;
 
 	/// Default constructor
-	vectorx() = default;
+	dense_vector() = default;
 
 	/// Construct a vector with the data between two given iterators
 	template<class It>
-	vectorx( It first, It last )
+	dense_vector( It first, It last )
 	{
 		this->resize( distance( first, last ) );
 		int n = 0;
@@ -34,7 +43,7 @@ public:
 	}
 
 	/// Construct a vector with the data given in an initializer_list
-	vectorx( const initializer_list<value_type>& list )
+	dense_vector( const initializer_list<value_type>& list )
 	{
 		this->resize( list.size() );
 		int i = 0;
@@ -44,7 +53,7 @@ public:
 
 	/// Construct a vector by concatenating the sub-vectors given in an
 	/// initializer_list
-	vectorx( const initializer_list<vectorx<value_type>> &list )
+	dense_vector( const initializer_list<dense_vector<value_type>> &list )
 	{
 		// Init
 		auto p = list.begin();
@@ -67,17 +76,17 @@ public:
 	}
 
 	/// Copy into the vector the data given in an initializer_list
-	vectorx<value_type>& operator=( const initializer_list<value_type>& list )
+	dense_vector<value_type>& operator=( const initializer_list<value_type>& list )
 	{
-		*this = vectorx<value_type>(list);
+		*this = dense_vector<value_type>(list);
 		return *this;
 	}
 
 	/// Copy into the vector the data obtained by concatenating the sub-vectors
 	/// given in an initializer_list
-	vectorx<value_type>& operator=( const initializer_list<vectorx<value_type>> &list )
+	dense_vector<value_type>& operator=( const initializer_list<dense_vector<value_type>> &list )
 	{
-		*this = vectorx<value_type>(list);
+		*this = dense_vector<value_type>(list);
 		return *this;
 	}
 };
@@ -150,7 +159,7 @@ public:
 
 /// Dense vector template
 template<class value_type>
-using Vec = vector_interface<vectorx<value_type>>;
+using Vec = vector_interface<dense_vector<value_type>>;
 
 /// Sparse vector template
 template<class value_type>
@@ -164,7 +173,7 @@ typedef	Vec<complex> cvec;														///< Complex vector
 
 /// Convert an expression template into a temporary
 template<class E>
-vector_interface<vectorx<typename E::value_type>>
+vector_interface<dense_vector<typename E::value_type>>
 noproxy( const vector_interface<E>& x )
 {
 	return x;

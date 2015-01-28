@@ -56,7 +56,7 @@ public:
 
 	/// @name Cast operators
 	template<class T>
-	operator Vec<T>() const;
+	operator vec<T>() const;
 	template<class T>
 	operator T*() const { return (T*)_data; }
 	/// @}
@@ -84,7 +84,7 @@ public:
 
 	/// @name Cast operators
 	template<class T>
-	operator Mat<T>() const;
+	operator mat<T>() const;
 	template<class T>
 	operator T*() const { return (T*)_data; }
 	/// @}

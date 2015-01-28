@@ -38,7 +38,7 @@ protected:
 
 	/// Error function
 	virtual
-	double errfun( const ivec&, const Vec<COE>& ) = 0;
+	double errfun( const ivec&, const vec<COE>& ) = 0;
 
 	/// Function to force a stop of the iterations
 	virtual
@@ -50,7 +50,7 @@ protected:
 
 	/// Optimal coefficients for the given indexes
 	virtual
-	Vec<COE> optimal_coefficients() = 0;
+	vec<COE> optimal_coefficients() = 0;
 
 	/// Virtual function override
 	void plotfun() override
@@ -61,7 +61,7 @@ protected:
 public:
 
 	///@name History
-	Vec<Vec<COE>> coefficient_history;											///< Coefficient history
+	vec<vec<COE>> coefficient_history;											///< Coefficient history
 	rvec error_history;															///< Error history
 	rvec sparsity_history;														///< Sparsity history
 	///@}
@@ -85,7 +85,7 @@ public:
 			this->coefficients = optimal_coefficients();
 			if( i > 0 )
 				coefficient_history = { coefficient_history,
-						Vec<rvec>{this->coefficients} };
+						vec<rvec>{this->coefficients} };
 
 			// Evaluate the approximation error
 			this->error = errfun( this->indexes, this->coefficients );
@@ -113,12 +113,12 @@ public:
 };
 
 /// Generic orthogonal matching pursuit.
-template<class COE=double, class RAN=Vec<COE>>
+template<class COE=double, class RAN=vec<COE>>
 class orthogonal_matching_pursuit : public virtual greedy<COE> {
 
-	Mat<COE> grammian;															///< Grammian matrix with the current atoms
-	Vec<COE> innerps;															///< Inner-products between the target and the current atoms
-	Vec<COE> all_innerps;														///< All inner-products between the target and the atoms
+	mat<COE> grammian;															///< Grammian matrix with the current atoms
+	vec<COE> innerps;															///< Inner-products between the target and the current atoms
+	vec<COE> all_innerps;														///< All inner-products between the target and the atoms
 	rvec all_norms;																///< All atom norm
 
 protected:
@@ -131,7 +131,7 @@ protected:
     }
 
 	/// Virtual function override
-	double errfun( const ivec& idxs, const Vec<COE>& coeffs ) override
+	double errfun( const ivec& idxs, const vec<COE>& coeffs ) override
 	{
 		approximation = synthesis( idxs, coeffs );
 		return norm( approximation - target );
@@ -143,10 +143,10 @@ protected:
     ivec next_indexes() override
 	{
 		// Compute all analysis coefficients
-		Vec<COE> ainnerps = analysis( this->target - this->approximation );
+		vec<COE> ainnerps = analysis( this->target - this->approximation );
 
 		// Build the normalized correlations
-		Vec<COE> ncorrs = abs( ainnerps );
+		vec<COE> ncorrs = abs( ainnerps );
 		int I = ncorrs.size();
 		for( int i = 0; i < I; i++ )
 			ncorrs(i) /= ( all_norms(i) < 1e-6 ? inf : all_norms(i) );
@@ -174,7 +174,7 @@ protected:
 	}
 
 	/// Virtual function override
-	Vec<COE> optimal_coefficients() override
+	vec<COE> optimal_coefficients() override
 	{
 		// Current number of indexes
 		int I1 = this->coefficients.size();
@@ -214,10 +214,10 @@ public:
     /// @name Functors
 
 	/// Computes the inner products between an element and all the atoms
-    function<Vec<COE>( const RAN& )> analysis;
+    function<vec<COE>( const RAN& )> analysis;
 
 	/// Build a sparse approximation
-	function<RAN( const ivec&, const Vec<COE>& )> synthesis;
+	function<RAN( const ivec&, const vec<COE>& )> synthesis;
 
 	/// Inner product of atoms given the indexes
     function<COE( int, int )> inner_product_atoms;
@@ -253,7 +253,7 @@ public:
 template<class COE=double>
 class orthogonal_matching_pursuit_vector : public orthogonal_matching_pursuit<COE> {
 
-	Mat<COE> gramian;															///< Gramian matrix
+	mat<COE> gramian;															///< Gramian matrix
 
 public:
 
@@ -262,12 +262,12 @@ public:
     /// Constructor
     orthogonal_matching_pursuit_vector()
     {
-		this->analysis = [this]( const Vec<COE>& y )
+		this->analysis = [this]( const vec<COE>& y )
 		{
 			return adjoint(this->matrix) * y;
 		};
 
-		this->synthesis = [this]( const ivec& idxs, const Vec<COE>& x )
+		this->synthesis = [this]( const ivec& idxs, const vec<COE>& x )
 		{
 			return rmat(this->matrix( indirect(vrange(0,this->matrix.size1())), indirect(idxs) )) * x;
 		};
@@ -368,7 +368,7 @@ protected:
 	virtual
 	rvec guess()
 	{
-		Vec<double> x0 = this->coefficients;
+		vec<double> x0 = this->coefficients;
 		int I = this->indexes.size() - this->coefficients.size();
 		for( int i = 0; i < I; i++ )
 			x0 = rvec{ x0, {0} };

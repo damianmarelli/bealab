@@ -22,10 +22,10 @@ namespace bealab
 /// Macro to turn a scalar function into a function that applies to each entry.
 #define _SEQ_FUNCTION( fun ) \
 template<class T> \
-auto fun( const Seq<T>& v ) -> Seq<decltype( fun(T()) )> \
+auto fun( const sequence<T>& v ) -> sequence<decltype( fun(T()) )> \
 { \
 	typedef decltype( fun(T()) ) R; \
-	return Seq<R>( fun( v.vec() ), v.t1() ); \
+	return sequence<R>( fun( v.buffer() ), v.t1() ); \
 }
 
 /// @name Roundup functions

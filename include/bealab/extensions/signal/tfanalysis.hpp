@@ -28,30 +28,30 @@ namespace signal
 
 /// Analysis using a generic filterbank
 template <class T, class S>
-Vec<Seq<decltype(S()*T())>> analysis( const Seq<T> &x, const Vec<Seq<S>> &h, int D )
+vec<sequence<decltype(S()*T())>> analysis( const sequence<T> &x, const vec<sequence<S>> &h, int D )
 {
-	const Vec<Seq<T>>& Xpp = fb2pp_signal( x, D );
-	const Mat<Seq<S>>& H   = fb2pp_filterbank( h, D );
+	const vec<sequence<T>>& Xpp = fb2pp_signal( x, D );
+	const mat<sequence<S>>& H   = fb2pp_filterbank( h, D );
 	return H * Xpp;
 }
 
 /// Synthesis using a generic filterbank
 template <class T, class S>
-Seq<decltype(S()*T())> synthesis( const Vec<Seq<T>> &X, const Vec<Seq<S>> &h, int D )
+sequence<decltype(S()*T())> synthesis( const vec<sequence<T>> &X, const vec<sequence<S>> &h, int D )
 {
 	typedef decltype(S()*T()) R;
-	const Mat<Seq<S>>& H   = fb2pp_filterbank( h, D );
-	const Vec<Seq<R>>& Xpp = H.A() * X;
+	const mat<sequence<S>>& H   = fb2pp_filterbank( h, D );
+	const vec<sequence<R>>& Xpp = H.A() * X;
 	return pp2fb_signal( Xpp );
 }
 
 /// Analysis using a DFT filterbank
 template<class T, class S>
-Vec<cseq> analysis ( const Seq<T>& x, const Seq<S>& h0, int M, int D )
+vec<cseq> analysis ( const sequence<T>& x, const sequence<S>& h0, int M, int D )
 {
 	// If the input is empty
 	if( x.size() == 0 )
-		return Vec<cseq>(M);
+		return vec<cseq>(M);
 
 	// Constants
 	int h1 = h0.t1();
@@ -68,7 +68,7 @@ Vec<cseq> analysis ( const Seq<T>& x, const Seq<S>& h0, int M, int D )
 	typedef decltype(T()*S()) R;
 
 	// Prepare output signals
-	Vec<cseq> X(M);
+	vec<cseq> X(M);
 	for( int m = 0; m < M; m++ )
 		X(m) = cseq( zeros(K), k1 );
 
@@ -76,16 +76,16 @@ Vec<cseq> analysis ( const Seq<T>& x, const Seq<S>& h0, int M, int D )
 	for( int k = k1; k <= k2; k++ ) {
 
 		// Take a flipped piece of the input
-		const Vec<T>& u1 = x.trunc( k*D-h2, k*D-h1 ).vec();
-		const Seq<T>& u2 = Seq<T>( flip(u1), h1 );
+		const vec<T>& u1 = x.trunc( k*D-h2, k*D-h1 ).buffer();
+		const sequence<T>& u2 = sequence<T>( flip(u1), h1 );
 
 		// Multiply it with the window
-		const Seq<R>& u3 = element_prod( u2, h0 );
+		const sequence<R>& u3 = element_prod( u2, h0 );
 
 		// Overlap-add u3
-		Vec<R> u4 = zeros(M);
+		vec<R> u4 = zeros(M);
 		for( int m = m1; m <= m2; m++ )
-			u4 += u3.trunc( m*M, (m+1)*M-1 ).vec();
+			u4 += u3.trunc( m*M, (m+1)*M-1 ).buffer();
 
 		// Take the inverse Fourier transform
 		const cvec& u5 = M*idft( u4 );
@@ -100,7 +100,7 @@ Vec<cseq> analysis ( const Seq<T>& x, const Seq<S>& h0, int M, int D )
 
 /// Synthesis using a DFT filterbank
 template<class T, class S>
-cseq synthesis ( const Vec<Seq<T>>& X, const Seq<S>& h0, int D )
+cseq synthesis ( const vec<sequence<T>>& X, const sequence<S>& h0, int D )
 {
 	// Constants
 	int M  = X.size();
@@ -108,8 +108,8 @@ cseq synthesis ( const Vec<Seq<T>>& X, const Seq<S>& h0, int D )
 	int h2 = h0.t2();
 	int m1 = floor( h1     / (double)M );
 	int m2 = floor( h2     / (double)M );
-	int k1 = min( entrywise([](const Seq<T>&x) {return x.t1();})(X) );
-	int k2 = max( entrywise([](const Seq<T>&x) {return x.t2();})(X) );
+	int k1 = min( entrywise([](const sequence<T>&x) {return x.t1();})(X) );
+	int k2 = max( entrywise([](const sequence<T>&x) {return x.t2();})(X) );
 
 	// Output signal
 	int y1 = k1*D-h2;
@@ -121,7 +121,7 @@ cseq synthesis ( const Vec<Seq<T>>& X, const Seq<S>& h0, int D )
 	for( int k = k1; k <= k2; k++ ) {
 
 		// Take the subband sammple in a vector
-		Vec<T> u1(M);
+		vec<T> u1(M);
 		for( int m = 0; m < M; m++ )
 			if( k >= X(m).t1() && k <= X(m).t2() )
 				u1(m) = X(m)(k);
@@ -144,7 +144,7 @@ cseq synthesis ( const Vec<Seq<T>>& X, const Seq<S>& h0, int D )
 		const cseq& u6 = u5.timereverse();
 		int t1 = k*D - h2;
 		int t2 = k*D - h1;
-		y.vec()( range( t1-y1, t2-y1+1 ) ) += u6.vec();
+		y.buffer()( range( t1-y1, t2-y1+1 ) ) += u6.buffer();
 	}
 
 	return y;
@@ -154,7 +154,7 @@ cseq synthesis ( const Vec<Seq<T>>& X, const Seq<S>& h0, int D )
 /// @name Filterbank design
 
 /// Build a DFT filterbank with the window h0
-Vec<cseq> filterbank_dtft( const cseq& h0, int M );
+vec<cseq> filterbank_dtft( const cseq& h0, int M );
 
 /// Obtain the best possible dual of the window h, with support in [t1,t2]
 cseq quasidual_window( const cseq& h, int M, int D, int t1, int t2 );

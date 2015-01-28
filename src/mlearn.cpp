@@ -40,7 +40,7 @@ neural_network::neural_network( const ivec& layer_nodes )
 	}
 }
 
-void neural_network::train( const Vec<rvec>& input, const Vec<rvec>& output )
+void neural_network::train( const vec<rvec>& input, const vec<rvec>& output )
 {
 	assert( input.size() == output.size() );
 

@@ -26,10 +26,10 @@ namespace signal
 /// Miscellaneous signal processing routines.
 /// @{
 
-control::state_space spectral_realization( const Mat<rseq> &Rx );
+control::state_space spectral_realization( const mat<rseq> &Rx );
 
 /// Computes Y such that X = Y*Y.A(), within tolerance tol
-Mat<cseq> spectral_factorization( const Mat<cseq>& X, double tol );
+mat<cseq> spectral_factorization( const mat<cseq>& X, double tol );
 
 control::transfer_function butter( int order, double bandwidth, bool analog=false );
 double raisedcosine( double t, double Fs, double beta );

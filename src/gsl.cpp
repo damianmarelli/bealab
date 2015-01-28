@@ -70,10 +70,10 @@ vector& vector::operator=( const rvec& x )
 }
 
 template<class T>
-vector::operator Vec<T>() const
+vector::operator vec<T>() const
 {
 	int I = ((gsl_vector*)_data)->size;
-	Vec<T> rv(I);
+	vec<T> rv(I);
 	for ( int i = 0; i < I; i++ )
 		rv(i) = gsl_vector_get( (gsl_vector*)_data, i );
 	return rv;
@@ -120,11 +120,11 @@ matrix& matrix::operator=( const rmat& x )
 }
 
 template<class T>
-matrix::operator Mat<T>() const
+matrix::operator mat<T>() const
 {
 	int I = ((gsl_matrix*)_data)->size1;
 	int J = ((gsl_matrix*)_data)->size2;
-	Mat<T> rv(I,J);
+	mat<T> rv(I,J);
 	for ( int i = 0; i < I; i++ )
 		for ( int j = 0; j < J; j++ )
 			rv(i,j) = gsl_matrix_get( (gsl_matrix*)_data, i, j );

@@ -27,7 +27,7 @@ namespace bealab
 /// coefficients of the polynomial p(x) = a(0) x^n + a(1) x^(n-1) + ... + a(n),
 /// whose roots are in 'r'.
 template<class R=complex,class T>
-Vec<R> poly( const Vec<T> &x )
+vec<R> poly( const vec<T> &x )
 {
 	int N  = x.size();
 	cvec c = zeros(N+1);
@@ -40,12 +40,12 @@ Vec<R> poly( const Vec<T> &x )
 /// Obtain the roots of a a polynomial. The roots of the polynomial
 /// p(x) = a(0) x^n + a(1) x^(n-1) + ... + a(n) are obtained by r = poly(a)
 template<class R=complex,class T>
-Vec<R> roots( const Vec<T> &x )
+vec<R> roots( const vec<T> &x )
 {
 	int N = x.size() - 1;
 
 	// Companion matrix
-	Mat<T> A                                = zeros(N,N);
+	mat<T> A                                = zeros(N,N);
 	A.range( 1, A.size1()-1, 0, A.size2()-2 ) = eye(N-1);
 	A.col( A.size2()-1 )                    = - flip( x.range(1,x.size()-1) ) / x(0);
 
@@ -58,7 +58,7 @@ Vec<R> roots( const Vec<T> &x )
 /// returns y = a(0) x^n + a(1) x^(n-1) + ... + a(n).
 template<class T, class S,
 	class R = decltype(T()*S()) >
-R polyval( const Vec<T>& p, S x )
+R polyval( const vec<T>& p, S x )
 {
 	int N = p.size();
 	R rv  = 0;
@@ -70,12 +70,12 @@ R polyval( const Vec<T>& p, S x )
 /// Polynomial multiplication
 template<class T, class S,
 	class R = decltype( noproxy(T()*S()) ) >
-Vec<R> conv( const Vec<T>& x, const Vec<S>& y )
+vec<R> conv( const vec<T>& x, const vec<S>& y )
 {
 	if( x.size() == 0 || y.size() == 0 )
-		return Vec<R>();
+		return vec<R>();
 	int N = x.size() + y.size() - 1;
-    Vec<R> rv(N);
+    vec<R> rv(N);
     for( int n = 0; n < N; n++ )
     	rv(n) = 0*R(x(0)*y(0));
     int Ix = x.size();
@@ -88,13 +88,13 @@ Vec<R> conv( const Vec<T>& x, const Vec<S>& y )
 
 /// Convolutional matrix
 template<class VAL>
-Mat<VAL> convmat(const Vec<VAL> &X, int J)
+mat<VAL> convmat(const vec<VAL> &X, int J)
 {
     int L = X.size();
     int I = L + J - 1;
-    Mat<VAL> M = zeros(I,J);
-    Vec<VAL> Z = zeros(J-1);
-    Vec<VAL> B = { Z, flip(X), Z };
+    mat<VAL> M = zeros(I,J);
+    vec<VAL> Z = zeros(J-1);
+    vec<VAL> B = { Z, flip(X), Z };
 
     for(int i=0; i<I; i++)
         M.row(i) = B.range( L+J-2-i, L+2*J-3-i );

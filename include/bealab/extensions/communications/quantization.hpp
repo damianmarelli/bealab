@@ -42,19 +42,19 @@ public:
 
 class vector_quantizer{
 public:
-	Vec<rvec> dict;
+	vec<rvec> dict;
 	vector_quantizer(){};
-	vector_quantizer( const Vec<rvec> &dict_ ) : dict(dict_) {};
-	vector_quantizer( const Vec<rvec>&, int );
-	void train( const Vec<rvec>&, int );
+	vector_quantizer( const vec<rvec> &dict_ ) : dict(dict_) {};
+	vector_quantizer( const vec<rvec>&, int );
+	void train( const vec<rvec>&, int );
 	int encode( const rvec& ) const;
-	iseq encode( const Vec<rseq>& ) const;
-	iseq encode( const Seq<rvec>& ) const;
+	iseq encode( const vec<rseq>& ) const;
+	iseq encode( const sequence<rvec>& ) const;
 	rvec decode( int ) const;
-	Seq<rvec> decode( const iseq& ) const;
+	sequence<rvec> decode( const iseq& ) const;
 	rvec operator()( const rvec& ) const;
-	Vec<rseq> operator()( const Vec<rseq> &x ) const;
-	Seq<rvec> operator()( const Seq<rvec> &x ) const;
+	vec<rseq> operator()( const vec<rseq> &x ) const;
+	sequence<rvec> operator()( const sequence<rvec> &x ) const;
 };
 
 //------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ rvec qdict( const function<double(double)>&, const rvec& );
 quantizer lloyd( const function<double(double)>&, const rvec& );
 quantizer lloyd( double, double, int );
 rvec waterfilling( const rvec&, int );
-Vec<rseq> KL_filterbank( const rseq &, int, rvec* =NULL, double=1e-4 );
+vec<rseq> KL_filterbank( const rseq &, int, rvec* =NULL, double=1e-4 );
 /// @}
 
 // LPC scalar
@@ -106,13 +106,13 @@ Vec<rseq> KL_filterbank( const rseq &, int, rvec* =NULL, double=1e-4 );
 //rseq lpc( const rseq&, rarma, const quantizer& );
 
 /// @name Linear predictive quantization
-control::arma<rmat,rvec> lpc_predictor( const Seq<rmat> &Fx_, int N );
-vector_quantizer lpc_quantizer_openloop( int L, const function<Seq<rvec>(Seq<rvec>)>& P,
-		const Seq<rmat> &Fx, int K );
-vector_quantizer lpc_quantizer_closedloop( int L, const function<Seq<rvec>(Seq<rvec>)>& P,
-		const Seq<rmat> &Fx, int K );
-Seq<rvec> lpc( const Seq<rvec> &x, const function<rvec(rvec)>& p, const vector_quantizer &q );
-Vec<rseq> lpc( const Vec<rseq> &x, const Mat<rseq> &Fx, int P, int L, int K,
+control::arma<rmat,rvec> lpc_predictor( const sequence<rmat> &Fx_, int N );
+vector_quantizer lpc_quantizer_openloop( int L, const function<sequence<rvec>(sequence<rvec>)>& P,
+		const sequence<rmat> &Fx, int K );
+vector_quantizer lpc_quantizer_closedloop( int L, const function<sequence<rvec>(sequence<rvec>)>& P,
+		const sequence<rmat> &Fx, int K );
+sequence<rvec> lpc( const sequence<rvec> &x, const function<rvec(rvec)>& p, const vector_quantizer &q );
+vec<rseq> lpc( const vec<rseq> &x, const mat<rseq> &Fx, int P, int L, int K,
 		const string& ="closed loop");
 /// @}
 

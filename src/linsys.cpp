@@ -59,18 +59,18 @@ state_space controllable_canonical_form( const transfer_function& tf )
 //------------------------------------------------------------------------------
 // Array support functions
 //------------------------------------------------------------------------------
-Mat<transfer_function> tfm2mtf( const arma<rmat,rvec> &S )
+mat<transfer_function> tfm2mtf( const arma<rmat,rvec> &S )
 {
 	// Take numerator and denominator
-	Vec<rmat> b = S.num();
-	Vec<rmat> a = S.den();
+	vec<rmat> b = S.num();
+	vec<rmat> a = S.den();
 
 	// Constants
 	int I  = b(0).size1();
 	int J  = b(0).size2();
 
 	// Transform numerator
-	Mat<rvec> mb(I,J);
+	mat<rvec> mb(I,J);
 	int Kb = b.size();
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ ) {
@@ -80,7 +80,7 @@ Mat<transfer_function> tfm2mtf( const arma<rmat,rvec> &S )
 		}
 
 	// Transform denominator
-	Mat<rvec> ma(I,J);
+	mat<rvec> ma(I,J);
 	int Ka = a.size();
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < I; j++ ) {
@@ -90,7 +90,7 @@ Mat<transfer_function> tfm2mtf( const arma<rmat,rvec> &S )
 		}
 
 	// Form the matrix of ARMA models and return it
-	Mat<transfer_function> M(I,J);
+	mat<transfer_function> M(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ ) {
 			int l = ma(i,j).size();
@@ -99,7 +99,7 @@ Mat<transfer_function> tfm2mtf( const arma<rmat,rvec> &S )
 	return M;
 }
 
-arma<rmat,rvec> mtf2tfm( const Mat<transfer_function> &M )
+arma<rmat,rvec> mtf2tfm( const mat<transfer_function> &M )
 {
 	// Constants
 	int I = M.size1();
@@ -115,7 +115,7 @@ arma<rmat,rvec> mtf2tfm( const Mat<transfer_function> &M )
 	int Ka = max(KKa);
 
 	// Transform numerator
-	Vec<rmat> B(Kb);
+	vec<rmat> B(Kb);
 	for( int k = 0; k < Kb; k++ ) {
 		B(k).resize(I,J);
 		for( int i = 0; i < I; i++ )
@@ -124,7 +124,7 @@ arma<rmat,rvec> mtf2tfm( const Mat<transfer_function> &M )
 	}
 
 	// Transform denominator
-	Vec<rmat> A(Ka);
+	vec<rmat> A(Ka);
 	for( int k = 0; k < Ka; k++ ) {
 		A(k).resize(I,I);
 		for( int i = 0; i < I; i++ )

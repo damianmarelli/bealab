@@ -24,7 +24,7 @@ namespace bealab
 
 /// Construct a vector with the data given in a container of values
 template<class value_type>
-class vmake : public Vec<value_type> {
+class vmake : public vec<value_type> {
 
 	template<class container>
 	void vmake_( const container& cont )
@@ -40,7 +40,7 @@ class vmake : public Vec<value_type> {
 public:
 
 	template<class E>
-	vmake( const vector_interface<E>& v ) : Vec<value_type>(v) {}
+	vmake( const vector_interface<E>& v ) : vec<value_type>(v) {}
 
 	template<class container>
 	vmake( const container& cont )
@@ -53,7 +53,7 @@ public:
 
 /// Construct a vector by concatenating the sub-vectors in a container
 template<class value_type>
-class vconcat : public Vec<value_type> {
+class vconcat : public vec<value_type> {
 
 	template<class container>
 	void vconcat_( const container& cont )
@@ -81,7 +81,7 @@ public:
 
 	template<class E>
 	vconcat( const vector_interface<E>& cont )
-	{ vconcat_<Vec<Vec<value_type>>>(cont); }
+	{ vconcat_<vec<vec<value_type>>>(cont); }
 
 	vconcat( const initializer_list<vmake<value_type>> &list )
 	{ vconcat_(list); }
@@ -89,10 +89,10 @@ public:
 
 /// Construct a matrix with the data given in nested initializer_list's
 template<class value_type>
-struct mmake : public Mat<value_type> {
+struct mmake : public mat<value_type> {
 
 	template<class E>
-	mmake( const matrix_interface<E>& m ) : Mat<value_type>(m) {}
+	mmake( const matrix_interface<E>& m ) : mat<value_type>(m) {}
 
 	mmake( const initializer_list<initializer_list<value_type>> &l )
 	{
@@ -114,7 +114,7 @@ struct mmake : public Mat<value_type> {
 /// Construct a matrix by concatenating the sub-matrices in nested
 /// initializer_list's or a container
 template<class value_type>
-struct mconcat : public Mat<value_type> {
+struct mconcat : public mat<value_type> {
 
 	mconcat( const initializer_list<initializer_list<mmake<value_type>>> &list )
 	{
@@ -160,7 +160,7 @@ struct mconcat : public Mat<value_type> {
 		}
 	}
 
-	mconcat( const Mat<Mat<value_type>> &mmat )
+	mconcat( const mat<mat<value_type>> &mmat )
 	{
 		// Compute sizes
 		int	Ib = mmat.size1();

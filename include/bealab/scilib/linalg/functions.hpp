@@ -29,7 +29,7 @@ namespace bealab
 /// of || Y - A * X ||
 template<class E, class F,
 	class R = decltype( noproxy( declval<typename E::value_type>()*declval<typename F::value_type>() ) ) >
-Mat<R> lls( const matrix_interface<E>& A, const matrix_interface<F>& Y )
+mat<R> lls( const matrix_interface<E>& A, const matrix_interface<F>& Y )
 {
 	// Assert dimensions
 	assert( A.size1() == Y.size1() );
@@ -84,10 +84,10 @@ Mat<R> lls( const matrix_interface<E>& A, const matrix_interface<F>& Y )
 /// of || y - A * x ||
 template<class E, class F,
 	class R = decltype( noproxy( declval<typename E::value_type>()*declval<typename F::value_type>() ) ) >
-Vec<R> lls( const matrix_interface<E>& A, const vector_interface<F>& y )
+vec<R> lls( const matrix_interface<E>& A, const vector_interface<F>& y )
 {
 	typedef typename F::value_type U;
-	Mat<U> Y( y.size(), 1 );
+	mat<U> Y( y.size(), 1 );
 	Y.column(0) = y;
 	return lls( A, Y ).column(0);
 }
@@ -96,7 +96,7 @@ Vec<R> lls( const matrix_interface<E>& A, const vector_interface<F>& y )
 /// Call: X = linsolve( A, Y ). Returns a matrix X such that Y = A * X.
 template<class E, class F,
 	class R = decltype( noproxy( declval<typename E::value_type>()*declval<typename F::value_type>() ) ) >
-Mat<R> linsolve( const matrix_interface<E>& A, const matrix_interface<F>& Y )
+mat<R> linsolve( const matrix_interface<E>& A, const matrix_interface<F>& Y )
 {
 	// Convert to column major storage
 	ublas::matrix<R,ublas::column_major> A_ = A;
@@ -126,10 +126,10 @@ Mat<R> linsolve( const matrix_interface<E>& A, const matrix_interface<F>& Y )
 /// Call: x = lsolve( A, b ). Returns a vector x such that y = A * x.
 template<class E, class F,
 	class R = decltype( noproxy( declval<typename E::value_type>()*declval<typename F::value_type>() ) ) >
-Vec<R> linsolve( const matrix_interface<E>& A, const vector_interface<F>& x )
+vec<R> linsolve( const matrix_interface<E>& A, const vector_interface<F>& x )
 {
 	typedef typename F::value_type U;
-	Mat<U> X( x.size(), 1 );
+	mat<U> X( x.size(), 1 );
 	X.column(0) = x;
 	return linsolve( A, X ).column(0);
 }
@@ -140,7 +140,7 @@ Vec<R> linsolve( const matrix_interface<E>& A, const vector_interface<F>& x )
 /// SVD decomposition.
 /// Call: USV = svd(A). Returns a tuple USV with U, S and V such that A = U * S * V.A()
 template<class E, class T = typename E::value_type>
-tuple< Mat<T>, rmat, Mat<T> > svd( const matrix_interface<E>& A )
+tuple< mat<T>, rmat, mat<T> > svd( const matrix_interface<E>& A )
 {
 	// Convert to column major storage
 	ublas::matrix<T,ublas::column_major> A_ = A;
@@ -171,14 +171,14 @@ tuple< Mat<T>, rmat, Mat<T> > svd( const matrix_interface<E>& A )
 		error("svd() - Error calling lapack::gesdd()");
 
 	// Parse results
-	Mat<T> U = U_;
-	Mat<T> V = adjoint(Mat<T>(VT_));
+	mat<T> U = U_;
+	mat<T> V = adjoint(mat<T>(VT_));
 	rmat S   = diag( s );
 	if( M > N )
 		S = rmat( {{S}, {zeros(M-N,N)}});
 	else if( M < N )
 		S = rmat( {{S, zeros(M,N-M)}} );
-	return tuple< Mat<T>, rmat, Mat<T> >{ U, S, V };
+	return tuple< mat<T>, rmat, mat<T> >{ U, S, V };
 }
 
 /// Eigenvalue decomposition.
@@ -231,7 +231,7 @@ tuple< cmat, cmat > eig( const matrix_interface<E>& A )
 /// A has to be positive. It assumes that A is Hermitian, so it only considers
 /// its diagonal and upper triangle.
 template<class E, class T = typename E::value_type>
-Mat<T> cholesky( const matrix_interface<E>& A )
+mat<T> cholesky( const matrix_interface<E>& A )
 {
 	typedef ublas::matrix<T,ublas::column_major> CM;
 	CM A_ = A;
@@ -263,7 +263,7 @@ Mat<T> cholesky( const matrix_interface<E>& A )
 /// (trapezoidal) matrix L and an upper-triangular (trapezoidal) matrix X
 /// such that A = P * L * U.
 template<class E, class T = typename E::value_type>
-tuple< imat, Mat<T>, Mat<T> > lu( const matrix_interface<E>& A )
+tuple< imat, mat<T>, mat<T> > lu( const matrix_interface<E>& A )
 {
 	typedef ublas::matrix<T,ublas::column_major> CM;
 	CM A_ = A;
@@ -282,12 +282,12 @@ tuple< imat, Mat<T>, Mat<T> > lu( const matrix_interface<E>& A )
 	}
 
 	// Parse L
-	Mat<T> L = ublas::triangular_adaptor<CM, ublas::lower>( A_ );
+	mat<T> L = ublas::triangular_adaptor<CM, ublas::lower>( A_ );
 	L        = L( range(0,L.size1()), range(0,mdim) );
 
 	// Parse U
 	diag(L)  = ones( mdim );
-	Mat<T> U = ublas::triangular_adaptor<CM, ublas::upper>( A_ );
+	mat<T> U = ublas::triangular_adaptor<CM, ublas::upper>( A_ );
 	U        = U( range(0,mdim), range(0,U.size2()) );
 
 	// Parse P
@@ -303,7 +303,7 @@ tuple< imat, Mat<T>, Mat<T> > lu( const matrix_interface<E>& A )
 	}
 
 	// Return a tuple
-	return tuple<imat,Mat<T>,Mat<T>>{ P, L, U };
+	return tuple<imat,mat<T>,mat<T>>{ P, L, U };
 }
 /// @}
 
@@ -312,25 +312,25 @@ tuple< imat, Mat<T>, Mat<T> > lu( const matrix_interface<E>& A )
 
 /// Inverse of a matrix
 template<class E, class T = typename E::value_type>
-Mat<T> inv( const matrix_interface<E>& A )
+mat<T> inv( const matrix_interface<E>& A )
 {
 	assert( A.size1() == A.size2() );
 	int N = A.size1();
-	Mat<T> I = eye(N);
+	mat<T> I = eye(N);
 	return linsolve( A, I );
 }
 
 /// Pseudo-inverse.
 /// Call: Y = pinv( X, tol ).
 template<class E, class T = typename E::value_type>
-Mat<T> pinv( const matrix_interface<E>& A, double tol=-1 )
+mat<T> pinv( const matrix_interface<E>& A, double tol=-1 )
 {
 	if( tol == -1 )
 		tol = eps * norm_op(A) * max(A.size1(),A.size2());
 	auto USV  = svd( A );
-	Mat<T> U  = get<0>(USV);
+	mat<T> U  = get<0>(USV);
 	rmat S    = get<1>(USV);
-	Mat<T> V  = get<2>(USV);
+	mat<T> V  = get<2>(USV);
 	int N     = min( A.size1(), A.size2() );
 	rmat Sp(A.size2(),A.size1());
 	for( int n = 0; n < N; n++ ) {
@@ -364,7 +364,7 @@ T det( const matrix_interface<E>& A )
 	// LU factorization
 	auto PLU = lu( A );
 	imat P   = get<0>( PLU );
-	Mat<T> U = get<2>( PLU );
+	mat<T> U = get<2>( PLU );
 
 	// Determinant modulus
 	T mod    = prod( diag(U) );
@@ -392,9 +392,9 @@ double norm_op( const matrix_interface<E> &A )
 {
 	typedef typename E::value_type T;
 	auto USV = svd( A );
-	Mat<T> U = get<0>(USV);
+	mat<T> U = get<0>(USV);
 	rmat S   = get<1>(USV);
-	Mat<T> V = get<2>(USV);
+	mat<T> V = get<2>(USV);
 	return max( diag(S) );
 }
 
@@ -404,9 +404,9 @@ double cond( const matrix_interface<E> &A )
 {
 	typedef typename E::value_type T;
 	auto USV = svd( A );
-	Mat<T> U = get<0>(USV);
+	mat<T> U = get<0>(USV);
 	rmat S   = get<1>(USV);
-	Mat<T> V = get<2>(USV);
+	mat<T> V = get<2>(USV);
 	return max( diag(S) ) / min( diag(S) );
 }
 /// @}
@@ -466,7 +466,7 @@ cmat mpow( const matrix_interface<E>& A, double p )
 			for( int i = 0; i < p; i++ )
 				B = B*A;
 		else {
-			Mat<T> Ai = inv( A );
+			mat<T> Ai = inv( A );
 			for( int i = 0; i < -p; i++ )
 				B = B*Ai;
 		}

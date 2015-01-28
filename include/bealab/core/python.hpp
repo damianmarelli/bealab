@@ -41,9 +41,9 @@ public:
 	object( const char *val );
 	object( const string &val );
 	template<class T>
-	object( const Vec<T> &val );
+	object( const vec<T> &val );
 	template<class T>
-	object( const Mat<T> &val );
+	object( const mat<T> &val );
 	~object();
 	void operator=( const object &o );
 	void* data() const { return pdata; }
@@ -52,9 +52,9 @@ public:
 	operator complex() const;
 	operator string() const;
 	template<class T>
-	operator Vec<T>() const;
+	operator vec<T>() const;
 	template<class T>
-	operator Mat<T>() const;
+	operator mat<T>() const;
 };
 
 /// @name Internal functions

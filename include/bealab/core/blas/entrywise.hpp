@@ -27,23 +27,23 @@ namespace bealab
 /// with a matrix.
 #define _ENTRYWISE_FUNCTION( fun ) \
 template<class E> \
-Vec<decltype( fun(typename E::value_type()) )> fun( const vector_interface<E>& v ) \
+vec<decltype( fun(typename E::value_type()) )> fun( const vector_interface<E>& v ) \
 { \
 	typedef decltype( fun(typename E::value_type()) ) R; \
 	int I = v.size(); \
-	Vec<R> r(I); \
+	vec<R> r(I); \
 	for( int i = 0;  i < I; i++ ) \
 		r(i) = fun(v(i)); \
 	return r; \
 } \
 \
 template<class E> \
-Mat<decltype( fun(typename E::value_type()) )> fun( const matrix_interface<E>& A ) \
+mat<decltype( fun(typename E::value_type()) )> fun( const matrix_interface<E>& A ) \
 { \
 	typedef decltype( fun(typename E::value_type()) ) R; \
 	int I = A.size1(); \
 	int J = A.size2(); \
-	Mat<R> B(I,J); \
+	mat<R> B(I,J); \
 	for( int i = 0;  i < I; i++ ) \
 		for( int j = 0;  j < J; j++ ) \
 			B(i,j) = fun(A(i,j)); \
@@ -57,25 +57,25 @@ _ENTRYWISE_FUNCTION( floor );
 _ENTRYWISE_FUNCTION( trunc );
 
 template<class T, class S>
-Vec<decltype(mod(typename T::value_type(),S()))>
+vec<decltype(mod(typename T::value_type(),S()))>
 mod( const vector_interface<T>& x, S a )
 {
 	typedef decltype(mod(typename T::value_type(),S())) R;
 	int N = x.size();
-	Vec<R> rv(N);
+	vec<R> rv(N);
 	for( int n = 0; n < N; n++ )
 		rv(n) = mod( x(n), a );
 	return rv;
 }
 
 template<class T, class S>
-Mat<decltype(mod(typename T::value_type(),S()))>
+mat<decltype(mod(typename T::value_type(),S()))>
 mod( const matrix_interface<T>& x, S a )
 {
 	typedef decltype(mod(typename T::value_type(),S())) R;
 	int I = x.size1();
 	int J = x.size2();
-	Mat<R> rv(I,J);
+	mat<R> rv(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			rv(i,j) = mod( x(i,j), a );
@@ -120,48 +120,48 @@ _ENTRYWISE_FUNCTION( log10 );
 _ENTRYWISE_FUNCTION( sqrt );
 
 template<class T, class S>
-Vec<decltype(pow(typename T::value_type(),typename S::value_type()))>
+vec<decltype(pow(typename T::value_type(),typename S::value_type()))>
 pow( const vector_interface<T>& x, const vector_interface<S>& y )
 {
 	assert( x.size() == y.size() );
 	typedef decltype(pow(typename T::value_type(),typename S::value_type())) R;
 	int N = x.size();
-	Vec<R> rv(N);
+	vec<R> rv(N);
 	for( int n = 0; n < N; n++ )
 		rv(n) = pow( x(n), y(n) );
 	return rv;
 }
 
 template<class T>
-Vec<decltype(pow(typename T::value_type(),double(0)))>
+vec<decltype(pow(typename T::value_type(),double(0)))>
 pow( const vector_interface<T>& x, double a )
 {
 	return pow( x, a*ones(x.size()) );
 }
 
 template<class T>
-Vec<decltype(pow(typename T::value_type(),complex(0,0)))>
+vec<decltype(pow(typename T::value_type(),complex(0,0)))>
 pow( const vector_interface<T>& x, complex a )
 {
 	return pow( x, a*ones(x.size()) );
 }
 
 template<class T>
-Vec<decltype(pow(double(0),typename T::value_type()))>
+vec<decltype(pow(double(0),typename T::value_type()))>
 pow( double a, const vector_interface<T>& x )
 {
 	return pow( a*ones(x.size()), x );
 }
 
 template<class T>
-Vec<decltype(pow(complex(0,0),typename T::value_type()))>
+vec<decltype(pow(complex(0,0),typename T::value_type()))>
 pow( complex a, const vector_interface<T>& x )
 {
 	return pow( a*ones(x.size()), x );
 }
 
 template<class T, class S>
-Mat<decltype(pow(typename T::value_type(),typename S::value_type()))>
+mat<decltype(pow(typename T::value_type(),typename S::value_type()))>
 pow( const matrix_interface<T>& x, const matrix_interface<S>& y )
 {
 	assert( x.size1() == y.size1() );
@@ -169,7 +169,7 @@ pow( const matrix_interface<T>& x, const matrix_interface<S>& y )
 	typedef decltype(pow(typename T::value_type(),typename S::value_type())) R;
 	int I = x.size1();
 	int J = x.size2();
-	Mat<R> rv(I,J);
+	mat<R> rv(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			rv(i,j) = pow( x(i,j), y(i,j) );
@@ -177,7 +177,7 @@ pow( const matrix_interface<T>& x, const matrix_interface<S>& y )
 }
 
 template<class T>
-Mat<decltype(pow(typename T::value_type(),double(0)))>
+mat<decltype(pow(typename T::value_type(),double(0)))>
 pow( const matrix_interface<T>& x, double a )
 {
 	return pow( x, a*ones( x.size1(),
@@ -185,7 +185,7 @@ pow( const matrix_interface<T>& x, double a )
 }
 
 template<class T>
-Mat<decltype(pow(typename T::value_type(),complex(0,0)))>
+mat<decltype(pow(typename T::value_type(),complex(0,0)))>
 pow( const matrix_interface<T>& x, complex a )
 {
 	return pow( x, a*ones( x.size1(),
@@ -193,7 +193,7 @@ pow( const matrix_interface<T>& x, complex a )
 }
 
 template<class T>
-Mat<decltype(pow(double(0),typename T::value_type()))>
+mat<decltype(pow(double(0),typename T::value_type()))>
 pow( double a, const matrix_interface<T>& x )
 {
 	return pow( a*ones( x.size1(),
@@ -201,7 +201,7 @@ pow( double a, const matrix_interface<T>& x )
 }
 
 template<class T>
-Mat<decltype(pow(complex(0,0),typename T::value_type()))>
+mat<decltype(pow(complex(0,0),typename T::value_type()))>
 pow( complex a, const matrix_interface<T>& x )
 {
 	return pow( a*ones( x.size1(),

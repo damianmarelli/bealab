@@ -270,7 +270,7 @@ void clustr ( double x[], double d[], double dev[], int b[], double f[],
 //  palloc  = pointer to a vector indicating the number of training vector assigned to each centroid
 //  pcount  = pointer to an integer counting the number of iterations
 //---------------------------------------------------------------------------------------
-Vec<rvec> kmeans( const Vec<rvec> &pts, int K, ivec *passig, ivec *palloc, int *pcount )
+vec<rvec> kmeans( const vec<rvec> &pts, int K, ivec *passig, ivec *palloc, int *pcount )
 {
 	int N = pts.size();			// Points
 	int M = pts(0).size();		// Dimensions
@@ -313,7 +313,7 @@ Vec<rvec> kmeans( const Vec<rvec> &pts, int K, ivec *passig, ivec *palloc, int *
 	}
 
 	// Form the return vector
-	Vec<rvec> rv(K);
+	vec<rvec> rv(K);
 	for( int k = 0; k < K; k++ ) {
 		rvec v(M);
 		for( int m = 0; m < M; m++ )
@@ -341,11 +341,11 @@ Vec<rvec> kmeans( const Vec<rvec> &pts, int K, ivec *passig, ivec *palloc, int *
 //  palloc  = pointer to a vector indicating the number of training vector assigned to each centroid
 //  pcount  = pointer to an integer counting the number of iterations
 //---------------------------------------------------------------------------------------
-Vec<rvec> kmeans1( const Vec<rvec> &db, int K, ivec *passign, ivec *palloc, int* pcount )
+vec<rvec> kmeans1( const vec<rvec> &db, int K, ivec *passign, ivec *palloc, int* pcount )
 {
 	// Initial centroids
 	int N = db.size();
-	Vec<rvec> centroids(K);
+	vec<rvec> centroids(K);
 	for( int k = 0; k < K; k++ )
 		centroids(k) = db( rand(uniform_discrete(0,N-1)) );
 

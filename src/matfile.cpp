@@ -71,7 +71,7 @@ void matfile::_free( void* pmatvar )
 	Mat_VarFree( (matvar_t*)pmatvar );
 }
 
-void* matfile::create_struct( const string& varname, const Vec<void*>& fields )
+void* matfile::create_struct( const string& varname, const vec<void*>& fields )
 {
 	size_t dims[2] = {1,1};
 	int N = fields.size();
@@ -82,7 +82,7 @@ void* matfile::create_struct( const string& varname, const Vec<void*>& fields )
 	return Mat_VarCreate( varname.data(), MAT_C_STRUCT, MAT_T_STRUCT, 2, dims, matvar, 0 );
 }
 
-void* matfile::create_cell( const string& varname, const Mat<void*>& entries )
+void* matfile::create_cell( const string& varname, const mat<void*>& entries )
 {
 	size_t I = entries.size1();
 	size_t J = entries.size2();
@@ -99,12 +99,12 @@ void* matfile::parse_struct( void* pvar, const string& field )
 	return Mat_VarGetStructField( (matvar_t*)pvar, const_cast<char*>(field.data()), MAT_BY_NAME, 0 );
 }
 
-Mat<void*> matfile::parse_cell( void* pvar )
+mat<void*> matfile::parse_cell( void* pvar )
 {
 	matvar_t* pmatvar = (matvar_t*)pvar;
 	int I = pmatvar->dims[0];
 	int J = pmatvar->dims[1];
-	Mat<void*> rv(I,J);
+	mat<void*> rv(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			rv(i,j) = reinterpret_cast<matvar_t**>(pmatvar->data)[i+j*I];
@@ -237,9 +237,9 @@ complex matvar<complex>::parse( void* pvar )
 }
 
 //------------------------------------------------------------------------------
-// matvar<Vec<double>> struct definition
+// matvar<vec<double>> struct definition
 //------------------------------------------------------------------------------
-void* matvar<Vec<double>>::create( const string& varname, const Vec<double>& x )
+void* matvar<vec<double>>::create( const string& varname, const vec<double>& x )
 {
 	// Create variable
 	size_t I = x.size();
@@ -253,47 +253,47 @@ void* matvar<Vec<double>>::create( const string& varname, const Vec<double>& x )
 	return var;
 }
 
-Vec<double> matvar<Vec<double>>::parse( void* pvar )
+vec<double> matvar<vec<double>>::parse( void* pvar )
 {
 	matvar_t* pmatvar = (matvar_t*)pvar;
 	auto pdata    = reinterpret_cast<double*>(pmatvar->data);
 	int I = pmatvar->dims[0];
-	Vec<double> x(I);
+	vec<double> x(I);
 	for( int i = 0; i < I; i++ )
 		x(i) = pdata[i];
 	return x;
 }
 
 //------------------------------------------------------------------------------
-// matvar<Vec<bool>> struct definition
+// matvar<vec<bool>> struct definition
 //------------------------------------------------------------------------------
-void* matvar<Vec<bool>>::create( const string& varname, const Vec<bool>& x )
+void* matvar<vec<bool>>::create( const string& varname, const vec<bool>& x )
 {
-	return matvar<Vec<double>>::create( varname, x );
+	return matvar<vec<double>>::create( varname, x );
 }
 
-Vec<bool> matvar<Vec<bool>>::parse( void* pvar )
+vec<bool> matvar<vec<bool>>::parse( void* pvar )
 {
-	return matvar<Vec<double>>::parse( pvar );
-}
-
-//------------------------------------------------------------------------------
-// matvar<Vec<int>> struct definition
-//------------------------------------------------------------------------------
-void* matvar<Vec<int>>::create( const string& varname, const Vec<int>& x )
-{
-	return matvar<Vec<double>>::create( varname, x );
-}
-
-Vec<int> matvar<Vec<int>>::parse( void* pvar )
-{
-	return matvar<Vec<double>>::parse( pvar );
+	return matvar<vec<double>>::parse( pvar );
 }
 
 //------------------------------------------------------------------------------
-// matvar<Vec<complex>> struct definition
+// matvar<vec<int>> struct definition
 //------------------------------------------------------------------------------
-void* matvar<Vec<complex>>::create( const string& varname, const Vec<complex>& x )
+void* matvar<vec<int>>::create( const string& varname, const vec<int>& x )
+{
+	return matvar<vec<double>>::create( varname, x );
+}
+
+vec<int> matvar<vec<int>>::parse( void* pvar )
+{
+	return matvar<vec<double>>::parse( pvar );
+}
+
+//------------------------------------------------------------------------------
+// matvar<vec<complex>> struct definition
+//------------------------------------------------------------------------------
+void* matvar<vec<complex>>::create( const string& varname, const vec<complex>& x )
 {
 	// Create variable
 	size_t I = x.size();
@@ -311,12 +311,12 @@ void* matvar<Vec<complex>>::create( const string& varname, const Vec<complex>& x
 	return var;
 }
 
-Vec<complex> matvar<Vec<complex>>::parse( void* pvar )
+vec<complex> matvar<vec<complex>>::parse( void* pvar )
 {
 	matvar_t* pmatvar = (matvar_t*)pvar;
 	auto pdata    = reinterpret_cast<mat_complex_split_t*>(pmatvar->data);
 	int I = pmatvar->dims[0];
-	Vec<complex> x(I);
+	vec<complex> x(I);
 	for( int i = 0; i < I; i++ ) {
 		auto preal = reinterpret_cast<double*>(pdata->Re);
 		auto pimag = reinterpret_cast<double*>(pdata->Im);
@@ -326,9 +326,9 @@ Vec<complex> matvar<Vec<complex>>::parse( void* pvar )
 }
 
 //------------------------------------------------------------------------------
-// matvar<Mat<double>> struct definition
+// matvar<mat<double>> struct definition
 //------------------------------------------------------------------------------
-void* matvar<Mat<double>>::create( const string& varname, const Mat<double>& x )
+void* matvar<mat<double>>::create( const string& varname, const mat<double>& x )
 {
 	// Create variable
 	size_t I = x.size1();
@@ -344,13 +344,13 @@ void* matvar<Mat<double>>::create( const string& varname, const Mat<double>& x )
 	return var;
 }
 
-Mat<double> matvar<Mat<double>>::parse( void* pvar )
+mat<double> matvar<mat<double>>::parse( void* pvar )
 {
 	matvar_t* pmatvar = (matvar_t*)pvar;
 	auto pdata    = reinterpret_cast<double*>(pmatvar->data);
 	int I = pmatvar->dims[0];
 	int J = pmatvar->dims[1];
-	Mat<double> x(I,J);
+	mat<double> x(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			x(i,j) = pdata[i+j*I];
@@ -358,35 +358,35 @@ Mat<double> matvar<Mat<double>>::parse( void* pvar )
 }
 
 //------------------------------------------------------------------------------
-// matvar<Mat<bool>> struct definition
+// matvar<mat<bool>> struct definition
 //------------------------------------------------------------------------------
-void* matvar<Mat<bool>>::create( const string& varname, const Mat<bool>& x )
+void* matvar<mat<bool>>::create( const string& varname, const mat<bool>& x )
 {
-	return matvar<Mat<double>>::create( varname, x );
+	return matvar<mat<double>>::create( varname, x );
 }
 
-Mat<bool> matvar<Mat<bool>>::parse( void* pvar )
+mat<bool> matvar<mat<bool>>::parse( void* pvar )
 {
-	return matvar<Mat<double>>::parse( pvar );
-}
-
-//------------------------------------------------------------------------------
-// matvar<Mat<int>> struct definition
-//------------------------------------------------------------------------------
-void* matvar<Mat<int>>::create( const string& varname, const Mat<int>& x )
-{
-	return matvar<Mat<double>>::create( varname, x );
-}
-
-Mat<int> matvar<Mat<int>>::parse( void* pvar )
-{
-	return matvar<Mat<double>>::parse( pvar );
+	return matvar<mat<double>>::parse( pvar );
 }
 
 //------------------------------------------------------------------------------
-// matvar<Mat<complex>> struct definition
+// matvar<mat<int>> struct definition
 //------------------------------------------------------------------------------
-void* matvar<Mat<complex>>::create( const string& varname, const Mat<complex>& x )
+void* matvar<mat<int>>::create( const string& varname, const mat<int>& x )
+{
+	return matvar<mat<double>>::create( varname, x );
+}
+
+mat<int> matvar<mat<int>>::parse( void* pvar )
+{
+	return matvar<mat<double>>::parse( pvar );
+}
+
+//------------------------------------------------------------------------------
+// matvar<mat<complex>> struct definition
+//------------------------------------------------------------------------------
+void* matvar<mat<complex>>::create( const string& varname, const mat<complex>& x )
 {
 	// Create variable
 	size_t I = x.size1();
@@ -406,13 +406,13 @@ void* matvar<Mat<complex>>::create( const string& varname, const Mat<complex>& x
 	return var;
 }
 
-Mat<complex> matvar<Mat<complex>>::parse( void* pvar )
+mat<complex> matvar<mat<complex>>::parse( void* pvar )
 {
 	matvar_t* pmatvar = (matvar_t*)pvar;
 	auto pdata    = reinterpret_cast<mat_complex_split_t*>(pmatvar->data);
 	int I = pmatvar->dims[0];
 	int J = pmatvar->dims[1];
-	Mat<complex> x(I,J);
+	mat<complex> x(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ ) {
 			auto preal = reinterpret_cast<double*>(pdata->Re);

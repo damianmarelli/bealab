@@ -22,7 +22,7 @@ namespace bealab
 /// @{
 
 /// K-means algorithm over a vector of vector samples.
-Vec<rvec> kmeans( const Vec<rvec>&, int, ivec* =NULL, ivec* =NULL, int* =NULL );
+vec<rvec> kmeans( const vec<rvec>&, int, ivec* =NULL, ivec* =NULL, int* =NULL );
 
 /// @}
 }

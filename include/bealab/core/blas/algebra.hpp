@@ -67,10 +67,10 @@ template< class E, class T,
 								  !is_scalar<T>::value ||
 								  !is_convertible<T,typename E::value_type>::value
 								>::type >
-Vec<R> operator*( const vector_interface<E>& x, const T& y )
+vec<R> operator*( const vector_interface<E>& x, const T& y )
 {
 	int I = x.size();
-	Vec<R> z(I);
+	vec<R> z(I);
 	for( int i = 0; i < I; i++ )
 		z(i) = x(i) * y;
 	return z;
@@ -95,10 +95,10 @@ template< class T, class E,
 								  !is_scalar<typename E::value_type>::value ||
 								  !is_convertible<T,typename E::value_type>::value
 								>::type >
-Vec<R> operator*( const T& x, const vector_interface<E>& y )
+vec<R> operator*( const T& x, const vector_interface<E>& y )
 {
 	int I = y.size();
-	Vec<R> z(I);
+	vec<R> z(I);
 	for( int i = 0; i < I; i++ )
 		z(i) = x * y(i);
 	return z;
@@ -123,10 +123,10 @@ template< class E, class T,
 								  !is_scalar<typename E::value_type>::value ||
 								  !is_convertible<T,typename E::value_type>::value
 								>::type >
-Vec<R> operator/( const vector_interface<E>& x, const T& y )
+vec<R> operator/( const vector_interface<E>& x, const T& y )
 {
 	int I = x.size();
-	Vec<R> z(I);
+	vec<R> z(I);
 	for( int i = 0; i < I; i++ )
 		z(i) = x(i) / y;
 	return z;
@@ -179,11 +179,11 @@ template< class E, class T,
 								  !is_scalar<T>::value ||
 								  !is_convertible<T,typename E::value_type>::value
 								>::type >
-Mat<R> operator*( const matrix_interface<E>& x, const T& y )
+mat<R> operator*( const matrix_interface<E>& x, const T& y )
 {
 	int I = x.size1();
 	int J = x.size2();
-	Mat<R> z(I,J);
+	mat<R> z(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			z(i,j) = x(i,j) * y;
@@ -209,11 +209,11 @@ template< class T, class E,
 								  !is_scalar<typename E::value_type>::value ||
 								  !is_convertible<T,typename E::value_type>::value
 								>::type >
-Mat<R> operator*( const T& x, const matrix_interface<E>& y )
+mat<R> operator*( const T& x, const matrix_interface<E>& y )
 {
 	int I = y.size1();
 	int J = y.size2();
-	Mat<R> z(I,J);
+	mat<R> z(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			z(i,j) = x * y(i,j);
@@ -239,11 +239,11 @@ template< class E, class T,
 								  !is_scalar<typename E::value_type>::value ||
 								  !is_convertible<T,typename E::value_type>::value
 								>::type >
-Mat<R> operator/( const matrix_interface<E>& x, const T& y )
+mat<R> operator/( const matrix_interface<E>& x, const T& y )
 {
 	int I = x.size1();
 	int J = x.size2();
-	Mat<R> z(I,J);
+	mat<R> z(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			z(i,j) = x(i,j) / y;
@@ -271,13 +271,13 @@ template< class E1, class E2,
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
 								  !is_scalar<typename E2::value_type>::value
 								>::type >
-Mat<R> operator*( const matrix_interface<E1>& x, const matrix_interface<E2>& y )
+mat<R> operator*( const matrix_interface<E1>& x, const matrix_interface<E2>& y )
 {
 	assert( x.size2() == y.size1() );
 	int I = x.size1();
 	int J = y.size2();
 	int K = x.size2();
-	Mat<R> M(I,J);
+	mat<R> M(I,J);
 	for( int i = 0; i < I; i++ ) {
 		for( int j = 0; j < J; j++ ) {
 			M(i,j) = R();
@@ -308,12 +308,12 @@ template< class E1, class E2,
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
 								  !is_scalar<typename E2::value_type>::value
 								>::type >
-Vec<R> operator*( const matrix_interface<E1>& x, const vector_interface<E2>& y )
+vec<R> operator*( const matrix_interface<E1>& x, const vector_interface<E2>& y )
 {
 	assert( x.size2() == y.size() );
 	int I = x.size1();
 	int K = x.size2();
-	Vec<R> v(I);
+	vec<R> v(I);
 	for( int i = 0; i < I; i++ ) {
 		v(i) = R();
 		for( int k = 0; k < K; k++ )
@@ -342,12 +342,12 @@ template< class E1, class E2,
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
 								  !is_scalar<typename E2::value_type>::value
 								>::type >
-Vec<R> operator*( const vector_interface<E1>& x, const matrix_interface<E2>& y )
+vec<R> operator*( const vector_interface<E1>& x, const matrix_interface<E2>& y )
 {
 	assert( x.size() == y.size1() );
 	int J = y.size2();
 	int K = x.size();
-	Vec<R> v(J);
+	vec<R> v(J);
 	for( int j = 0; j < J; j++ ) {
 		v(j) = R();
 		for( int k = 1; k < K; k++ )
@@ -380,11 +380,11 @@ template< class E1, class E2,
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
 								  !is_scalar<typename E2::value_type>::value
 								>::type >
-Vec<R> element_prod( const vector_interface<E1> &x, const vector_interface<E2> &y )
+vec<R> element_prod( const vector_interface<E1> &x, const vector_interface<E2> &y )
 {
 	assert( x.size() == y.size() );
 	int I = x.size();
-	Vec<R> r(I);
+	vec<R> r(I);
 	for( int i = 0; i < I; i++ )
 		r(i) = x(i) * y(i);
 	return r;
@@ -392,10 +392,10 @@ Vec<R> element_prod( const vector_interface<E1> &x, const vector_interface<E2> &
 
 /// Vector element-wise inversion
 template<class E, class R = typename E::value_type>
-Vec<R> element_inv( const vector_interface<E> &x )
+vec<R> element_inv( const vector_interface<E> &x )
 {
 	int I = x.size();
-	Vec<R> r(I);
+	vec<R> r(I);
 	for( int i = 0; i < I; i++ )
 		r(i) = inv( x(i) );
 	return r;
@@ -418,11 +418,11 @@ template< class E1, class E2,
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
 								  !is_scalar<typename E2::value_type>::value
 								>::type >
-Vec<R> element_div( const vector_interface<E1> &x, const vector_interface<E2> &y )
+vec<R> element_div( const vector_interface<E1> &x, const vector_interface<E2> &y )
 {
 	assert( x.size() == y.size() );
 	int I = x.size();
-	Vec<R> r(I);
+	vec<R> r(I);
 	for( int i = 0; i < I; i++ )
 		r(i) = x(i) * inv( y(i) );
 	return r;
@@ -445,13 +445,13 @@ template< class E1, class E2,
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
 								  !is_scalar<typename E2::value_type>::value
 								>::type >
-Mat<R> element_prod( const matrix_interface<E1> &x, const matrix_interface<E2> &y )
+mat<R> element_prod( const matrix_interface<E1> &x, const matrix_interface<E2> &y )
 {
 	assert( x.size1() == y.size1() );
 	assert( x.size2() == y.size2() );
 	int I = x.size1();
 	int J = x.size2();
-	Mat<R> r(I,J);
+	mat<R> r(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			r(i,j) = x(i,j) * y(i,j);
@@ -460,11 +460,11 @@ Mat<R> element_prod( const matrix_interface<E1> &x, const matrix_interface<E2> &
 
 /// Matrix element-wise inversion
 template<class E, class R = typename E::value_type>
-Mat<R> element_inv( const matrix_interface<E> &x )
+mat<R> element_inv( const matrix_interface<E> &x )
 {
 	int I = x.size1();
 	int J = x.size2();
-	Mat<R> r(I,J);
+	mat<R> r(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			r(i,j) = inv( x(i,j) );
@@ -488,13 +488,13 @@ template< class E1, class E2,
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
 								  !is_scalar<typename E2::value_type>::value
 								>::type >
-Mat<R> element_div( const matrix_interface<E1> &x, const matrix_interface<E2> &y )
+mat<R> element_div( const matrix_interface<E1> &x, const matrix_interface<E2> &y )
 {
 	assert( x.size1() == y.size1() );
 	assert( x.size2() == y.size2() );
 	int I = x.size1();
 	int J = x.size2();
-	Mat<R> r(I,J);
+	mat<R> r(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			r(i,j) = x(i,j) * inv( y(i,j) );
@@ -516,7 +516,7 @@ matrix_interface<decltype(ublas::trans(A))>
 
 /// Adjoint of a vector
 template<class T, class R = typename T::value_type>
-Vec<R> adjoint( const vector_interface<T>& v )
+vec<R> adjoint( const vector_interface<T>& v )
 {
 	auto afun = [](const R& x) -> R {return adjoint(x);};
 	return entrywise(afun)( v );
@@ -524,7 +524,7 @@ Vec<R> adjoint( const vector_interface<T>& v )
 
 /// Adjoint of a matrix
 template<class T, class R = typename T::value_type>
-Mat<R> adjoint( const matrix_interface<T>& A )
+mat<R> adjoint( const matrix_interface<T>& A )
 {
 	auto afun = [](const R& x) -> R {return adjoint(x);};
 	return entrywise(afun)( trans( A ) );
@@ -594,11 +594,11 @@ template<class E1, class E2,
 	class   = typename enable_if< !is_scalar<typename E1::value_type>::value ||
 								  !is_scalar<typename E2::value_type>::value
 								>::type >
-Mat<R> outer_prod( const vector_interface<E1> &x, const vector_interface<E2> &y )
+mat<R> outer_prod( const vector_interface<E1> &x, const vector_interface<E2> &y )
 {
 	assert(x.size() == y.size());
 	int I = x.size();
-	Mat<R> op(I,I);
+	mat<R> op(I,I);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < I; j++ )
 			op(i,j) = outer_prod( x(i), y(j) );

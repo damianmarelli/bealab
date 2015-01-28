@@ -70,7 +70,7 @@ int sbindex_pool::sbi2int( const sbindex& idx )
 	return it - sbindexes.begin();
 }
 
-void sbindex_pool::set_sbindexes( const Vec<sbindex>& idxs )
+void sbindex_pool::set_sbindexes( const vec<sbindex>& idxs )
 {
 	sbindexes.resize(0);
 	int I = idxs.size();
@@ -99,16 +99,16 @@ void sbindex_pool::set_sbindexes( const Vec<sbindex>& idxs )
 			continue;
 		}
 
-		sbindexes = Vec<sbindex>{ sbindexes, {idx} };
+		sbindexes = vec<sbindex>{ sbindexes, {idx} };
 	}
 }
 
-void sbindex_pool::set_sbindexes( const Mat<cseq>& MA, const Mat<cseq>& AR )
+void sbindex_pool::set_sbindexes( const mat<cseq>& MA, const mat<cseq>& AR )
 {
 	// Init
 	assert( (int)MA.size1() == M && (int)MA.size2() == M );
 	assert( (int)AR.size1() == M && (int)AR.size2() == M );
-	Vec<sbindex> idxs;
+	vec<sbindex> idxs;
 
 	// Set numerator coefficients
 	for( int m = 0; m < M; m++ )
@@ -116,7 +116,7 @@ void sbindex_pool::set_sbindexes( const Mat<cseq>& MA, const Mat<cseq>& AR )
 			int T1 = MA(m,n).t1();
 			int T2 = MA(m,n).t2();
 			for( int t = T1; t <= T2; t++ )
-				idxs = Vec<sbindex>{ idxs, { sbindex{m,n,t,true,true},
+				idxs = vec<sbindex>{ idxs, { sbindex{m,n,t,true,true},
 						sbindex{m,n,t,false,true} } };
 		}
 
@@ -126,7 +126,7 @@ void sbindex_pool::set_sbindexes( const Mat<cseq>& MA, const Mat<cseq>& AR )
 			int T1 = AR(m,n).t1();
 			int T2 = AR(m,n).t2();
 			for( int t = T1; t <= T2; t++ )
-				idxs = Vec<sbindex>{ idxs, { sbindex{m,n,t,true,false},
+				idxs = vec<sbindex>{ idxs, { sbindex{m,n,t,true,false},
 						sbindex{m,n,t,false,false} } };
 		}
 
@@ -136,7 +136,7 @@ void sbindex_pool::set_sbindexes( const Mat<cseq>& MA, const Mat<cseq>& AR )
 void sbindex_pool::set_sbindexes( int noffdiags, int t1, int t2, bool den_f )
 {
 	assert( noffdiags >= 0 );
-	Mat<cseq> MA(M,M), AR(M,M);
+	mat<cseq> MA(M,M), AR(M,M);
 	int d1 = -min( noffdiags, M/2 - 1 );
 	int d2 =  min( noffdiags, M/2 );
 	for( int m = 0; m < M; m++ )
@@ -165,7 +165,7 @@ int sbindex_pool::sparsity() const
 //==============================================================================
 // Class sbmodel
 //==============================================================================
-int sbmodel::inv_ImP_irlength( const Vec<cmat>& P ) const
+int sbmodel::inv_ImP_irlength( const vec<cmat>& P ) const
 {
 	int L = P.size() - 1;
 	int N = L*M;
@@ -182,33 +182,33 @@ int sbmodel::inv_ImP_irlength( const Vec<cmat>& P ) const
 	return ceil( log(.001)/log(dommode) );
 }
 
-Mat<cseq> sbmodel::inv_ImP( const Mat<cseq>& P_ ) const
+mat<cseq> sbmodel::inv_ImP( const mat<cseq>& P_ ) const
 {
 	// Form ARMA model
-	Seq<cmat> I = Vec<cmat>{eye(M)};
-	Seq<cmat> B = I;
-	Seq<cmat> P = ms2sm(P_);
+	sequence<cmat> I = vec<cmat>{eye(M)};
+	sequence<cmat> B = I;
+	sequence<cmat> P = ms2sm(P_);
 	if( P.size() == 0 )
 		return sm2ms(I);
-	Seq<cmat> A = I - P;
-	control::arma<cmat> H( B.vec(), A.vec() );
+	sequence<cmat> A = I - P;
+	control::arma<cmat> H( B.buffer(), A.buffer() );
 
 	// Compute IR length
-	int L = inv_ImP_irlength( P.vec() );
+	int L = inv_ImP_irlength( P.buffer() );
 
 	// Impulse input
-	Seq<cmat> X(L);
+	sequence<cmat> X(L);
 	X(0) = eye(M);
 	for( int l = 1; l < L; l++ )
 		X(l) = zeros(M,M);
 
 	// Impulse response
-	Seq<cmat> Ir = H(X);
+	sequence<cmat> Ir = H(X);
 	return sm2ms(Ir);
 
 //		// Verify
-//		Mat<cseq> Y_ = sm2ms(Ir);
-//		Mat<cseq> I_(M,M);
+//		mat<cseq> Y_ = sm2ms(Ir);
+//		mat<cseq> I_(M,M);
 //		for( int m = 0; m < M; m++ )
 //			I_(m,m) = rseq{1};
 //		cout << "inv_ImP() - error = " << norm( I_ - (I_-P_)*Y_ ) << endl;
@@ -241,20 +241,20 @@ sbmodel::models_t sbmodel::models() const
 	return sbm;
 }
 
-Mat<cseq> sbmodel::impulse_response() const
+mat<cseq> sbmodel::impulse_response() const
 {
 	models_t sbm = models();
-	Mat<cseq> X  = inv_ImP( sbm.P );
+	mat<cseq> X  = inv_ImP( sbm.P );
 	return X * sbm.S;
 }
 
 //==============================================================================
 // Class fdcriterion
 //==============================================================================
-Vec<cvec> fdcriterion::get_atom_sbm_( const sbindex& sbi )
+vec<cvec> fdcriterion::get_atom_sbm_( const sbindex& sbi )
 {
 	// Form the polyphase representation of the atom
-	Mat<cseq> E = outer_prod( FA.column(sbi.m), H.row(sbi.n) );
+	mat<cseq> E = outer_prod( FA.column(sbi.m), H.row(sbi.n) );
 	E           = entrywise( [&sbi]( const cseq& x ){ return time_shift(x,sbi.t); } )( E );
 
 	// Modify E if the target is real and the index is not self-conjugate
@@ -278,15 +278,15 @@ void fdcriterion::reset_sbatoms()
 
 void fdcriterion::precompute_fbatoms()
 {
-	Mat<cseq> S = sbm.models().S;
-	FASWA       = sm2ms( ms2sm( FA * S ) * Seq<cmat>(Vec<cmat>{M*idft(M)}) );
-	WSH         = sm2ms( Seq<cmat>(Vec<cmat>{dft(M)}) * ms2sm( S * H ) );
+	mat<cseq> S = sbm.models().S;
+	FASWA       = sm2ms( ms2sm( FA * S ) * sequence<cmat>(vec<cmat>{M*idft(M)}) );
+	WSH         = sm2ms( sequence<cmat>(vec<cmat>{dft(M)}) * ms2sm( S * H ) );
 }
 
-Vec<cvec>& fdcriterion::get_atom_sbm( const sbindex& sbi )
+vec<cvec>& fdcriterion::get_atom_sbm( const sbindex& sbi )
 {
 	// Retrieve the fullband frequency response of the corresponding atom
-	Vec<cvec>& e = sbi.real_f ? real_atoms_sbm(sbi.m,sbi.n)(sbi.t):
+	vec<cvec>& e = sbi.real_f ? real_atoms_sbm(sbi.m,sbi.n)(sbi.t):
 								imag_atoms_sbm(sbi.m,sbi.n)(sbi.t);
 
 	// Fill the corresponding entry if it is empty
@@ -297,23 +297,23 @@ Vec<cvec>& fdcriterion::get_atom_sbm( const sbindex& sbi )
 	return e;
 }
 
-Vec<cvec> fdcriterion::get_atom_analysis( int idx )
+vec<cvec> fdcriterion::get_atom_analysis( int idx )
 {
-	Mat<cseq> E(D,D);
+	mat<cseq> E(D,D);
 	int i       = mod( idx, M );
 	int j       = mod( idx, D );
 	int d       = floor( (double)idx / D );
-	E.column(j) = entrywise( [d](const cseq& x){ return time_shift(x,d); } )( Vec<cseq>(FASWA.column(i)) );
+	E.column(j) = entrywise( [d](const cseq& x){ return time_shift(x,d); } )( vec<cseq>(FASWA.column(i)) );
 	return entrywise( dtft )( pp2fb_system( E ) );
 }
 
-Vec<cvec> fdcriterion::get_atom_synthesis( int idx )
+vec<cvec> fdcriterion::get_atom_synthesis( int idx )
 {
-	Mat<cseq> E(D,D);
+	mat<cseq> E(D,D);
 	int i    = mod( idx, D );
 	int j    = mod( idx, M );
 	int d    = -floor( (double)idx / D );
-	E.row(i) = entrywise( [d](const cseq& x){ return time_shift(x,d); } )( Vec<cseq>(WSH.row(j)) );
+	E.row(i) = entrywise( [d](const cseq& x){ return time_shift(x,d); } )( vec<cseq>(WSH.row(j)) );
 	return entrywise( dtft )( pp2fb_system( E ) );
 }
 
@@ -327,7 +327,7 @@ fdcriterion::fdcriterion( int M, int D, int N ) :
 	};
 }
 
-void fdcriterion::set_target( const Mat<cseq>& G )
+void fdcriterion::set_target( const mat<cseq>& G )
 {
 	sbapprox::set_target(G);
 	gf = entrywise(dtft)( pp2fb_system(G) );
@@ -354,14 +354,14 @@ void fdcriterion::set_spectral_weight( const rseq& w_ )
 //==============================================================================
 // Class logarithmic
 //==============================================================================
-rvec logarithmic::gradient_aux( const Vec<Vec<cvec>>& atoms )
+rvec logarithmic::gradient_aux( const vec<vec<cvec>>& atoms )
 {
 	// Frequency response of the approximation
-	Vec<cseq> gh  = impulse_responses();
-	Vec<cvec> ghf = entrywise(dtft)( gh );
+	vec<cseq> gh  = impulse_responses();
+	vec<cvec> ghf = entrywise(dtft)( gh );
 
 	// Pre-compute X = conj(\tilde{c}) / \hat{g}
-	Vec<cvec> X(D);
+	vec<cvec> X(D);
 	for( int d = 0; d < D; d++ ) {
 		cvec ctfd = logspec( element_div( gf(d), ghf(d) ) );
 		X(d) = element_div( conj(ctfd), ghf(d) );
@@ -374,7 +374,7 @@ rvec logarithmic::gradient_aux( const Vec<Vec<cvec>>& atoms )
 	for( int i = 0; i < I; i++ ) {
 
 		// Get the i-th atom
-		const Vec<cvec>& ei = atoms(i);
+		const vec<cvec>& ei = atoms(i);
 
 		// Gradient entry
 		double gi = 0;
@@ -407,10 +407,10 @@ logarithmic::logarithmic( int M, int D, int N ) :
 
 double logarithmic::errfun()
 {
-	Mat<cseq> Gh  = polyphase();
-	Vec<cseq> gh  = pp2fb_system( Gh );
-	Vec<cvec> ghf = entrywise(dtft)( gh );
-	Vec<cvec> ctf(D);
+	mat<cseq> Gh  = polyphase();
+	vec<cseq> gh  = pp2fb_system( Gh );
+	vec<cvec> ghf = entrywise(dtft)( gh );
+	vec<cvec> ctf(D);
 	for( int d = 0; d < D; d++ )
 		ctf(d) = logspec( element_div( gf(d), ghf(d) ) );
 	rvec x1 = sum( real( pow( abs(ctf), 2 ) ) );
@@ -422,7 +422,7 @@ rvec logarithmic::gradient_sbm()
 {
 	// Form the vector of atoms
 	int I = sbm.sbindexes.size();
-	Vec<Vec<cvec>> atoms(I);
+	vec<vec<cvec>> atoms(I);
 	for( int i = 0; i < I; i++ )
 		atoms(i) = get_atom_sbm( sbm.sbindexes(i) );
 
@@ -448,7 +448,7 @@ logarithmic::gradient_t logarithmic::gradient()
 	{
 		// Form the vector of analysis atoms
 		int I = h0().size();
-		Vec<Vec<cvec>> atoms(I);
+		vec<vec<cvec>> atoms(I);
 		for( int i = 0; i < I; i++ )
 			atoms(i) = get_atom_analysis( h0().t1()+i );
 		grad.h0 = gradient_aux( atoms );
@@ -458,7 +458,7 @@ logarithmic::gradient_t logarithmic::gradient()
 	{
 		// Form the vector of analysis atoms
 		int I = f0().size();
-		Vec<Vec<cvec>> atoms(I);
+		vec<vec<cvec>> atoms(I);
 		for( int i = 0; i < I; i++ )
 			atoms(i) = get_atom_synthesis( f0().t1()+i );
 		grad.f0 = gradient_aux( atoms );
@@ -481,29 +481,29 @@ void logarithmic::plotfun()
 	function<cvec(const cseq&)> dtft        = [N](const cseq& x ){ return bealab::dtft(x,N); };
 
 	// Target frequency response
-	Vec<cseq> g   = pp2fb_system( G );
-	Vec<cvec> gf  = entrywise(dtft)( g );
-	Vec<cvec> cf  = entrywise(ftshift)( entrywise(dbspec)( gf ) );
-	Vec<rvec> cfr = real(cf);
-	Vec<rvec> cfi = real(-i*cf);
+	vec<cseq> g   = pp2fb_system( G );
+	vec<cvec> gf  = entrywise(dtft)( g );
+	vec<cvec> cf  = entrywise(ftshift)( entrywise(dbspec)( gf ) );
+	vec<rvec> cfr = real(cf);
+	vec<rvec> cfi = real(-i*cf);
 	cfi = 180/pi * entrywise(unwrap)( log(10)/20 * cfi );
 	cfi = entrywise(centerphase)( cfi );
 
 	// Approximation frequency response
-	Mat<cseq> Gh   = polyphase();
-	Vec<cseq> gh   = pp2fb_system( Gh );
-	Vec<cvec> ghf  = entrywise(dtft)( gh );
-	Vec<cvec> chf  = entrywise(ftshift)( entrywise(dbspec)(ghf) );
-	Vec<rvec> chfr = real(chf);
-	Vec<rvec> chfi = real(-i*chf);
+	mat<cseq> Gh   = polyphase();
+	vec<cseq> gh   = pp2fb_system( Gh );
+	vec<cvec> ghf  = entrywise(dtft)( gh );
+	vec<cvec> chf  = entrywise(ftshift)( entrywise(dbspec)(ghf) );
+	vec<rvec> chfr = real(chf);
+	vec<rvec> chfi = real(-i*chf);
 	chfi = 180/pi * entrywise(unwrap)( log(10)/20 * chfi );
 	chfi = entrywise(centerphase)( chfi );
 
 //		// Error
-//		Vec<cvec> gtf(D);
+//		vec<cvec> gtf(D);
 //		for( int d = 0; d < D; d++ )
 //			gtf(d) = element_div( gf(d), ghf(d) );
-//		Vec<cvec> ctf = gtf.apply(logspec).apply( ftshift );
+//		vec<cvec> ctf = gtf.apply(logspec).apply( ftshift );
 
 	// Plot
 	fig_amp.clear().overlap().rangex(-pi,pi).
@@ -519,14 +519,14 @@ void logarithmic::plotfun()
 //==============================================================================
 // Class logarithmic_nophase
 //==============================================================================
-rvec logarithmic_nophase::gradient_aux( const Vec<Vec<cvec>>& atoms )
+rvec logarithmic_nophase::gradient_aux( const vec<vec<cvec>>& atoms )
 {
 	// Frequency response of the approximation
-	Vec<cseq> gh  = impulse_responses();
-	Vec<cvec> ghf = entrywise(dtft)( gh );
+	vec<cseq> gh  = impulse_responses();
+	vec<cvec> ghf = entrywise(dtft)( gh );
 
 	// Some pre-computing
-	Vec<rvec> C(D);
+	vec<rvec> C(D);
 	for( int d = 0; d < D; d++ ) {
 		rvec t1   = real( logspec( element_div( gf(d), ghf(d) ) ) );
 		rvec t2   = element_prod( wf2, t1 );
@@ -541,7 +541,7 @@ rvec logarithmic_nophase::gradient_aux( const Vec<Vec<cvec>>& atoms )
 	for( int i = 0; i < I; i++ ) {
 
 		// Get the i-th atom
-		const Vec<cvec>& ei = atoms(i);
+		const vec<cvec>& ei = atoms(i);
 
 		// Gradient entry
 		double gi = 0;
@@ -574,7 +574,7 @@ logarithmic_nophase::logarithmic_nophase( int M, int D, int N ) :
 //==============================================================================
 // Class greedy
 //==============================================================================
-int greedy::number_of_coefficients( const Mat<cseq>& S )
+int greedy::number_of_coefficients( const mat<cseq>& S )
 {
 	return norm(real(S),0) + norm(imag(S),0);
 }
@@ -657,8 +657,8 @@ void linear::plotfun( const ivec& idxs, const rvec& coeffs )
 	// Approximation frequency response
 	sbm.sbindexes = sbindexes(indirect(idxs));
 	sbm.sbvalues  = coeffs;
-	Vec<rseq> gh  = real(impulse_responses());
-	Vec<rvec> ghw = entrywise(ftshift)( entrywise(spec)(gh) );
+	vec<rseq> gh  = real(impulse_responses());
+	vec<rvec> ghw = entrywise(ftshift)( entrywise(spec)(gh) );
 
 	// Plot
 	fig.clear().overlap().rangex(-pi,pi).
@@ -669,20 +669,20 @@ void linear::plotfun( const ivec& idxs, const rvec& coeffs )
 //==============================================================================
 // Class time_domain
 //==============================================================================
-Mat<cseq> time_domain::synthesis_( const ivec& idxs, const rvec& coeffs )
+mat<cseq> time_domain::synthesis_( const ivec& idxs, const rvec& coeffs )
 {
 	sbm.sbindexes = sbindexes(indirect(idxs));
 	sbm.sbvalues  = coeffs;
 	return polyphase();
 }
 
-rvec time_domain::analysis_( const Mat<cseq>& G )
+rvec time_domain::analysis_( const mat<cseq>& G )
 {
 //		if( analysis_1by1_flag )
 //			return analysis_1by1( G );
 //		else
 //			return analysis_whole( G );
-	const Mat<cseq>& S = F * G * adjoint(H);
+	const mat<cseq>& S = F * G * adjoint(H);
 	int I = sbindexes.size();
 	rvec x(I);
 	for( int i = 0; i < I; i++ ) {
@@ -747,7 +747,7 @@ time_domain::time_domain( int M, int D ) :
 		return this->synthesis_( idxs, coeffs );
 	};
 
-	analysis = [this]( const Mat<cseq>& G )
+	analysis = [this]( const mat<cseq>& G )
 	{
 		return this->analysis_( G );
 	};
@@ -758,27 +758,27 @@ time_domain::time_domain( int M, int D ) :
 	};
 }
 
-void time_domain::set_target( const Mat<cseq>& G )
+void time_domain::set_target( const mat<cseq>& G )
 {
 	sbapprox::set_target( G );
 	target = G;
 }
 
-void time_domain::set_analysis_fb( const Mat<cseq>& H )
+void time_domain::set_analysis_fb( const mat<cseq>& H )
 {
 	sbapprox::set_analysis_fb( H );
 	HH = H * adjoint(H);
 }
 
-void time_domain::set_synthesis_fb( const Mat<cseq>& F )
+void time_domain::set_synthesis_fb( const mat<cseq>& F )
 {
 	sbapprox::set_synthesis_fb( F );
 	FF = F * adjoint(F);
 }
 
-void time_domain::set_sbindexes( const Vec<sbindex>& idxs )
+void time_domain::set_sbindexes( const vec<sbindex>& idxs )
 {
-	Vec<sbindex> idxs_num;
+	vec<sbindex> idxs_num;
 	int I = idxs.size();
 	for( int i = 0; i < I; i++ )
 		if(idxs(i).num_f)
@@ -795,21 +795,21 @@ void time_domain::approximate()
 //==============================================================================
 // Class frequency_domain
 //==============================================================================
-Vec<cmat> frequency_domain::synthesis_( const ivec& idxs, const rvec& coeffs )
+vec<cmat> frequency_domain::synthesis_( const ivec& idxs, const rvec& coeffs )
 {
 	sbm.sbindexes = sbindexes(indirect(idxs));
 	sbm.sbvalues  = coeffs;
-	Mat<cseq> S   = sbm.models().S;
-	Vec<cmat> Sf  = td2fd( S );
-	Vec<cmat> Ghf = element_prod( element_prod( adjoint(Ff), Sf ), Hf );
+	mat<cseq> S   = sbm.models().S;
+	vec<cmat> Sf  = td2fd( S );
+	vec<cmat> Ghf = element_prod( element_prod( adjoint(Ff), Sf ), Hf );
 	return Ghf;
 }
 
-rvec frequency_domain::analysis_( const Vec<cmat>& Gf )
+rvec frequency_domain::analysis_( const vec<cmat>& Gf )
 {
-	// Compute the Mat<cseq> of complex coefficients
-	Vec<cmat> Sf  = element_prod( element_prod( Ff, Gf ), adjoint(Hf) );
-	Mat<cseq> S   = fd2td( Sf );
+	// Compute the mat<cseq> of complex coefficients
+	vec<cmat> Sf  = element_prod( element_prod( Ff, Gf ), adjoint(Hf) );
+	mat<cseq> S   = fd2td( Sf );
 
 	// Compute the inner products
 	int I = sbindexes.size();
@@ -877,13 +877,13 @@ frequency_domain::frequency_domain( int M, int D, int N ) :
 	dtft  = [N]( const cseq& x ) { return bealab::dtft(x,N); };
 	idtft = []( const cvec& x ) { return bealab::idtft(x); };
 
-	td2fd = [this]( const Mat<cseq>& G )
+	td2fd = [this]( const mat<cseq>& G )
 	{
 		auto tmp = entrywise(this->dtft)( G );
-		return ms2sm( Mat<cseq>( tmp ) ).vec();
+		return ms2sm( mat<cseq>( tmp ) ).buffer();
 	};
 
-	fd2td = [this]( const Vec<cmat>& Gf )
+	fd2td = [this]( const vec<cmat>& Gf )
 	{
 		auto tmp = entrywise(this->idtft)( vm2mv(Gf) );
 		return tmp;
@@ -895,7 +895,7 @@ frequency_domain::frequency_domain( int M, int D, int N ) :
 		return this->synthesis_( idxs, coeffs );
 	};
 
-	analysis = [this]( const Vec<cmat>& Gf )
+	analysis = [this]( const vec<cmat>& Gf )
 	{
 		return this->analysis_( Gf );
 	};
@@ -906,49 +906,49 @@ frequency_domain::frequency_domain( int M, int D, int N ) :
 	};
 }
 
-void frequency_domain::set_target( const Vec<cmat>& Gf )
+void frequency_domain::set_target( const vec<cmat>& Gf )
 {
 	target = Gf;
 }
 
-void frequency_domain::set_target( const Mat<cseq>& G )
+void frequency_domain::set_target( const mat<cseq>& G )
 {
 	sbapprox::set_target( G );
-	Vec<cmat> Gf = td2fd( G );
+	vec<cmat> Gf = td2fd( G );
 	set_target( Gf );
 }
 
-void frequency_domain::set_analysis_fb( const Vec<cmat>& Hf_ )
+void frequency_domain::set_analysis_fb( const vec<cmat>& Hf_ )
 {
 	Hf             = Hf_;
-	Vec<cmat> HHf1 = element_prod( Hf, adjoint(Hf) );
+	vec<cmat> HHf1 = element_prod( Hf, adjoint(Hf) );
 	HHf            = vm2mv( HHf1 );
 }
 
-void frequency_domain::set_analysis_fb( const Mat<cseq>& H )
+void frequency_domain::set_analysis_fb( const mat<cseq>& H )
 {
 	sbapprox::set_analysis_fb( H );
-	Vec<cmat> Hf_  = td2fd( H );
+	vec<cmat> Hf_  = td2fd( H );
 	set_analysis_fb( Hf_ );
 }
 
-void frequency_domain::set_synthesis_fb( const Vec<cmat>& Ff_ )
+void frequency_domain::set_synthesis_fb( const vec<cmat>& Ff_ )
 {
 	Ff             = Ff_;
-	Vec<cmat> FFf1 = element_prod( Ff, adjoint(Ff) );
+	vec<cmat> FFf1 = element_prod( Ff, adjoint(Ff) );
 	FFf            = vm2mv( FFf1 );
 }
 
-void frequency_domain::set_synthesis_fb( const Mat<cseq>& F )
+void frequency_domain::set_synthesis_fb( const mat<cseq>& F )
 {
 	sbapprox::set_synthesis_fb( F );
-	Vec<cmat> Ff_  = td2fd( F );
+	vec<cmat> Ff_  = td2fd( F );
 	set_synthesis_fb( Ff_ );
 }
 
-void frequency_domain::set_sbindexes( const Vec<sbindex>& idxs )
+void frequency_domain::set_sbindexes( const vec<sbindex>& idxs )
 {
-	Vec<sbindex> idxs_num;
+	vec<sbindex> idxs_num;
 	int I = idxs.size();
 	for( int i = 0; i < I; i++ )
 		if(idxs(i).num_f)

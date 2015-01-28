@@ -89,21 +89,21 @@ public:
 	}
 
 	/// Filter one pair of sequences of input and output samples
-	Vec<rvec> operator()( const Vec<rvec>& U, const Vec<rvec>& Y )
+	vec<rvec> operator()( const vec<rvec>& U, const vec<rvec>& Y )
 	{
 		assert( U.size() == Y.size() );
 		int T = U.size();
-		Vec<rvec> Xh(T);
+		vec<rvec> Xh(T);
 		for( int t = 0; t < T; t++ )
 			Xh(t) = (*this)( U(t), Y(t) );
 		return Xh;
 	}
 
 	/// Filter a sequences of output samples, assuming zero input.
-	Vec<rvec> operator()( const Vec<rvec>& Y )
+	vec<rvec> operator()( const vec<rvec>& Y )
 	{
 		int T = Y.size();
-		Vec<rvec> Xh(T);
+		vec<rvec> Xh(T);
 		for( int t = 0; t < T; t++ )
 			Xh(t) = (*this)( Y(t) );
 		return Xh;
@@ -263,7 +263,7 @@ public:
 	virtual
 	out_t output()
 	{
-		Vec<out_t> o(I);
+		vec<out_t> o(I);
 		#pragma omp parallel for schedule(dynamic)
 		for( int i = 0; i < I; i++ )
 			o(i) = output_function( x[i].trajectory.front() ) * x[i].weight;
@@ -295,10 +295,10 @@ public:
 	}
 
 	/// Filter a vector of samples
-	Vec<out_t> operator()( const Vec<obs_t>& Z )
+	vec<out_t> operator()( const vec<obs_t>& Z )
 	{
 		int T = Z.size();
-		Vec<out_t> Yh(T);
+		vec<out_t> Yh(T);
 		for( int t = 0; t < T; t++ )
 			Yh(t) = (*this)( Z(t) );
 		return Yh;
@@ -691,10 +691,10 @@ public:
 	}
 
 	/// Filter a vector of samples
-	Vec<rvec> operator()( const Vec<rvec>& Z )
+	vec<rvec> operator()( const vec<rvec>& Z )
 	{
 		int T = Z.size();
-		Vec<rvec> Yh(T);
+		vec<rvec> Yh(T);
 		for( int t = 0; t < T; t++ )
 			Yh(t) = (*this)( Z(t) );
 		return Yh;

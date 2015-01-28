@@ -151,10 +151,10 @@ auto rand( T distribution ) -> decltype(_stats::stats2random(distribution)(_stat
 /// Obtain a vector of random samples from any specified distribution.
 template<class T>
 auto rand( T distribution, int M )
-	-> Vec<decltype(_stats::stats2random(distribution)(_stats::engine))>
+	-> vec<decltype(_stats::stats2random(distribution)(_stats::engine))>
 {
 	typedef decltype(_stats::stats2random(distribution)(_stats::engine)) R;
-	Vec<R> rv(M);
+	vec<R> rv(M);
 	for( int m = 0; m < M; m++ )
 		rv(m) = _stats::stats2random(distribution)(_stats::engine);
 	return rv;
@@ -163,10 +163,10 @@ auto rand( T distribution, int M )
 /// Obtain a matrix of random samples from any specified distribution.
 template<class T>
 auto rand( T distribution, int M, int N )
-	-> Mat<decltype(_stats::stats2random(distribution)(_stats::engine))>
+	-> mat<decltype(_stats::stats2random(distribution)(_stats::engine))>
 {
 	typedef decltype(_stats::stats2random(distribution)(_stats::engine)) R;
-	Mat<R> rv(M,N);
+	mat<R> rv(M,N);
 	for( int m = 0; m < M; m++ )
 		for( int n = 0; n < N; n++ )
 			rv(m,n) = _stats::stats2random(distribution)(_stats::engine);

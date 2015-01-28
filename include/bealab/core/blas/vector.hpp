@@ -159,17 +159,17 @@ public:
 
 /// Dense vector template
 template<class value_type>
-using Vec = vector_interface<dense_vector<value_type>>;
+using vec = vector_interface<dense_vector<value_type>>;
 
 /// Sparse vector template
 template<class value_type>
 using sparse_vector = vector_interface<ublas::compressed_vector<value_type>>;
 
 // Shorthand expressions for dense vectors
-typedef	Vec<bool> bvec;															///< Boolean vector
-typedef	Vec<int> ivec;															///< Integer vector
-typedef Vec<double> rvec;														///< Real vector
-typedef	Vec<complex> cvec;														///< Complex vector
+typedef	vec<bool> bvec;															///< Boolean vector
+typedef	vec<int> ivec;															///< Integer vector
+typedef vec<double> rvec;														///< Real vector
+typedef	vec<complex> cvec;														///< Complex vector
 
 /// Convert an expression template into a temporary
 template<class E>
@@ -196,12 +196,12 @@ std::basic_ostream<A,B> &operator<<( std::basic_ostream<A,B> &os,
 
 /// Apply a function to all the elements of a vector
 template<class F, class T>
-Vec<typename result_of<F(typename T::value_type)>::type>
+vec<typename result_of<F(typename T::value_type)>::type>
 	entrywise( F fun, const vector_interface<T>& x )
 {
 	typedef typename result_of<F(typename T::value_type)>::type R;
 	int N = x.size();
-	Vec<R> y(N);
+	vec<R> y(N);
 	for( int n = 0; n < N; n++ )
 		y(n) = fun( x(n) );
 	return y;

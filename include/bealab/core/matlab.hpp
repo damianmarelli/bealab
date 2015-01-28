@@ -37,7 +37,7 @@ class functor : public ofunctor<oargs...> {
 
 	string call_prefix() override
 	{
-		return "matlab -nodesktop -nosplash -r";
+		return "matlab -nojvm -r";
 	}
 
 	string call_suffix() override

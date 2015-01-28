@@ -268,7 +268,7 @@ public:
 
 /// Dense matrix template
 template<class value_type>
-using Mat = matrix_interface<dense_matrix<value_type>>;
+using mat = matrix_interface<dense_matrix<value_type>>;
 
 /// Triangular matrix template
 template<class value_type, class LU>
@@ -292,10 +292,10 @@ template<class value_type>
 using sparse_matrix = matrix_interface<ublas::compressed_matrix<value_type>>;
 
 // Shorthand expressions for dense matrices
-typedef	Mat<bool> bmat;															///< Boolean dense matrix
-typedef	Mat<int> imat;															///< Integer dense matrix
-typedef Mat<double> rmat;														///< Real dense matrix
-typedef	Mat<complex> cmat;														///< Complex dense matrix
+typedef	mat<bool> bmat;															///< Boolean dense matrix
+typedef	mat<int> imat;															///< Integer dense matrix
+typedef mat<double> rmat;														///< Real dense matrix
+typedef	mat<complex> cmat;														///< Complex dense matrix
 
 /// Convert an expression template into a temporary
 template<class E>
@@ -329,13 +329,13 @@ std::basic_ostream<A,B> &operator<<( std::basic_ostream<A,B> &os,
 
 /// Apply a function to all the elements of a matrix
 template<class F, class T>
-Mat<typename result_of<F(typename T::value_type)>::type>
+mat<typename result_of<F(typename T::value_type)>::type>
 	entrywise( F fun, const matrix_interface<T>& A )
 {
 	typedef typename result_of<F(typename T::value_type)>::type R;
 	int I = A.size1();
 	int J = A.size2();
-	Mat<R> B(I,J);
+	mat<R> B(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			B(i,j) = fun( A(i,j) );

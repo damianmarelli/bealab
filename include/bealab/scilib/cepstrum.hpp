@@ -25,7 +25,7 @@ namespace bealab
 
 /// Cepstrum
 template<class T>
-function<complex(int)> cepstrum( const Seq<T>& x )
+function<complex(int)> cepstrum( const sequence<T>& x )
 {
 	// Functor to compute the cepstrum in the frequency domain
 	function<complex(double)> ceps_f = [x]( double w ) -> complex
@@ -42,7 +42,7 @@ function<complex(int)> cepstrum( const Seq<T>& x )
 
 /// Real cepstrum
 template<class T>
-function<double(int)> real_cepstrum( const Seq<T>& x )
+function<double(int)> real_cepstrum( const sequence<T>& x )
 {
 	// Functor to compute the real cepstrum in the frequency domain
 	function<complex(double)> ceps_f = [x]( double w ) -> complex
@@ -59,7 +59,7 @@ function<double(int)> real_cepstrum( const Seq<T>& x )
 
 /// Minimum-phase cepstrum
 template<class T>
-function<double(int)> minimum_phase_cepstrum( const Seq<T>& x )
+function<double(int)> minimum_phase_cepstrum( const sequence<T>& x )
 {
 	return [x]( int t ) -> double
 	{
@@ -74,7 +74,7 @@ function<double(int)> minimum_phase_cepstrum( const Seq<T>& x )
 
 /// Inverse cepstrum
 template<class T>
-function<complex(int)> icepstrum( const Seq<T>& c )
+function<complex(int)> icepstrum( const sequence<T>& c )
 {
 	// Functor to compute the spectrum of the sequence
 	function<complex(double)> xf = [c]( double w )
@@ -94,21 +94,21 @@ function<complex(int)> icepstrum( const Seq<T>& c )
 
 /// Cepstrum
 template<class T>
-cseq cepstrum( const Seq<T>& x, int N, int a, int b )
+cseq cepstrum( const sequence<T>& x, int N, int a, int b )
 {
 	return idtft( log( dtft( x, N ) ) ).trunc( a, b );
 }
 
 /// Real cepstrum
 template<class T>
-rseq real_cepstrum( const Seq<T>& x, int N, int a, int b )
+rseq real_cepstrum( const sequence<T>& x, int N, int a, int b )
 {
 	return real( idtft( log( abs( dtft( x, N ) ) ) ) ).trunc( a, b );
 }
 
 /// Minimum-phase cepstrum
 template<class T>
-rseq minimum_phase_cepstrum( const Seq<T>& x, int N, int a, int b )
+rseq minimum_phase_cepstrum( const sequence<T>& x, int N, int a, int b )
 {
 	rseq rceps = real_cepstrum( x, N, a, b );
 	rseq mpceps = 2 * rceps;
@@ -120,7 +120,7 @@ rseq minimum_phase_cepstrum( const Seq<T>& x, int N, int a, int b )
 
 /// Inverse cepstrum
 template<class T>
-cseq icepstrum( const Seq<T>& c, int N, int a, int b )
+cseq icepstrum( const sequence<T>& c, int N, int a, int b )
 {
 	return idtft( exp( dtft( c, N ) ) ).trunc( a, b );
 }

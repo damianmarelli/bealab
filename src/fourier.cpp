@@ -16,7 +16,7 @@ namespace bealab
 // Static mutex for calling fftw_plan_dft_1d() and fftw_destroy_plan()
 static mutex dft_mutex;
 
-Vec<complex> dft( const Vec<complex>& x_ )
+vec<complex> dft( const vec<complex>& x_ )
 {
 	// Output
 	cvec& x = const_cast<cvec&>( x_ );
@@ -46,13 +46,13 @@ Vec<complex> dft( const Vec<complex>& x_ )
 	return y;
 }
 
-Vec<complex> dft( const Vec<double>& x )
+vec<complex> dft( const vec<double>& x )
 {
 	cvec x_ = x;
 	return dft( x_ );
 }
 
-Vec<complex> idft( const Vec<complex>& x_ )
+vec<complex> idft( const vec<complex>& x_ )
 {
 	// Output
 	cvec& x = const_cast<cvec&>( x_ );
@@ -82,7 +82,7 @@ Vec<complex> idft( const Vec<complex>& x_ )
 	return y / N;
 }
 
-Vec<complex> idft( const Vec<double>& x )
+vec<complex> idft( const vec<double>& x )
 {
 	cvec x_ = x;
 	return idft( x_ );

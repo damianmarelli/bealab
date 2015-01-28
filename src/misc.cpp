@@ -19,10 +19,10 @@ namespace signal
 {
 
 #ifndef BEALAB_NOMATLAB
-//state_space spectral_realization( const Mat<rseq> &Rx )
+//state_space spectral_realization( const mat<rseq> &Rx )
 //{
 //	// 3D array for matlab call
-//	Seq<rmat> Rx1 = ms2sm( Rx );
+//	sequence<rmat> Rx1 = ms2sm( Rx );
 //	Rx1   = Rx1.trunc( 0, Rx1.t2() );
 //	int I = Rx.size1();
 //	int J = Rx.size2();
@@ -46,7 +46,7 @@ namespace signal
 //}
 #endif
 
-Mat<cseq> spectral_factorization( const Mat<cseq>& X, double tol )
+mat<cseq> spectral_factorization( const mat<cseq>& X, double tol )
 {
 	class {
 		int rankred( const rvec& x, double tol )
@@ -58,13 +58,13 @@ Mat<cseq> spectral_factorization( const Mat<cseq>& X, double tol )
 			return N;
 		}
 	public:
-		Mat<cseq> operator()( const Mat<cseq>& X, double tol, int N )
+		mat<cseq> operator()( const mat<cseq>& X, double tol, int N )
 		{
-			const Mat<cvec>& Xf  = entrywise( [N](const cseq& s) {return dtft(s,N);} )( X );
-			const Vec<cmat>& Xf_ = ms2sm( Mat<cseq>(Xf) ).vec();
-			Vec<cmat> Yf_(N);
-			Vec<cmat> U(N);
-			Vec<rvec> d(N);
+			const mat<cvec>& Xf  = entrywise( [N](const cseq& s) {return dtft(s,N);} )( X );
+			const vec<cmat>& Xf_ = ms2sm( mat<cseq>(Xf) ).buffer();
+			vec<cmat> Yf_(N);
+			vec<cmat> U(N);
+			vec<rvec> d(N);
 			double max_sv = 0;
 			for( int n = 0; n < N; n++ ) {
 				auto UDV = svd( Xf_(n) );
@@ -83,15 +83,15 @@ Mat<cseq> spectral_factorization( const Mat<cseq>& X, double tol )
 				cmat tmp = U(n)( range(0,U(n).size1()), range(0,R) );
 				Yf_(n)   = tmp * diag( d(n)(range(0,R)) );
 			}
-			const Mat<cseq>& Yf = sm2ms( Seq<cmat>(Yf_) );
-			const Mat<cseq>& Y  = entrywise( [](const cseq& v) {return idtft(v.vec());} )( Yf );
+			const mat<cseq>& Yf = sm2ms( sequence<cmat>(Yf_) );
+			const mat<cseq>& Y  = entrywise( [](const cseq& v) {return idtft(v.buffer());} )( Yf );
 			return Y;
 		}
 	} spectral_factorization_N;
 
 	const cseq& x = sum(X);
 	int N         = x.size();
-	Mat<cseq> Y;
+	mat<cseq> Y;
 	double err    = inf;
 	for( int k = 0; err > tol; k++ ) {
 		Y   = spectral_factorization_N( X, tol/10, N*pow(2,k) );

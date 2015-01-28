@@ -309,7 +309,7 @@ public:
 
 	/// Constructor for a multi-XY plot (using a variadic template argument)
 	template<class... T>
-	_curve( const Vec<rvec>& x, const Vec<rvec>& y, const T&... sty ) : lines(true),
+	_curve( const vec<rvec>& x, const vec<rvec>& y, const T&... sty ) : lines(true),
 		points(false), linetype(1), pointtype(1), line_width(1), point_size(1), point_interval(0)
 	{
 		// Parse template arguments
@@ -338,7 +338,7 @@ public:
 
 	/// Constructor for a multi-XYZ plot (using a variadic template argument)
 	template<class... T>
-	_curve( const Vec<rvec>& x, const Vec<rvec>& y, const Vec<rvec>& z, const T&... sty ) : lines(true),
+	_curve( const vec<rvec>& x, const vec<rvec>& y, const vec<rvec>& z, const T&... sty ) : lines(true),
 		points(false), linetype(1), pointtype(1), line_width(1), point_size(1), point_interval(0)
 	{
 		// Parse template arguments
@@ -940,7 +940,7 @@ public:
 
 	/// Plots a matrix of vectors providing the x-scale
 	template<class... T>
-	figure& plot( const rvec& x, const Mat<rvec> &Y, const T&... sty )
+	figure& plot( const rvec& x, const mat<rvec> &Y, const T&... sty )
 	{
 		int I = Y.size1();
 		int J = Y.size2();
@@ -963,9 +963,9 @@ public:
 
 	/// Plots a vector of vectors providing the x-scale
 	template<class... T>
-	figure& plot( const rvec &x, const Vec<rvec> &y, const T&... sty )
+	figure& plot( const rvec &x, const vec<rvec> &y, const T&... sty )
 	{
-		Mat<rvec> Y( y.size(), 1 );
+		mat<rvec> Y( y.size(), 1 );
 		Y.column(0) = y;
 		return plot( x, Y, sty... );
 	}
@@ -974,12 +974,12 @@ public:
 	template<class... T>
 	figure& plot( const rvec &x, const rvec &y, const T&... sty )
 	{
-		return plot( x, Mat<rvec>{{y}}, sty... );
+		return plot( x, mat<rvec>{{y}}, sty... );
 	}
 
 	/// Plots a matrix of vectors
 	template<class... T>
-	figure& plot( const Mat<rvec> &Y, const T&... sty )
+	figure& plot( const mat<rvec> &Y, const T&... sty )
 	{
 		int I = Y.size1();
 		int J = Y.size2();
@@ -1005,10 +1005,10 @@ public:
 
 	/// Plots a vector of vectors
 	template<class... T>
-	figure& plot( const Vec<rvec> &y, const T&... sty )
+	figure& plot( const vec<rvec> &y, const T&... sty )
 	{
 		int I = y.size();
-		Mat<rvec> M(I,1);
+		mat<rvec> M(I,1);
 		M.column(0) = y;
 		return plot( M, sty... );
 	}
@@ -1017,12 +1017,12 @@ public:
 	template<class... T>
 	figure& plot( const rvec &y, const T&... sty )
 	{
-		return plot( Mat<rvec>{{y}}, sty... );
+		return plot( mat<rvec>{{y}}, sty... );
 	}
 
 	/// Plots a matrix of complex vectors
 	template<class... T>
-	figure& plot( const Mat<cvec> &Y, const T&... sty )
+	figure& plot( const mat<cvec> &Y, const T&... sty )
 	{
 		int I = Y.size1();
 		int J = Y.size2();
@@ -1049,21 +1049,21 @@ public:
 
 	/// Plots a vector of complex vectors
 	template<class... T>
-	figure& plot( const Vec<cvec> &y, const T&... sty )
+	figure& plot( const vec<cvec> &y, const T&... sty )
 	{
-		return plot( Mat<cvec>(y), sty... );
+		return plot( mat<cvec>(y), sty... );
 	}
 
 	/// Plots a complex vector
 	template<class... T>
 	figure& plot( const cvec &y, const T&... sty )
 	{
-		return plot( Mat<cvec>{{y}}, sty... );
+		return plot( mat<cvec>{{y}}, sty... );
 	}
 
 	/// Multi-XY plot
 	template<class... T>
-	figure& plot( const Vec<rvec>& x, const Vec<rvec> &y, const T&... sty )
+	figure& plot( const vec<rvec>& x, const vec<rvec> &y, const T&... sty )
 	{
 		_set_subplots( 1, 1 );
 		_subplot(0,0)->curves.push_back( _curve( x, y, sty... ) );
@@ -1076,7 +1076,7 @@ public:
 
 	/// Plot a matrix of sequences
 	template<class... T>
-	figure& plot( const Mat<rseq> &X, const T&... sty )
+	figure& plot( const mat<rseq> &X, const T&... sty )
 	{
 		int I = X.size1();
 		int J = X.size2();
@@ -1093,10 +1093,10 @@ public:
 				rvec t = vrange( X(i,j).t1(), X(i,j).t2()+1 );
 				if( overlap_f == true )
 					_subplot(0,0)->curves.push_back(
-							_curve( t, X(i,j).vec(), sty... ) );
+							_curve( t, X(i,j).buffer(), sty... ) );
 				else
 					_subplot(i,j)->curves.push_back(
-							_curve( t, X(i,j).vec(), sty... ) );
+							_curve( t, X(i,j).buffer(), sty... ) );
 			}
 		_draw();
 		return *this;
@@ -1104,9 +1104,9 @@ public:
 
 	/// Plot a vector of sequences
 	template<class... T>
-	figure& plot( const Vec<rseq> &Y, const T&... sty )
+	figure& plot( const vec<rseq> &Y, const T&... sty )
 	{
-		Mat<rseq> Z( Y.size(), 1 );
+		mat<rseq> Z( Y.size(), 1 );
 		Z.column(0) = Y;
 	    return plot( Z, sty... );
 	}
@@ -1115,7 +1115,7 @@ public:
 	template<class... T>
 	figure& plot( const rseq &y, const T&... sty )
 	{
-	    return plot( Mat<rseq>{{y}}, sty... );
+	    return plot( mat<rseq>{{y}}, sty... );
 	}
 
 	/// @name 3D plots
@@ -1125,14 +1125,14 @@ public:
 	figure& plot( const rvec &x, const rvec &y, const rvec &z, const T&... sty )
 	{
 		_set_subplots( 1, 1, _frame::xyzplot );
-		_subplot(0,0)->curves.push_back( _curve( Vec<rvec>{x}, Vec<rvec>{y}, Vec<rvec>{z}, sty... ) );
+		_subplot(0,0)->curves.push_back( _curve( vec<rvec>{x}, vec<rvec>{y}, vec<rvec>{z}, sty... ) );
 		_draw();
 		return *this;
 	}
 
 	/// Multi-XYZ plot
 	template<class... T>
-	figure& plot( const Vec<rvec> &x, const Vec<rvec> &y, const Vec<rvec> &z, const T&... sty )
+	figure& plot( const vec<rvec> &x, const vec<rvec> &y, const vec<rvec> &z, const T&... sty )
 	{
 		_set_subplots( 1, 1, _frame::xyzplot );
 		_subplot(0,0)->curves.push_back( _curve( x, y, z, sty... ) );

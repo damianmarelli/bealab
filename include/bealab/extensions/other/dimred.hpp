@@ -35,26 +35,26 @@ class principal_component_analysis {
 
 public:
 
-	Vec<Vec<T>> principal_components;
-	Vec<T> approximation;
-	Vec<T> coefficients;
+	vec<vec<T>> principal_components;
+	vec<T> approximation;
+	vec<T> coefficients;
 
-	principal_component_analysis( const Vec<Vec<T>>& x, int N_ ) :
+	principal_component_analysis( const vec<vec<T>>& x, int N_ ) :
 		N(N_), principal_components(N_)
 	{
 		// Convert to a matrix (X)
 		int I = x(0).size();
 		int J = x.size();
-		Mat<T> X(I,J);
+		mat<T> X(I,J);
 		for( int j = 0; j < J; j++ )
 			X.column(j) = x(j);
 
 		// Compute principal components of X
-		Mat<T> XX = X * trans(X);
+		mat<T> XX = X * trans(X);
 		auto DU   = eig( XX );
 		rvec d    = real(diag( get<0>(DU) ));
 		rmat U    = real(get<1>(DU));
-		Mat<T> PCS(I,N);
+		mat<T> PCS(I,N);
 		for( int n = 0; n < N; n++ )
 			PCS.column(n) = U.column(n);
 
@@ -63,7 +63,7 @@ public:
 			principal_components(n) = PCS.column(n);
 	}
 
-	rvec approximate( const Vec<T>& x )
+	rvec approximate( const vec<T>& x )
 	{
 		// Compute the coefficients
 		coefficients.resize(N);
@@ -102,7 +102,7 @@ public:
 	~manifold_learning_b();
 
 	/// Run the manifold pearning algorithm
-	Vec<rvec> run( const Vec<rvec>& points );
+	vec<rvec> run( const vec<rvec>& points );
 };
 
 /// Isomap
@@ -138,7 +138,7 @@ struct breadth_first_unfolding : public manifold_learning_b
 };
 
 /// Multi-dimensional scaling method
-Vec<rvec> multidimensional_scaling( const rmat& distances, int target_dimensions );
+vec<rvec> multidimensional_scaling( const rmat& distances, int target_dimensions );
 
 /// @}
 }

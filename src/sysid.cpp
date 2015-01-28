@@ -69,8 +69,8 @@ void steiglitz_mcbride_td::identify()
 		den0 = den;
 
 		// Pre-filtering
-		rvec uf = transfer_function( rvec{1}, den )( u ).vec();
-		rvec yf = transfer_function( rvec{1}, den )( y ).vec();
+		rvec uf = transfer_function( rvec{1}, den )( u ).buffer();
+		rvec yf = transfer_function( rvec{1}, den )( y ).buffer();
 
 		// Kalman ID
 		kalman_td id( n_num, n_den );
@@ -82,7 +82,7 @@ void steiglitz_mcbride_td::identify()
 
 		// Stopping condition
 		double erro = err;
-		rvec yh     = transfer_function( num, den )( u ).vec();
+		rvec yh     = transfer_function( num, den )( u ).buffer();
 		err         = norm(y-yh) / norm(y);
 		derr        = err - erro;
 
@@ -314,7 +314,7 @@ void plinreg::iteration()
 	int Tr        = T - n + 1;
 
 	// Generate x
-	rvec x = transfer_function( num, den )( u ).vec();
+	rvec x = transfer_function( num, den )( u ).buffer();
 
 	// Regressor matrix (Phi)
 	rmat Phi_u(Tr,n_num);
@@ -354,7 +354,7 @@ void plinreg::identify()
 		iteration();
 
 		// Stopping condition
-		rvec yh     = transfer_function( num, den )( u ).vec();
+		rvec yh     = transfer_function( num, den )( u ).buffer();
 		double erro = err;
 		err         = norm(y-yh) / norm(y);
 		derr        = err - erro;

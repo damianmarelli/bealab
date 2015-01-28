@@ -26,61 +26,61 @@ namespace signal
 
 /// @name Downsampling and upsampling
 template <class T>
-Seq<T> phase( const Seq<T> &x, int D, int d )
+sequence<T> phase( const sequence<T> &x, int D, int d )
 {
 	int t1 = ceil( (x.t1()-d)/(double)D );
 	int t2 = floor( (x.t2()-d)/(double)D );
 	int I  = t2-t1+1;
-	Vec<T> v(I);
+	vec<T> v(I);
 	for( int i = 0; i < I; i++ )
 		v(i) = x( (i+t1)*D + d );
-	return Seq<T>( v, t1 );
+	return sequence<T>( v, t1 );
 }
 
 template <class T>
-Seq<T> downsample( const Seq<T> &x, int D )
+sequence<T> downsample( const sequence<T> &x, int D )
 {
 	return phase( x, D, 0 );
 }
 
 template <class T>
-Vec<Seq<T>> downsample( const Vec<Seq<T>> &x, int D )
+vec<sequence<T>> downsample( const vec<sequence<T>> &x, int D )
 {
 	return x.apply( [D](const rseq &s){return downsample(s,D);} );
 }
 
 template <class T>
-Mat<Seq<T>> downsample( const Mat<Seq<T>> &x, int D )
+mat<sequence<T>> downsample( const mat<sequence<T>> &x, int D )
 {
 	return x.apply( [D](const rseq &s){return downsample(s,D);} );
 }
 
 template <class T>
-Seq<T> upsample( const Seq<T> &x, int D )
+sequence<T> upsample( const sequence<T> &x, int D )
 {
 	if( x.size() == 0 )
-		return Seq<T>();
+		return sequence<T>();
 	int xt1    = x.t1();
 	int xt2    = x.t2();
 	int xI     = xt2-xt1+1;
 	int t1     = D*xt1;
 	int t2     = D*xt2;
 	int I      = t2-t1+1;
-	Vec<T> v   = zeros(I);
-	const Vec<T> &x_ = x.vec();
+	vec<T> v   = zeros(I);
+	const vec<T> &x_ = x.buffer();
 	for( int i = 0; i < xI; i++ )
 		v(i*D) = x_(i);
-	return Seq<T>( v, t1 );
+	return sequence<T>( v, t1 );
 }
 
 template <class T>
-Vec<Seq<T>> upsample( const Vec<Seq<T>> &x, int D )
+vec<sequence<T>> upsample( const vec<sequence<T>> &x, int D )
 {
 	return x.apply( [D](const rseq &s){return upsample(s,D);} );
 }
 
 template <class T>
-Mat<Seq<T>> upsample( const Mat<Seq<T>> &x, int D )
+mat<sequence<T>> upsample( const mat<sequence<T>> &x, int D )
 {
 	return x.apply( [D](const rseq &s){return upsample(s,D);} );
 }
@@ -88,29 +88,29 @@ Mat<Seq<T>> upsample( const Mat<Seq<T>> &x, int D )
 
 /// @name Polyphase representation
 template <class T>
-Vec<Seq<T>> fb2pp_signal( const Seq<T> &x, int D )
+vec<sequence<T>> fb2pp_signal( const sequence<T> &x, int D )
 {
-	Vec<Seq<T>> X(D);
+	vec<sequence<T>> X(D);
 	for( int d = 0; d < D; d++ )
 		X(d) = phase( x, D, -d );
 	return X;
 }
 
 template <class T>
-Seq<T> pp2fb_signal( const Vec<Seq<T>> &X )
+sequence<T> pp2fb_signal( const vec<sequence<T>> &X )
 {
 	int D = X.size();
-	Seq<T> x;
+	sequence<T> x;
 	for( int d = 0; d < D; d++ )
 		x += time_shift( upsample( X(d), D ), -d );
 	return x;
 }
 
 template <class T>
-Mat<Seq<T>> fb2pp_filterbank( const Vec<Seq<T>> &h, int D )
+mat<sequence<T>> fb2pp_filterbank( const vec<sequence<T>> &h, int D )
 {
 	int M = h.size();
-	Mat<Seq<T>> H(M,D);
+	mat<sequence<T>> H(M,D);
 	for( int m = 0; m < M; m++ )
 		for( int d = 0; d < D; d++ )
 			H(m,d) = phase( h(m), D, d );
@@ -118,11 +118,11 @@ Mat<Seq<T>> fb2pp_filterbank( const Vec<Seq<T>> &h, int D )
 }
 
 template <class T>
-Vec<Seq<T>> pp2fb_filterbank( const Mat<Seq<T>> &H )
+vec<sequence<T>> pp2fb_filterbank( const mat<sequence<T>> &H )
 {
 	int M = H.rows();
 	int D = H.cols();
-	Vec<Seq<T>> h(M);
+	vec<sequence<T>> h(M);
 	for( int m = 0; m < M; m++ )
 		for( int d = 0; d < D; d++ )
 			h(m) += time_shift( upsample( H(m,d), D ), d );
@@ -130,9 +130,9 @@ Vec<Seq<T>> pp2fb_filterbank( const Mat<Seq<T>> &H )
 }
 
 template <class T>
-Mat<Seq<T>> fb2pp_system( const Seq<T> &g, int D )
+mat<sequence<T>> fb2pp_system( const sequence<T> &g, int D )
 {
-	Mat<Seq<T>> G(D,D);
+	mat<sequence<T>> G(D,D);
 	for( int d = 0; d < D; d++ )
 		for( int e = 0; e < D; e++ )
 			G(d,e) = phase( g, D, e-d );
@@ -140,10 +140,10 @@ Mat<Seq<T>> fb2pp_system( const Seq<T> &g, int D )
 }
 
 template <class T>
-Mat<Seq<T>> fb2pp_system( const Vec<Seq<T>> &g )
+mat<sequence<T>> fb2pp_system( const vec<sequence<T>> &g )
 {
 	int D = g.size();
-	Mat<Seq<T>> G(D,D);
+	mat<sequence<T>> G(D,D);
 	for( int d = 0; d < D; d++ )
 		for( int e = 0; e < D; e++ )
 			G(d,e) = phase( g(d), D, e-d );
@@ -151,15 +151,15 @@ Mat<Seq<T>> fb2pp_system( const Vec<Seq<T>> &g )
 }
 
 template <class T>
-Vec<Seq<T>> pp2fb_system( const Mat<Seq<T>> &G )
+vec<sequence<T>> pp2fb_system( const mat<sequence<T>> &G )
 {
 	if( G.size1() != G.size2() )
 		error("pp2fb_system() - The polyphase matrix needs to be square");
 	int D = G.size1();
-	Vec<Seq<T>> g(D);
+	vec<sequence<T>> g(D);
 	for( int d = 0; d < D; d++ ) {
 		for( int e = 0; e < D; e++ ) {
-			const Seq<T>& ph = upsample( G(d,e), D );
+			const sequence<T>& ph = upsample( G(d,e), D );
 			g(d) += time_shift( ph, e-d );
 		}
 	}

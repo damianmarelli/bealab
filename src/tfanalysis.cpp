@@ -20,11 +20,11 @@ namespace signal
 #ifndef BEALAB_NOPYTHON
 cmat spectrogram( rseq x, int M, int D, int N )
 {
-	Vec<rseq> X = fb2pp_signal( x, D );
+	vec<rseq> X = fb2pp_signal( x, D );
 	rseq h0     = hamming( N );
-	Vec<cseq> h = filterbank_dtft( h0, M );
-	Mat<cseq> H = fb2pp_filterbank( h, D );
-	Vec<cseq> Y = H * X;
+	vec<cseq> h = filterbank_dtft( h0, M );
+	mat<cseq> H = fb2pp_filterbank( h, D );
+	vec<cseq> Y = H * X;
 	int K  = max( entrywise( [](const cseq& x) { return x.size(); } )(Y) );
 	int t1 = min( entrywise( [](const cseq& x) { return x.t1(); } )(Y) );
 	cmat A(M,K);
@@ -35,9 +35,9 @@ cmat spectrogram( rseq x, int M, int D, int N )
 }
 #endif
 
-Vec<cseq> filterbank_dtft( const cseq& h0, int M )
+vec<cseq> filterbank_dtft( const cseq& h0, int M )
 {
-	Vec<cseq> h(M);
+	vec<cseq> h(M);
 	for( int m = 0; m < M; m++ )
 		h(m) = frequency_shift( h0, 2*pi*m/(double)M );
 	return h;
@@ -60,7 +60,7 @@ cseq quasidual_window( const cseq& h, int M, int D, int t1, int t2 )
 			const cseq& h3 = upsample( h2, D );
 			cseq h4        = time_shift( h3, -t );
 			h4             = h4.trunc( t1, t2 );
-			cvec rw        = conj(h4).vec();
+			cvec rw        = conj(h4).buffer();
 			if( norm(rw) > 0 ) {
 				R.row(ir) = rw;
 				d(ir) = (m==0)/(double)M;
@@ -83,13 +83,13 @@ tuple<double,double> frame_bounds( const cseq& h0, int M, int D )
 	int N = h0.size();
 
 	// Compute U(d) = \sum_m |h_m(z)| |h_m(\Omega^d z)|
-	Vec<rvec> U(D);
+	vec<rvec> U(D);
 	rvec Beta(D);
 	for( int d = 0; d < D; d++ ) {
 		const cseq& h00 = h0;
 		const cseq& H00 = abs( dtft( h00, N ) );
-		const cseq& H0d = circshift( H00.vec(), round((double)N/D)*d );
-		const rvec& U0  = real( element_prod( H00.vec(), H0d.vec() ) );
+		const cseq& H0d = circshift( H00.buffer(), round((double)N/D)*d );
+		const rvec& U0  = real( element_prod( H00.buffer(), H0d.buffer() ) );
 		U(d) = U0;
 		for( int m = 1; m < M; m++ )
 			U(d) += circshift( U0, round((double)N/M)*m );
@@ -113,7 +113,7 @@ tuple<double,double> frame_bounds( const cseq& h0, int M, int D )
 double dual_window_error( const cseq& h0, const cseq& f0, int M, int D )
 {
 	const rseq& x      = randn(10e3);
-	const Vec<cseq>& X = analysis( x, h0, M, D );
+	const vec<cseq>& X = analysis( x, h0, M, D );
 	const rseq& y      = real( synthesis( X, f0, D ) );
 	return norm( x - y ) / norm( x );
 }
@@ -132,10 +132,10 @@ cseq connonical_dual_window( const cseq& h0, int M, int D, double tol )
 //		cout << "cannonical_dual() - Error = " << err << endl;
 		if( err < tol )
 			break;
-		const Vec<cseq>& H = analysis( s, h0, M, D );
+		const vec<cseq>& H = analysis( s, h0, M, D );
 		s   = s - K * synthesis( H, h0, D );
 	}
-	f0 = f0.trim( .1*tol*max(abs(f0).vec()) );
+	f0 = f0.trim( .1*tol*max(abs(f0).buffer()) );
 
 	return f0;
 }

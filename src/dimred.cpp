@@ -22,7 +22,7 @@ namespace dimred
 //------------------------------------------------------------------------------
 // Function multidimensional_scaling()
 //------------------------------------------------------------------------------
-Vec<rvec> multidimensional_scaling( const rmat& distances, int target_dimensions )
+vec<rvec> multidimensional_scaling( const rmat& distances, int target_dimensions )
 {
 	assert( distances.size1() == distances.size2() );
 
@@ -41,7 +41,7 @@ Vec<rvec> multidimensional_scaling( const rmat& distances, int target_dimensions
 	GMatrix& B = *pB;
 
 	// Output data
-	Vec<rvec> rv(I);
+	vec<rvec> rv(I);
 	for( int i = 0; i < I; i++ ) {
 		rv(i).resize(target_dimensions);
 		for( int j = 0; j < target_dimensions; j++ )
@@ -66,7 +66,7 @@ manifold_learning_b::~manifold_learning_b()
 //		delete pmethod;
 }
 
-Vec<rvec> manifold_learning_b::run( const Vec<rvec>& points )
+vec<rvec> manifold_learning_b::run( const vec<rvec>& points )
 {
 	// Input data
 	int I = points.size();
@@ -82,7 +82,7 @@ Vec<rvec> manifold_learning_b::run( const Vec<rvec>& points )
 	GMatrix& B = *pB;
 
 	// Output data
-	Vec<rvec> rv(I);
+	vec<rvec> rv(I);
 	for( int i = 0; i < I; i++ ) {
 		rv(i).resize(target_dims);
 		for( int j = 0; j < target_dims; j++ )

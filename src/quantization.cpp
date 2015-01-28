@@ -66,12 +66,12 @@ rseq quantizer::operator()( const rseq &x ) const
 //============================================================================
 // Vector quantizer class
 //============================================================================
-vector_quantizer::vector_quantizer( const Vec<rvec> &database, int dictsize )
+vector_quantizer::vector_quantizer( const vec<rvec> &database, int dictsize )
 {
 	train( database, dictsize );
 }
 
-void vector_quantizer::train( const Vec<rvec> &database, int dictsize )
+void vector_quantizer::train( const vec<rvec> &database, int dictsize )
 {
 	dict = kmeans( database, dictsize );
 }
@@ -85,12 +85,12 @@ int vector_quantizer::encode( const rvec &x ) const
 	return min_index( dist );
 }
 
-iseq vector_quantizer::encode( const Vec<rseq> &x ) const
+iseq vector_quantizer::encode( const vec<rseq> &x ) const
 {
 	return encode( vs2sv(x) );
 }
 
-iseq vector_quantizer::encode( const Seq<rvec> &x ) const
+iseq vector_quantizer::encode( const sequence<rvec> &x ) const
 {
 	iseq y( x.size(), x.t1() );
 	for( int t = x.t1(); t <= x.t2(); t++ )
@@ -103,9 +103,9 @@ rvec vector_quantizer::decode( int i ) const
 	return dict(i);
 }
 
-Seq<rvec> vector_quantizer::decode( const iseq &i ) const
+sequence<rvec> vector_quantizer::decode( const iseq &i ) const
 {
-	Seq<rvec> z( i.size(), i.t1() );
+	sequence<rvec> z( i.size(), i.t1() );
 	for( int t = i.t1(); t <= i.t2(); t++ )
 		z(t) = decode( i(t) );
 	return z;
@@ -116,12 +116,12 @@ rvec vector_quantizer::operator()( const rvec &x ) const
 	return decode( encode(x) );
 }
 
-Vec<rseq> vector_quantizer::operator()( const Vec<rseq> &x ) const
+vec<rseq> vector_quantizer::operator()( const vec<rseq> &x ) const
 {
 	return sv2vs( decode( encode(x) ) );
 }
 
-Seq<rvec> vector_quantizer::operator()( const Seq<rvec> &x ) const
+sequence<rvec> vector_quantizer::operator()( const sequence<rvec> &x ) const
 {
 	return decode( encode(x) );
 }
@@ -214,7 +214,7 @@ rvec waterfilling( const rvec &s2, int B )
 /*
  * Filterbank for KL decomposition
  */
-Vec<rseq> KL_filterbank( const rseq &rx, int N, rvec *power, double tol )
+vec<rseq> KL_filterbank( const rseq &rx, int N, rvec *power, double tol )
 {
 	// input eigenvectors
 	rmat R = zeros(N,N);
@@ -230,7 +230,7 @@ Vec<rseq> KL_filterbank( const rseq &rx, int N, rvec *power, double tol )
 	int Nc = sum( static_cast<ivec>( abs(d) > tol * abs(d(0)) ) );
 
 	// Analysis filterbank
-	Vec<rseq> h(Nc);
+	vec<rseq> h(Nc);
 	for( int i = 0; i < Nc; i++ )
 	    h(i) = rseq( real(flip(V.column(i))), 0 );
 
@@ -408,7 +408,7 @@ double distortion_rate_function( double R, const function<double(double)>& phi )
 // */
 //rarma lpc_predictor( const rseq &fx, int N )
 //{
-//	return 	lpc_predictor( Mat<rseq>({{fx}}), N )(0,0);
+//	return 	lpc_predictor( mat<rseq>({{fx}}), N )(0,0);
 //}
 //
 ///*
@@ -417,8 +417,8 @@ double distortion_rate_function( double R, const function<double(double)>& phi )
 //quantizer lpc_quantizer( int L, const rseq &p, const rseq &fx, int K )
 //{
 //	// Design vector quantizer of one dimension
-//	Seq<rmat> P  = ms2sm( Mat<rseq>{{p}}  );
-//	Seq<rmat> Fx = ms2sm( Mat<rseq>{{fx}} );
+//	sequence<rmat> P  = ms2sm( mat<rseq>{{p}}  );
+//	sequence<rmat> Fx = ms2sm( mat<rseq>{{fx}} );
 //	vector_quantizer VQ = lpc_quantizer( L, P, Fx, K );
 //
 //	// Build scalar quantizer
@@ -453,12 +453,12 @@ double distortion_rate_function( double R, const function<double(double)>& phi )
 //---------------------------------------------------------------------------
 // Compute predictor
 //---------------------------------------------------------------------------
-control::arma<rmat,rvec> lpc_predictor( const Seq<rmat> &Fx_, int N )
+control::arma<rmat,rvec> lpc_predictor( const sequence<rmat> &Fx_, int N )
 {
-	Mat<rseq> Fx = sm2ms(Fx_);
+	mat<rseq> Fx = sm2ms(Fx_);
 
 	// Compute R_ and M_
-	Mat<rseq> R = Fx * adjoint(Fx);
+	mat<rseq> R = Fx * adjoint(Fx);
 	int L   = R.size1();
 	rmat R_ = zeros(N*L,L);
 	rmat M_ = zeros(N*L,N*L);
@@ -477,7 +477,7 @@ control::arma<rmat,rvec> lpc_predictor( const Seq<rmat> &Fx_, int N )
 	rmat P_ = lls( M_, R_ );
 
 	// Build numerators
-	Mat<rvec> B(L,L);
+	mat<rvec> B(L,L);
 	for( int i = 0; i < L; i++ )
 		for( int j = 0; j < L; j++ )
 			B(i,j) = zeros(N);
@@ -493,7 +493,7 @@ control::arma<rmat,rvec> lpc_predictor( const Seq<rmat> &Fx_, int N )
 	}
 
 	// Build arma model
-	Mat<control::transfer_function> P(L,L);
+	mat<control::transfer_function> P(L,L);
 	for( int i = 0; i < L; i++ )
 		for( int j = 0; j < L; j++ )
 			P(i,j).set_coeffs( B(i,j), rvec({1}) );
@@ -504,20 +504,20 @@ control::arma<rmat,rvec> lpc_predictor( const Seq<rmat> &Fx_, int N )
 //---------------------------------------------------------------------------
 // Compute the quantizer using the open loop algorithm
 //---------------------------------------------------------------------------
-vector_quantizer lpc_quantizer_openloop( int L, const function<Seq<rvec>(Seq<rvec>)>& P,
-		const Seq<rmat> &Fx, int K )
+vector_quantizer lpc_quantizer_openloop( int L, const function<sequence<rvec>(sequence<rvec>)>& P,
+		const sequence<rmat> &Fx, int K )
 {
 	// Training signal
-	Seq<rvec> E(K,0);
+	sequence<rvec> E(K,0);
 	int J = Fx(Fx.t1()).size2();
 	for( int k = 0; k < K; k++ )
 		E(k) = randn(J);
-	Seq<rvec> X  = (Fx * E).trunc(0,K-1);
-	Seq<rvec> Xp = time_shift( P(X), 1 );
-	Seq<rvec> Xe = X - Xp;
+	sequence<rvec> X  = (Fx * E).trunc(0,K-1);
+	sequence<rvec> Xp = time_shift( P(X), 1 );
+	sequence<rvec> Xe = X - Xp;
 
 	// Design quantizer
-	vector_quantizer VQ( Xe.vec(), L );
+	vector_quantizer VQ( Xe.buffer(), L );
 
 	return VQ;
 }
@@ -528,18 +528,18 @@ vector_quantizer lpc_quantizer_openloop( int L, const function<Seq<rvec>(Seq<rve
 // approach to predictive vector quantizer design with application in video
 // coding,” IEEE Trans. Image Process., vol. 10, no. 1, pp. 15–23, Jan. 2001.
 //---------------------------------------------------------------------------
-vector_quantizer lpc_quantizer_closedloop( int L, const function<Seq<rvec>(Seq<rvec>)>& P,
-		const Seq<rmat> &Fx, int K )
+vector_quantizer lpc_quantizer_closedloop( int L, const function<sequence<rvec>(sequence<rvec>)>& P,
+		const sequence<rmat> &Fx, int K )
 {
 	// Training signal
-	Seq<rvec> E(K,0);
+	sequence<rvec> E(K,0);
 	int J = Fx(Fx.t1()).size2();
 	for( int k = 0; k < K; k++ )
 		E(k) = randn(J);
-	Seq<rvec> X = (Fx * E).trunc(0,K-1);
+	sequence<rvec> X = (Fx * E).trunc(0,K-1);
 
 	// Main loop
-	Seq<rvec> Xq(K,0);									// Quantized signal
+	sequence<rvec> Xq(K,0);									// Quantized signal
 	int I = Fx(Fx.t1()).size1();
 	for( int t = Xq.t1(); t <= Xq.t2(); t++ )
 		Xq(t) = zeros(I);
@@ -548,12 +548,12 @@ vector_quantizer lpc_quantizer_closedloop( int L, const function<Seq<rvec>(Seq<r
 	double err = inf;
 	double err0;
 	do {
-		Seq<rvec> Xp__= P(Xq);
-		Seq<rvec> Xp_ = time_shift( Xp__, 1 );
-		Seq<rvec> Xp  = Xp_.trunc(Xq.t1()+1, Xq.t2());	// Prediction
-		Seq<rvec> Xe  = X - Xp;							// Prediction error
+		sequence<rvec> Xp__= P(Xq);
+		sequence<rvec> Xp_ = time_shift( Xp__, 1 );
+		sequence<rvec> Xp  = Xp_.trunc(Xq.t1()+1, Xq.t2());	// Prediction
+		sequence<rvec> Xe  = X - Xp;							// Prediction error
 		VQ0 = VQ;
-		VQ.train( Xe.vec(), L );						// Quantizer
+		VQ.train( Xe.buffer(), L );						// Quantizer
 		Xq = VQ( Xe ) + Xp;								// Quantization
 
 		// stop criterion
@@ -570,12 +570,12 @@ vector_quantizer lpc_quantizer_closedloop( int L, const function<Seq<rvec>(Seq<r
 //---------------------------------------------------------------------------
 // Quantize a vector signal given the PREDICTOR and QUANTIZER
 //---------------------------------------------------------------------------
-Seq<rvec> lpc( const Seq<rvec> &x, const function<rvec(rvec)>& p, const vector_quantizer &q )
+sequence<rvec> lpc( const sequence<rvec> &x, const function<rvec(rvec)>& p, const vector_quantizer &q )
 {
 	int M  = x(x.t1()).size();
 	int T  = x.size();
 	int t1 = x.t1();
-	Seq<rvec> xq( T, t1 );							// Quantized signal
+	sequence<rvec> xq( T, t1 );							// Quantized signal
 	rvec xp = zeros(M);								// Predicted value
 	for( int t = x.t1(); t <= x.t2(); t++ ) {
 		rvec pe = x(t) - xp;
@@ -589,11 +589,11 @@ Seq<rvec> lpc( const Seq<rvec> &x, const function<rvec(rvec)>& p, const vector_q
 //---------------------------------------------------------------------------
 // Quantize a vector signal given the PREDICTOR LENGTH and QUANTIZATION LEVELS
 //---------------------------------------------------------------------------
-Vec<rseq> lpc( const Vec<rseq> &x, const Mat<rseq> &Fx, int P, int L, int K,
+vec<rseq> lpc( const vec<rseq> &x, const mat<rseq> &Fx, int P, int L, int K,
 		const string &quantization )
 {
 	// compute the predictor
-	Seq<rmat> Fx_                  = ms2sm(Fx);
+	sequence<rmat> Fx_                  = ms2sm(Fx);
 	control::arma<rmat,rvec> p = lpc_predictor( Fx_, P );
 
 	// Quantizer design
@@ -607,9 +607,9 @@ Vec<rseq> lpc( const Vec<rseq> &x, const Mat<rseq> &Fx, int P, int L, int K,
 		error( string("quantization mode ") + quantization + string(" not supported") );
 
 	// Linear predictive quantization
-	Seq<rvec> x_  = vs2sv( x );
-	Seq<rvec> xq  = lpc( x_, p, q );
-	Vec<rseq> xq_ = sv2vs(xq);
+	sequence<rvec> x_  = vs2sv( x );
+	sequence<rvec> xq  = lpc( x_, p, q );
+	vec<rseq> xq_ = sv2vs(xq);
 
 	return xq_;
 }

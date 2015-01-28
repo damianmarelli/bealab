@@ -31,19 +31,19 @@ namespace mpi = boost::mpi;
 /// Implements a for loop in parallel over a cluster.
 /// It evaluates fun(i), for i=0,...,I-1, and return a vector with the results.
 template<class T>
-Vec<T> parallel_for( int I, const function<T(int)>& fun )
+vec<T> parallel_for( int I, const function<T(int)>& fun )
 {
 	// Parallel processing
-	Vec<T> X(I);
+	vec<T> X(I);
 	mpi::communicator com;
 	#pragma omp parallel for
 	for( int i = com.rank(); i < I; i += com.size() )
 		X[i] = fun(i);
 
 	// Collect the result
-	vector<Vec<T>> XX;
+	vector<vec<T>> XX;
 	mpi::gather( com, X, XX, 0 );
-	Vec<T> Y(I);
+	vec<T> Y(I);
 	if( com.rank() == 0 )
 		for( int i = 0; i < I; i++ )
 			Y[i] = XX[ i % com.size() ](i);

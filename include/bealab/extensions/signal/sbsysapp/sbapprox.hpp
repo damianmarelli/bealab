@@ -33,7 +33,7 @@ class sbapprox : public sbconfig, public sbindex_pool {
 
 protected:
 
-	Mat<cseq> G;																///< polyphase matrix of the target
+	mat<cseq> G;																///< polyphase matrix of the target
 
 public:
 
@@ -48,14 +48,14 @@ public:
 
 	/// Set target (polyphase)
 	virtual
-	void set_target( const Mat<cseq>& G_ )
+	void set_target( const mat<cseq>& G_ )
 	{
 		assert( (int)G_.size1() == D && (int)G_.size2() == D );
 		G = G_;
 	}
 
 	/// Set target (impulse response)
-	void set_target( const Vec<cseq>& g )
+	void set_target( const vec<cseq>& g )
 	{
 		set_target( fb2pp_system(g) );
 	}
@@ -63,7 +63,7 @@ public:
 	/// Set target (single complex impulse response)
 	void set_target( const cseq& g0 )
 	{
-		Vec<cseq> g(D);
+		vec<cseq> g(D);
 		for( int d = 0; d < D; d++ )
 			g(d) = g0;
 		set_target( g );
@@ -79,13 +79,13 @@ public:
 /// Base for all subband approximation problems in the frequency domain.
 class fdcriterion : public virtual sbapprox {
 
-	Mat<Seq<Vec<cvec>>> real_atoms_sbm;											///< Table with pre-computed real atoms in the frequency domain
-	Mat<Seq<Vec<cvec>>> imag_atoms_sbm;											///< Table with pre-computed imaginary atoms in the frequency domain
-	Mat<cseq> FASWA;															///< Pre-computed matrix
-	Mat<cseq> WSH;																///< Pre-computed matrix
+	mat<sequence<vec<cvec>>> real_atoms_sbm;											///< Table with pre-computed real atoms in the frequency domain
+	mat<sequence<vec<cvec>>> imag_atoms_sbm;											///< Table with pre-computed imaginary atoms in the frequency domain
+	mat<cseq> FASWA;															///< Pre-computed matrix
+	mat<cseq> WSH;																///< Pre-computed matrix
 
 	/// Get a subband model atom
-	Vec<cvec> get_atom_sbm_( const sbindex& sbi );
+	vec<cvec> get_atom_sbm_( const sbindex& sbi );
 
 protected:
 
@@ -100,26 +100,26 @@ protected:
 	void precompute_fbatoms();
 
 	/// Get a subband model atom, and fill the table if necessary
-	Vec<cvec>& get_atom_sbm( const sbindex& sbi );
+	vec<cvec>& get_atom_sbm( const sbindex& sbi );
 
 	/// Get an analysis window atom
-	Vec<cvec> get_atom_analysis( int idx );
+	vec<cvec> get_atom_analysis( int idx );
 
 	/// Get a synthesis window atom
-	Vec<cvec> get_atom_synthesis( int idx );
+	vec<cvec> get_atom_synthesis( int idx );
 
 public:
 
 	using sbapprox::set_target;
 
-	Vec<cvec> gf;																///< Frequency representation of the target
+	vec<cvec> gf;																///< Frequency representation of the target
 	function<cvec(const cseq&)> dtft;											///< N-point DTFT functor
 
 	/// Constructor
 	fdcriterion( int M, int D, int N );
 
 	/// Virtual function override
-	void set_target( const Mat<cseq>& G ) override;
+	void set_target( const mat<cseq>& G ) override;
 
 	/// Set the analysis filterbank
 	void set_analysis_fb( const cseq& h0 );
@@ -149,7 +149,7 @@ class logarithmic : public fdcriterion {
 
 	/// Auxiliary function to compute the gradient given the atoms.
 	virtual
-	rvec gradient_aux( const Vec<Vec<cvec>>& atoms );
+	rvec gradient_aux( const vec<vec<cvec>>& atoms );
 
 public:
 
@@ -176,7 +176,7 @@ public:
 class logarithmic_nophase : public logarithmic {
 
 	/// Virtual function override
-	rvec gradient_aux( const Vec<Vec<cvec>>& atoms ) override;
+	rvec gradient_aux( const vec<vec<cvec>>& atoms ) override;
 
 public:
 

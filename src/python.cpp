@@ -84,7 +84,7 @@ object::object( const string &val )
 }
 
 template<class T>
-object::object( const Vec<T> &val )
+object::object( const vec<T> &val )
 {
 	int N = val.size();
 	pdata = PyList_New( N );
@@ -95,28 +95,28 @@ object::object( const Vec<T> &val )
 	}
 }
 /// @cond INCLUDE_EXPLICIT_TEMPLATES
-template object::object( const Vec<bool>& );
-template object::object( const Vec<int>& );
-template object::object( const Vec<double>& );
-template object::object( const Vec<complex>& );
+template object::object( const vec<bool>& );
+template object::object( const vec<int>& );
+template object::object( const vec<double>& );
+template object::object( const vec<complex>& );
 /// @endcond
 
 template<class T>
-object::object( const Mat<T> &val )
+object::object( const mat<T> &val )
 {
 	int N = val.size1();
 	pdata = PyList_New( N );
 	for( int n = 0; n < N; n++ ) {
-		object o = Vec<T>( val.row( n ) );
+		object o = vec<T>( val.row( n ) );
 		PyList_SetItem( (PyObject*)pdata, n, (PyObject*)o.data() );
 		Py_INCREF( (PyObject*)o.data() );
 	}
 }
 /// @cond INCLUDE_EXPLICIT_TEMPLATES
-template object::object( const Mat<bool>& );
-template object::object( const Mat<int>& );
-template object::object( const Mat<double>& );
-template object::object( const Mat<complex>& );
+template object::object( const mat<bool>& );
+template object::object( const mat<int>& );
+template object::object( const mat<double>& );
+template object::object( const mat<complex>& );
 /// @endcond
 
 object::~object()
@@ -173,7 +173,7 @@ object::operator string() const
 }
 
 template<class T>
-object::operator Vec<T>() const
+object::operator vec<T>() const
 {
 	// Convert to PyArray
 	PyObject* pd = PyArray_FROM_OTF( (PyObject*) pdata, NPY_DOUBLE, NPY_IN_ARRAY );
@@ -183,21 +183,21 @@ object::operator Vec<T>() const
 	if( data == NULL )
 		error("Cannot get data pointer of PyArray");
 
-	// Convert to Vec<T>
+	// Convert to vec<T>
 	int N = PyArray_DIM( pd, 0 );
-	Vec<T> rv(N);
+	vec<T> rv(N);
 	for( int n = 0; n < N; n++ )
 		rv(n) = data[n];
 	return rv;
 }
 /// @cond INCLUDE_EXPLICIT_TEMPLATES
-template object::operator Vec<int>() const;
-template object::operator Vec<double>() const;
-template object::operator Vec<complex>() const;
+template object::operator vec<int>() const;
+template object::operator vec<double>() const;
+template object::operator vec<complex>() const;
 /// @endcond
 
 template<class T>
-object::operator Mat<T>() const
+object::operator mat<T>() const
 {
 	// Convert to PyArray
 	PyObject* pd = PyArray_FROM_OTF( (PyObject*) pdata, NPY_DOUBLE, NPY_IN_ARRAY );
@@ -207,19 +207,19 @@ object::operator Mat<T>() const
 	if( data == NULL )
 		error("Cannot get data pointer of PyArray");
 
-	// Convert to Mat<T>
+	// Convert to mat<T>
 	int I = PyArray_DIM( pd, 0 );
 	int J = PyArray_DIM( pd, 1 );
-	Mat<T> rv(I,J);
+	mat<T> rv(I,J);
 	for( int i = 0; i < I; i++ )
 		for( int j = 0; j < J; j++ )
 			rv(i,j) = data[j+J*i];
 	return rv;
 }
 /// @cond INCLUDE_EXPLICIT_TEMPLATES
-template object::operator Mat<int>() const;
-template object::operator Mat<double>() const;
-template object::operator Mat<complex>() const;
+template object::operator mat<int>() const;
+template object::operator mat<double>() const;
+template object::operator mat<complex>() const;
 /// @endcond
 
 // Class members of functor ---------------------------------------------------

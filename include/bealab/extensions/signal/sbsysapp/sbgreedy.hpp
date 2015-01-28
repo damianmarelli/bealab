@@ -34,8 +34,8 @@ class greedy :
 
 	figure fig;																	///< Figure for trace plotting.
 
-	/// Count the number of non-zero coefficients in a Mat<cseq>
-	int number_of_coefficients( const Mat<cseq>& S );
+	/// Count the number of non-zero coefficients in a mat<cseq>
+	int number_of_coefficients( const mat<cseq>& S );
 
 protected:
 
@@ -78,18 +78,18 @@ public:
 class time_domain :
 	public greedy,
 	public linear,
-	public sparse::orthogonal_matching_pursuit<double,Mat<cseq>> {
+	public sparse::orthogonal_matching_pursuit<double,mat<cseq>> {
 
 private:
 
-	Mat<cseq> HH;																///< Precomputed H*H.star()
-	Mat<cseq> FF;																///< Precomputed F*F.star()
+	mat<cseq> HH;																///< Precomputed H*H.star()
+	mat<cseq> FF;																///< Precomputed F*F.star()
 
 	/// Callback function
-	Mat<cseq> synthesis_( const ivec& idxs, const rvec& coeffs );
+	mat<cseq> synthesis_( const ivec& idxs, const rvec& coeffs );
 
 	/// Callback function
-	rvec analysis_( const Mat<cseq>& G );
+	rvec analysis_( const mat<cseq>& G );
 
 	/// Callback function
 	double inner_product_atoms_( int i, int j );
@@ -113,16 +113,16 @@ public:
 	time_domain( int M, int D );
 
 	/// Virtual function override
-	void set_target( const Mat<cseq>& G ) override;
+	void set_target( const mat<cseq>& G ) override;
 
 	/// Virtual function override
-	void set_analysis_fb( const Mat<cseq>& H ) override;
+	void set_analysis_fb( const mat<cseq>& H ) override;
 
 	/// Virtual function override
-	void set_synthesis_fb( const Mat<cseq>& F ) override;
+	void set_synthesis_fb( const mat<cseq>& F ) override;
 
 	/// Virtual function override
-	void set_sbindexes( const Vec<sbindex>& idxs ) override;
+	void set_sbindexes( const vec<sbindex>& idxs ) override;
 
 	/// Virtual function override
 	void approximate() override;
@@ -132,18 +132,18 @@ public:
 class frequency_domain :
 	public greedy,
 	public linear,
-	public sparse::orthogonal_matching_pursuit<double,Vec<cmat>> {
+	public sparse::orthogonal_matching_pursuit<double,vec<cmat>> {
 
-	Mat<cvec> HHf;																///< Precomputed H*H.star()
-	Mat<cvec> FFf;																///< Precomputed F*F.star()
-	Vec<cmat> Hf;																///< Frequency version of H
-	Vec<cmat> Ff;																///< Frequency version of F
-
-	/// Callback function
-	Vec<cmat> synthesis_( const ivec& idxs, const rvec& coeffs );
+	mat<cvec> HHf;																///< Precomputed H*H.star()
+	mat<cvec> FFf;																///< Precomputed F*F.star()
+	vec<cmat> Hf;																///< Frequency version of H
+	vec<cmat> Ff;																///< Frequency version of F
 
 	/// Callback function
-	rvec analysis_( const Vec<cmat>& Gf );
+	vec<cmat> synthesis_( const ivec& idxs, const rvec& coeffs );
+
+	/// Callback function
+	rvec analysis_( const vec<cmat>& Gf );
 
 	/// Callback function
 	double inner_product_atoms_( int i, int j );
@@ -161,8 +161,8 @@ protected:
 
 public:
 
-	function<Vec<cmat>(const Mat<cseq>&)> td2fd;
-	function<Mat<cseq>(const Vec<cmat>&)> fd2td;
+	function<vec<cmat>(const mat<cseq>&)> td2fd;
+	function<mat<cseq>(const vec<cmat>&)> fd2td;
 
 	// Imports from subband
 	using sbapprox::set_target;
@@ -174,25 +174,25 @@ public:
 	frequency_domain( int M, int D, int N );
 
 	/// Set the target
-	void set_target( const Vec<cmat>& Gf );
+	void set_target( const vec<cmat>& Gf );
 
 	/// Virtual function override
-	void set_target( const Mat<cseq>& G ) override;
+	void set_target( const mat<cseq>& G ) override;
 
 	/// Set the analysis filterbank
-	void set_analysis_fb( const Vec<cmat>& Hf_ );
+	void set_analysis_fb( const vec<cmat>& Hf_ );
 
 	/// Virtual function override
-	void set_analysis_fb( const Mat<cseq>& H ) override;
+	void set_analysis_fb( const mat<cseq>& H ) override;
 
 	/// Set the synthesis filterbank
-	void set_synthesis_fb( const Vec<cmat>& Ff_ );
+	void set_synthesis_fb( const vec<cmat>& Ff_ );
 
 	/// Virtual function override
-	void set_synthesis_fb( const Mat<cseq>& F ) override;
+	void set_synthesis_fb( const mat<cseq>& F ) override;
 
 	/// Virtual function override
-	void set_sbindexes( const Vec<sbindex>& idxs ) override;
+	void set_sbindexes( const vec<sbindex>& idxs ) override;
 
 	/// Virtual function override
 	void approximate() override;
@@ -206,7 +206,7 @@ class ompursuit : public kronecker::time_domain {
 
 	criterion crit;
 	rseq w;																		///< Spectral weight
-	Mat<rseq> W;																///< Polyphase representation of the spectral weight factor
+	mat<rseq> W;																///< Polyphase representation of the spectral weight factor
 
 protected:
 
@@ -245,7 +245,7 @@ public:
 	}
 
 //	/// Virtual function override
-//	void set_target( const Mat<cseq>& G ) override
+//	void set_target( const mat<cseq>& G ) override
 //	{
 //		kronecker_td::set_target(G);
 //		criterion::set_target(G);
@@ -283,8 +283,8 @@ public:
 		crit.set_spectral_weight( w );
 
 		// Run the approximation
-		Mat<cseq> G_ = G;
-		Mat<cseq> H_ = H;
+		mat<cseq> G_ = G;
+		mat<cseq> H_ = H;
 		set_target( G*W );
 		set_analysis_fb( H*W );
 		kronecker::time_domain::approximate();
@@ -299,8 +299,8 @@ class ompursuit_old : public kronecker::frequency_domain {
 
 	criterion crit;
 	rseq w;																		///< Spectral weight
-	Mat<rseq> W;																///< Polyphase representation of the spectral weight factor
-	Vec<cmat> Rf;																///< Frequency-polyphase representation of the modified spectral weights
+	mat<rseq> W;																///< Polyphase representation of the spectral weight factor
+	vec<cmat> Rf;																///< Frequency-polyphase representation of the modified spectral weights
 
 	/// Virtual function override
 	double errfun( const ivec& idxs, const rvec& coeffs ) override
@@ -327,21 +327,21 @@ class ompursuit_old : public kronecker::frequency_domain {
 	void update_frweight()
 	{
 		// Compute linear difference
-		Mat<cseq> Gh  = polyphase();
-		Mat<cseq> Gt  = G - Gh;
-		Vec<cmat> Gtf = td2fd( Gt );
+		mat<cseq> Gh  = polyphase();
+		mat<cseq> Gt  = G - Gh;
+		vec<cmat> Gtf = td2fd( Gt );
 
 		// Compute log difference
-		Vec<cvec> gf  = entrywise(dtft)( pp2fb_system(G) );
-		Vec<cvec> ghf = entrywise(dtft)( pp2fb_system( Gh ) );
-		Vec<cvec> ctf(D);
+		vec<cvec> gf  = entrywise(dtft)( pp2fb_system(G) );
+		vec<cvec> ghf = entrywise(dtft)( pp2fb_system( Gh ) );
+		vec<cvec> ctf(D);
 		for( int d = 0; d < D; d++ )
 			ctf(d) = crit.logspec( element_div( crit.gf(d), ghf(d) ) );
-		Vec<cseq> ct   = entrywise( [this](const cvec& x){ return idtft(x); } )( ctf );
-		Mat<cseq> Ct   = fb2pp_system( ct );
-		Vec<cmat> Ctf  = td2fd( Ct );
-		Vec<cmat> Wf   = td2fd( W );
-		Vec<cmat> CtWf = element_prod( Ctf, Wf );
+		vec<cseq> ct   = entrywise( [this](const cvec& x){ return idtft(x); } )( ctf );
+		mat<cseq> Ct   = fb2pp_system( ct );
+		vec<cmat> Ctf  = td2fd( Ct );
+		vec<cmat> Wf   = td2fd( W );
+		vec<cmat> CtWf = element_prod( Ctf, Wf );
 
 		// Compute Rf (the spectral compensation for logarithmic amplitude)
 		Rf = element_prod( element_inv(Gtf), CtWf );
@@ -392,8 +392,8 @@ public:
 		crit.set_spectral_weight( w );
 
 		// Remember the actual target and analysis FB
-		Mat<cseq> G_ = G;
-		Mat<cseq> H_ = H;
+		mat<cseq> G_ = G;
+		mat<cseq> H_ = H;
 
 		// Main loop
 		for( int i = 0;; i++ ) {
@@ -412,10 +412,10 @@ public:
 
 			// Update the problem
 			update_frweight();
-			Vec<cmat> Hf  = td2fd( H );
-			Vec<cmat> Gf  = td2fd( G );
-			Vec<cmat> Gzf = element_prod( Gf, Rf );
-			Vec<cmat> Hzf = element_prod( Hf, Rf );
+			vec<cmat> Hf  = td2fd( H );
+			vec<cmat> Gf  = td2fd( G );
+			vec<cmat> Gzf = element_prod( Gf, Rf );
+			vec<cmat> Hzf = element_prod( Hf, Rf );
 			set_analysis_fb( Hzf );
 			set_target( Gzf );
 		}
@@ -431,7 +431,7 @@ template<class criterion>
 class nlpursuit :
 	public greedy,
 	public criterion,
-	public sparse::gradient_pursuit<Mat<cseq>> {
+	public sparse::gradient_pursuit<mat<cseq>> {
 
 	/// Subproblem class. Gives access to protected members from bomp_ppfd
 	class subproblem_t :
@@ -445,38 +445,38 @@ class nlpursuit :
 	};
 
 	subproblem_t subproblem;													///< Subproblem used for obtaining the next index and the guess
-	Vec<cmat> Gf;																///< Frequency-polyphase representation of the target
-	Vec<cmat> Hf;																///< Frequency-polyphase representation of the analysis filterbank
-	Vec<cmat> Wf;																///< Frequency-polyphase representation of the nominal spectral weight
-	Vec<cmat> Rf;																///< Frequency-polyphase representation of the modified spectral weights
+	vec<cmat> Gf;																///< Frequency-polyphase representation of the target
+	vec<cmat> Hf;																///< Frequency-polyphase representation of the analysis filterbank
+	vec<cmat> Wf;																///< Frequency-polyphase representation of the nominal spectral weight
+	vec<cmat> Rf;																///< Frequency-polyphase representation of the modified spectral weights
 	bool gradientpursuit_f;														///< Flag to indicate if the next indexes are chosen using gradient pursuit
 
 	/// Update the auxiliar variables Zf and CtWf
 	void update_auxiliar_variables()
 	{
 //		// Compute linear difference
-//		Vec<cseq> gh  = pp2fb_system( approximation );
-//		Vec<cvec> ghf = gh.apply( dtft );
-//		Vec<cvec> gtf = gf - ghf;
+//		vec<cseq> gh  = pp2fb_system( approximation );
+//		vec<cvec> ghf = gh.apply( dtft );
+//		vec<cvec> gtf = gf - ghf;
 //
 //		// Compute log difference
-//		Vec<cvec> ctf(D);
+//		vec<cvec> ctf(D);
 //		for( int d = 0; d < D; d++ )
 //			ctf(d) = logspec( element_div( gf(d), ghf(d) ) );
 //
 //		// Spectral compensation weights
-//		Vec<cvec> af(D);
+//		vec<cvec> af(D);
 //		for( int d = 0; d < D; d++ )
 //			af(d) = element_div( ctf(d), gtf(d) );
 //
 //		// Average weight
 //		rvec af1 = sum( abs( af ) ) / D;
 //		rvec zf1 = element_prod( af1, sqrt(wf) );
-//		Vec<rvec> zf(D);
+//		vec<rvec> zf(D);
 //		for( int d = 0; d < D; d++ )
 //			zf(d) = zf1;
 //		cseq z1      = idtft( zf1 );
-//		Mat<cseq> Z  = fb2pp_system( z1, D );
+//		mat<cseq> Z  = fb2pp_system( z1, D );
 //		Zf           = sp_indexes.td2fd( Z );
 //
 //		// Compute the spectral compensation for logarithmic amplitude
@@ -484,20 +484,20 @@ class nlpursuit :
 //			Zf  = Wf;
 
 		// Compute linear difference
-		Mat<cseq> Gh  = polyphase();
-		Mat<cseq> Gt  = G - Gh;
-		Vec<cmat> Gtf = subproblem.td2fd( Gt );
+		mat<cseq> Gh  = polyphase();
+		mat<cseq> Gt  = G - Gh;
+		vec<cmat> Gtf = subproblem.td2fd( Gt );
 
 		// Compute log difference
-		Vec<cseq> gh  = pp2fb_system( Gh );
-		Vec<cvec> ghf = entrywise(this->dtft)( gh );
-		Vec<cvec> ctf(D);
+		vec<cseq> gh  = pp2fb_system( Gh );
+		vec<cvec> ghf = entrywise(this->dtft)( gh );
+		vec<cvec> ctf(D);
 		for( int d = 0; d < D; d++ )
 			ctf(d) = this->logspec( element_div( this->gf(d), ghf(d) ) );
-		Vec<cseq> ct   = entrywise( [](const cvec& x){ return idtft(x); } )( ctf );
-		Mat<cseq> Ct   = fb2pp_system( ct );
-		Vec<cmat> Ctf  = subproblem.td2fd( Ct );
-		Vec<cmat> CtWf = element_prod( Ctf, Wf );
+		vec<cseq> ct   = entrywise( [](const cvec& x){ return idtft(x); } )( ctf );
+		mat<cseq> Ct   = fb2pp_system( ct );
+		vec<cmat> Ctf  = subproblem.td2fd( Ct );
+		vec<cmat> CtWf = element_prod( Ctf, Wf );
 
 		// Compute Rf (the spectral compensation for logarithmic amplitude)
 //		if( indexes.size() == 0 ) {
@@ -518,8 +518,8 @@ class nlpursuit :
 	ivec next_indexes_itreweighting()
 	{
 		// Modify the approximation subproblem
-		Vec<cmat> Gzf = element_prod( Gf, Rf );
-		Vec<cmat> Hzf = element_prod( Hf, Rf );
+		vec<cmat> Gzf = element_prod( Gf, Rf );
+		vec<cmat> Hzf = element_prod( Hf, Rf );
 		subproblem.set_analysis_fb( Hzf );
 		subproblem.set_synthesis_fb( F );
 		subproblem.set_target( Gzf );
@@ -547,7 +547,7 @@ class nlpursuit :
 	{
 		sbm.sbindexes = sbindexes(indirect(idxs));
 		sbm.sbvalues  = coeffs;
-		Mat<cseq> S   = sbm.models().S;
+		mat<cseq> S   = sbm.models().S;
 		for( int m = 0; m < M; m++ )
 			if( S(m,m).size() == 0 )
 				return false;
@@ -555,7 +555,7 @@ class nlpursuit :
 	}
 
 	/// Virtual function override
-	void set_analysis_fb( const Mat<cseq>& H ) override
+	void set_analysis_fb( const mat<cseq>& H ) override
 	{
 		// Set the base
 		greedy::set_analysis_fb(H);
@@ -565,13 +565,13 @@ class nlpursuit :
 	}
 
 	/// Virtual function override
-	void set_synthesis_fb( const Mat<cseq>& F ) override
+	void set_synthesis_fb( const mat<cseq>& F ) override
 	{
 		// Set the base
 		greedy::set_synthesis_fb(F);
 
 		// Compute frequency-polypase of the dual
-		Vec<cmat> Ff = subproblem.td2fd( F );
+		vec<cmat> Ff = subproblem.td2fd( F );
 	}
 
 protected:
@@ -690,9 +690,9 @@ protected:
 		criterion::plotfun();
 		greedy::plotfun();
 
-//		Mat<cseq> R   = subproblem.fd2td( Rf );
-//		Vec<cseq> r   = pp2fb_system( R );
-//		Vec<cvec> rf  = entrywise(this->dtft)( r );
+//		mat<cseq> R   = subproblem.fd2td( Rf );
+//		vec<cseq> r   = pp2fb_system( R );
+//		vec<cvec> rf  = entrywise(this->dtft)( r );
 //		fig.clear().overlap().plot( abs(rf) );
 //		cin.get();
 	}
@@ -717,7 +717,7 @@ public:
 	}
 
 	/// Virtual function override
-	void set_target( const Mat<cseq>& G ) override
+	void set_target( const mat<cseq>& G ) override
 	{
 		// Set the bases
 		criterion::set_target( G );
@@ -727,7 +727,7 @@ public:
 	}
 
 	/// Virtual function override
-	void set_sbindexes( const Vec<sbindex>& idxs ) override
+	void set_sbindexes( const vec<sbindex>& idxs ) override
 	{
 		// Set the bases
 		greedy::set_sbindexes(idxs);
@@ -735,7 +735,7 @@ public:
 
 		// Set the subproblem
 		int N = idxs.size();
-		Vec<sbindex> sidxs(N);
+		vec<sbindex> sidxs(N);
 		for( int n = 0; n < N; n++ ) {
 			sidxs(n) = idxs(n);
 			if( !sidxs(n).num_f ) {
@@ -751,7 +751,7 @@ public:
 	void set_spectral_weight( const rseq& w )
 	{
 		criterion::set_spectral_weight( w );
-		Mat<cseq> W = fb2pp_system( w, D );
+		mat<cseq> W = fb2pp_system( w, D );
 		Wf          = subproblem.td2fd( W );
 	}
 

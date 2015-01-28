@@ -33,11 +33,11 @@ template<class T, class S=T>
 class arma {
 
 //	struct _ST {
-//		Vec<S> input;
-//		Vec<S> output;
+//		vec<S> input;
+//		vec<S> output;
 //		int ibuflength, obuflength;
 ////		_ST() : ibuflength(0), ibuflength(0) {}
-//		void shift( Vec<S>& buffer, const S& x )
+//		void shift( vec<S>& buffer, const S& x )
 //		{
 //			int N = buffer.size();
 //			for( int n = N-1; n > 0; n-- )
@@ -48,10 +48,10 @@ class arma {
 //	};
 
 	/// Internal state structure
-	class buffer_t : public Vec<S> {
+	class buffer_t : public vec<S> {
 		int buflen;
 	public:
-		buffer_t() : Vec<S>(), buflen(0) {}
+		buffer_t() : vec<S>(), buflen(0) {}
 
 		void set_len( int len )
 		{
@@ -71,10 +71,10 @@ class arma {
 				(*this)(0) = x;
 		}
 
-		S average( const Vec<T>& x )
+		S average( const vec<T>& x )
 		{
 			int N = this->size();
-			const Vec<S>& prod = element_prod( x(range(0,N)), *this );
+			const vec<S>& prod = element_prod( x(range(0,N)), *this );
 			return sum( prod );
 		}
 	};
@@ -83,9 +83,9 @@ class arma {
 //	_ST _state;
 	buffer_t inbuf, outbuf;
 
-	Vec<T> _b;	///< Numerator
-	Vec<T> _a0;	///< First element of the denominator. Must be 1.
-	Vec<T> _ar;	///< Denominator remainder (= denominator - 1)
+	vec<T> _b;	///< Numerator
+	vec<T> _a0;	///< First element of the denominator. Must be 1.
+	vec<T> _ar;	///< Denominator remainder (= denominator - 1)
 
 	/// Return type
 //	typedef decltype(T()*S()) R;
@@ -94,7 +94,7 @@ public:
 
 	/// @name Constructors
 	arma() { clear(); }
-	arma( const Vec<T> &b_, const Vec<T> &a_ )
+	arma( const vec<T> &b_, const vec<T> &a_ )
 	{
 		set_coeffs( b_, a_ );
 	}
@@ -118,13 +118,13 @@ public:
 	}
 
 	/// Get numerator
-	Vec<T> num() const { return _b; }
+	vec<T> num() const { return _b; }
 
 	/// Get Denominator
-	Vec<T> den() const { return {_a0, _ar}; }
+	vec<T> den() const { return {_a0, _ar}; }
 
 	/// Set numerator and denominator
-	void set_coeffs( const Vec<T> &b_, const Vec<T> &a_ )
+	void set_coeffs( const vec<T> &b_, const vec<T> &a_ )
 	{
 		// Set b
 		_b  = b_;
@@ -155,8 +155,8 @@ public:
 		inbuf.push( x );
 //		R y = sum(element_prod( _b, _state.input ))
 //		    - sum(element_prod( _ar, _state.output ));
-//		const Vec<S>& Y1 = element_prod( _b, _state.input );
-//		const Vec<S>& Y2 = element_prod( _ar, _state.output );
+//		const vec<S>& Y1 = element_prod( _b, _state.input );
+//		const vec<S>& Y2 = element_prod( _ar, _state.output );
 //		const S& y1 = sum(Y1);
 //		const S& y2 = sum(Y2);
 		S y  = inbuf.average( _b );
@@ -167,9 +167,9 @@ public:
 	}
 
 	/// Filter a sequence
-	Seq<S> operator()( const Seq<S> &x )
+	sequence<S> operator()( const sequence<S> &x )
 	{
-		Seq<S> y( x.size(), x.t1() );
+		sequence<S> y( x.size(), x.t1() );
 		for( int t = x.t1(); t <= x.t2(); t++ )
 			y(t) = (*this)( x(t) );
 		return y;
@@ -179,11 +179,11 @@ public:
 	/// @name Response
 
 	/// Impulse response
-	Seq<S> impulse_response( int N ) const
+	sequence<S> impulse_response( int N ) const
 	{
 		arma<T,S> local = *this;
-		Vec<S> x_ = { {1}, zeros(N-1) };
-		Seq<S> x( x_, 0  );
+		vec<S> x_ = { {1}, zeros(N-1) };
+		sequence<S> x( x_, 0  );
 		return local( x );
 	}
 
@@ -192,7 +192,7 @@ public:
 	{
 		int I = W.size();
 		cvec N(I), D(I);
-		Vec<T> a = {_a0,_ar};
+		vec<T> a = {_a0,_ar};
 		for( int i = 0; i < I; i++ ) {
 			N(i) = polyval( _b, exp(j*W(i)) );
 			D(i) = polyval( a, exp(j*W(i)) );
@@ -259,12 +259,12 @@ public:
 		return y;
 	}
 
-	Seq<rvec> operator()( const Seq<rvec>& u )
+	sequence<rvec> operator()( const sequence<rvec>& u )
 	{
 		int T = u.size();
-		Vec<rvec> yvec(T);
+		vec<rvec> yvec(T);
 		for( int t = 0; t < T; t++ )
-			yvec(t) = (*this)( u.vec()(t) );
+			yvec(t) = (*this)( u.buffer()(t) );
 		return { yvec, u.t1() };
 	}
 
@@ -273,13 +273,13 @@ public:
 		int T = u.size();
 		rvec yvec(T);
 		for( int t = 0; t < T; t++ )
-			yvec(t) = (*this)( rvec{u.vec()(t)} )(0);
+			yvec(t) = (*this)( rvec{u.buffer()(t)} )(0);
 		return { yvec, u.t1() };
 	}
 
-	Seq<rvec> impulse_response( int T )
+	sequence<rvec> impulse_response( int T )
 	{
-		Vec<rvec> yvec(T);
+		vec<rvec> yvec(T);
 		int N   = x.size();
 		yvec(0) = (*this)( (rvec)ones(N) );
 		for( int t = 1; t < T; t++ )
@@ -295,10 +295,10 @@ state_space controllable_canonical_form( const transfer_function& tf );
 /// @name Support for arrays of transfer functions
 
 /// Converts a matrix transfer function into a matrix of scalar transfer functions
-Mat<transfer_function> tfm2mtf( const arma<rmat,rvec> &S );
+mat<transfer_function> tfm2mtf( const arma<rmat,rvec> &S );
 
 /// Converts a matrix of scalar transfer functions into a matrix transfer function
-arma<rmat,rvec> mtf2tfm( const Mat<transfer_function> &M );
+arma<rmat,rvec> mtf2tfm( const mat<transfer_function> &M );
 /// @}
 
 /// @}

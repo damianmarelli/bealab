@@ -38,7 +38,7 @@ public:
 
 	neural_network( const ivec& layer_nodes );
 
-	void train( const Vec<rvec>& input, const Vec<rvec>& output );
+	void train( const vec<rvec>& input, const vec<rvec>& output );
 
 	rvec predict( const rvec& in );
 };

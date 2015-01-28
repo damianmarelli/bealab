@@ -56,7 +56,7 @@ public:
 
     /// @name Solution
     ivec indexes;																///< Indexes of the sparse solution vector
-	Vec<COE> coefficients;														///< Values (at the indexes) of the sparse solution vector
+	vec<COE> coefficients;														///< Values (at the indexes) of the sparse solution vector
 	double error;																///< Final approximation error
 	/// @}
 

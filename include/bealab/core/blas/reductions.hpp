@@ -26,22 +26,22 @@ namespace bealab
 /// Macro to turn a vector functional into a row/column-wise reduction of a matrix.
 #define _ROWCOLWISE_FUNCTIONAL( fun ) \
 template<class T> \
-Vec<typename T::value_type> fun##_rowwise( const matrix_interface<T>& A ) \
+vec<typename T::value_type> fun##_rowwise( const matrix_interface<T>& A ) \
 { \
 	typedef decltype( fun( A.row(0) ) ) R; \
 	int N = A.size1(); \
-	Vec<R> rv(N); \
+	vec<R> rv(N); \
 	for( int n = 0; n < N; n++ ) \
 		rv(n) = fun( A.row(n) ); \
 	return rv; \
 } \
 \
 template<class T> \
-Vec<typename T::value_type> fun##_columnwise( const matrix_interface<T>& A ) \
+vec<typename T::value_type> fun##_columnwise( const matrix_interface<T>& A ) \
 { \
 	typedef decltype( fun( A.column(0) ) ) R; \
 	int N = A.size2(); \
-	Vec<R> rv(N); \
+	vec<R> rv(N); \
 	for( int n = 0; n < N; n++ ) \
 		rv(n) = fun( A.column(n) ); \
 	return rv; \
@@ -133,13 +133,13 @@ typename T::value_type sum( const vector_interface<T>& x )
 }
 
 template<class T>
-Vec<typename T::value_type> diff( const vector_interface<T>& x )
+vec<typename T::value_type> diff( const vector_interface<T>& x )
 {
 	typedef typename T::value_type R;
 	if( x.size() <= 1 )
-		return Vec<R>();
+		return vec<R>();
 	int N = x.size();
-	Vec<R> rv(N-1);
+	vec<R> rv(N-1);
 	for( int n = 1; n < N; n++ )
 		rv(n-1) = x(n) - x(n-1);
 	return rv;

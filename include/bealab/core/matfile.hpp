@@ -56,16 +56,16 @@ public:
 
 	/// @name Create a MATIO container
 	static
-	void* create_struct( const string& varname, const Vec<void*>& fields );		///< Create a MATIO structure
+	void* create_struct( const string& varname, const vec<void*>& fields );		///< Create a MATIO structure
 	static
-	void* create_cell( const string& varname, const Mat<void*>& entries );		///< Create a MATIO cell array
+	void* create_cell( const string& varname, const mat<void*>& entries );		///< Create a MATIO cell array
 	/// @}
 
 	/// @name Parse a MATIO container
 	static
 	void* parse_struct( void* pvar, const string& field );						///< Parse a MATIO structure
 	static
-	Mat<void*> parse_cell( void* pvar );										///< Parse a MATIO sell array
+	mat<void*> parse_cell( void* pvar );										///< Parse a MATIO sell array
 	/// @}
 
 	/// Constructor
@@ -155,96 +155,96 @@ struct matvar<complex> {
 	static complex parse( void* pvar );
 };
 
-/// Specialization of matvar for Vec<double>
+/// Specialization of matvar for vec<double>
 template<>
-struct matvar<Vec<double>> {
-	static void* create( const string& varname, const Vec<double>& x );
-	static Vec<double> parse( void* pvar );
+struct matvar<vec<double>> {
+	static void* create( const string& varname, const vec<double>& x );
+	static vec<double> parse( void* pvar );
 };
 
-/// Specialization of matvar for Vec<bool>
+/// Specialization of matvar for vec<bool>
 template<>
-struct matvar<Vec<bool>> {
-	static void* create( const string& varname, const Vec<bool>& x );
-	static Vec<bool> parse( void* pvar );
+struct matvar<vec<bool>> {
+	static void* create( const string& varname, const vec<bool>& x );
+	static vec<bool> parse( void* pvar );
 };
 
-/// Specialization of matvar for Vec<int>
+/// Specialization of matvar for vec<int>
 template<>
-struct matvar<Vec<int>> {
-	static void* create( const string& varname, const Vec<int>& x );
-	static Vec<int> parse( void* pvar );
+struct matvar<vec<int>> {
+	static void* create( const string& varname, const vec<int>& x );
+	static vec<int> parse( void* pvar );
 };
 
-/// Specialization of matvar for Vec<complex>
+/// Specialization of matvar for vec<complex>
 template<>
-struct matvar<Vec<complex>> {
-	static void* create( const string& varname, const Vec<complex>& x );
-	static Vec<complex> parse( void* pvar );
+struct matvar<vec<complex>> {
+	static void* create( const string& varname, const vec<complex>& x );
+	static vec<complex> parse( void* pvar );
 };
 
-/// Specialization of matvar for Mat<double>
+/// Specialization of matvar for mat<double>
 template<>
-struct matvar<Mat<double>> {
-	static void* create( const string& varname, const Mat<double>& x );
-	static Mat<double> parse( void* pvar );
+struct matvar<mat<double>> {
+	static void* create( const string& varname, const mat<double>& x );
+	static mat<double> parse( void* pvar );
 };
 
-/// Specialization of matvar for Mat<bool>
+/// Specialization of matvar for mat<bool>
 template<>
-struct matvar<Mat<bool>> {
-	static void* create( const string& varname, const Mat<bool>& x );
-	static Mat<bool> parse( void* pvar );
+struct matvar<mat<bool>> {
+	static void* create( const string& varname, const mat<bool>& x );
+	static mat<bool> parse( void* pvar );
 };
 
-/// Specialization of matvar for Mat<int>
+/// Specialization of matvar for mat<int>
 template<>
-struct matvar<Mat<int>> {
-	static void* create( const string& varname, const Mat<int>& x );
-	static Mat<int> parse( void* pvar );
+struct matvar<mat<int>> {
+	static void* create( const string& varname, const mat<int>& x );
+	static mat<int> parse( void* pvar );
 };
 
-/// Specialization of matvar for Mat<complex>
+/// Specialization of matvar for mat<complex>
 template<>
-struct matvar<Mat<complex>> {
-	static void* create( const string& varname, const Mat<complex>& x );
-	static Mat<complex> parse( void* pvar );
+struct matvar<mat<complex>> {
+	static void* create( const string& varname, const mat<complex>& x );
+	static mat<complex> parse( void* pvar );
 };
 
-/// Specialization of matvar for Vec<T>
+/// Specialization of matvar for vec<T>
 template<class T>
-struct matvar<Vec<T>> {
+struct matvar<vec<T>> {
 	static
-	void* create( const string& varname, const Vec<T>& x )
+	void* create( const string& varname, const vec<T>& x )
 	{
 		int N = x.size();
-		Mat<void*> entries(N,1);
+		mat<void*> entries(N,1);
 		for( int n = 0; n < N; n++ )
 			entries(n,0) = matvar<T>::create( "", x(n) );
 		return matfile::create_cell( varname, entries );
 	}
 
 	static
-	Vec<T> parse( void* pvar )
+	vec<T> parse( void* pvar )
 	{
-		Mat<void*> entries = matfile::parse_cell( pvar );
+		mat<void*> entries = matfile::parse_cell( pvar );
 		int N = entries.size1();
-		Vec<T> x(N);
+		vec<T> x(N);
 		for( int n = 0; n < N; n++ )
 			x(n) = matvar<T>::parse( entries(n,0) );
 		return x;
 	}
 };
 
-/// Specialization of matvar for Mat<T>
+/// Specialization of matvar for mat<T>
 template<class T>
-struct matvar<Mat<T>> {
+struct matvar<mat<T>> {
 	static
-	void* create( const string& varname, const Mat<T>& x )
+	void* create( const string& varname, const mat<T>& x )
 	{
 		int M = x.size1();
 		int N = x.size2();
-		Mat<void*> entries(M,N);
+		mat<void*> entries(M,N);
 		for( int m = 0; m < M; m++ )
 			for( int n = 0; n < N; n++ )
 				entries(m,n) = matvar<T>::create( "", x(m,n) );
@@ -252,12 +252,12 @@ struct matvar<Mat<T>> {
 	}
 
 	static
-	Mat<T> parse( void* pvar )
+	mat<T> parse( void* pvar )
 	{
-		Mat<void*> entries = matfile::parse_cell( pvar );
+		mat<void*> entries = matfile::parse_cell( pvar );
 		int M = entries.size1();
 		int N = entries.size2();
-		Mat<T> x(M,N);
+		mat<T> x(M,N);
 		for( int m = 0; m < M; m++ )
 			for( int n = 0; n < N; n++ )
 				x(m,n) = matvar<T>::parse( entries(m,n) );

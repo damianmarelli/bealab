@@ -100,7 +100,7 @@ protected:
 
 public:
 
-	Vec<sbindex> sbindexes;														///< Pool of all subband indexes
+	vec<sbindex> sbindexes;														///< Pool of all subband indexes
 	int M;																		///< Number of subbands
 
 	/// Constructor
@@ -113,10 +113,10 @@ public:
 
 	/// Initialize table of subband indexes with an array of indexes
 	virtual
-	void set_sbindexes( const Vec<sbindex>& idxs );
+	void set_sbindexes( const vec<sbindex>& idxs );
 
 	/// Initialize table of subband indexes with a pattern matrix
-	void set_sbindexes( const Mat<cseq>& MA, const Mat<cseq>& AR );
+	void set_sbindexes( const mat<cseq>& MA, const mat<cseq>& AR );
 
 	/// Initialize table of subband indexes specifying number of off-diagonal terms
 	void set_sbindexes( int noffdiags, int t1, int t2, bool den_f=false );
@@ -141,15 +141,15 @@ class sbmodel : public sbindex_pool {
 
 	/// Model matrices
 	struct models_t {
-		Mat<cseq> S;															///< MA part
-		Mat<cseq> P;															///< AR part
+		mat<cseq> S;															///< MA part
+		mat<cseq> P;															///< AR part
 	};
 
 	/// Computes the impulse response length of inv(I-P)
-	int inv_ImP_irlength( const Vec<cmat>& P ) const;
+	int inv_ImP_irlength( const vec<cmat>& P ) const;
 
 	/// Computes the impulse response of inv(I-P)
-	Mat<cseq> inv_ImP( const Mat<cseq>& P_ ) const;
+	mat<cseq> inv_ImP( const mat<cseq>& P_ ) const;
 
 public:
 
@@ -162,7 +162,7 @@ public:
 	models_t models() const;
 
 	/// Obtain the impulse response
-	Mat<cseq> impulse_response() const;
+	mat<cseq> impulse_response() const;
 };
 
 /// A subband configuration (with a single subband model).
@@ -176,9 +176,9 @@ class sbconfig {
 protected:
 
 	static const int callback_trace_level = 100;
-	Mat<cseq> H;																///< Polyphase matrix of the analysis filterbank
-	Mat<cseq> F;																///< Polyphase matrix of the synthesis filterbank
-	Mat<cseq> FA;																///< Pre-computed F.A() to speedup computations
+	mat<cseq> H;																///< Polyphase matrix of the analysis filterbank
+	mat<cseq> F;																///< Polyphase matrix of the synthesis filterbank
+	mat<cseq> FA;																///< Pre-computed F.A() to speedup computations
 
 public:
 
@@ -195,14 +195,14 @@ public:
 
 	/// Set the analysis filterbank (polyphase)
 	virtual
-	void set_analysis_fb( const Mat<cseq>& H_ )
+	void set_analysis_fb( const mat<cseq>& H_ )
 	{
 		assert( (int)H_.size1() == M && (int)H_.size2() == D );
 		H = H_;
 	}
 
 	/// Set the analysis filterbank (filterbank)
-	void set_analysis_fb( const Vec<cseq>& h )
+	void set_analysis_fb( const vec<cseq>& h )
 	{
 		set_analysis_fb( fb2pp_filterbank( h, D ) );
 	}
@@ -211,7 +211,7 @@ public:
 	void set_analysis_fb( const cseq& h0_ )
 	{
 		_h0         = h0_;
-		Vec<cseq> h = filterbank_dtft( _h0, M );
+		vec<cseq> h = filterbank_dtft( _h0, M );
 		set_analysis_fb( h );
 	}
 
@@ -223,7 +223,7 @@ public:
 
 	/// Set the synthesis filterbank (polyphase)
 	virtual
-	void set_synthesis_fb( const Mat<cseq>& F_ )
+	void set_synthesis_fb( const mat<cseq>& F_ )
 	{
 		assert( (int)F_.size1() == M && (int)F_.size2() == D );
 		F  = F_;
@@ -231,7 +231,7 @@ public:
 	}
 
 	/// Set the synthesis filterbank (filterbank)
-	void set_synthesis_fb( const Vec<cseq>& f )
+	void set_synthesis_fb( const vec<cseq>& f )
 	{
 		set_synthesis_fb( fb2pp_filterbank( f, D ) );
 	}
@@ -240,7 +240,7 @@ public:
 	void set_synthesis_fb( const cseq& f0_ )
 	{
 		_f0         = f0_;
-		Vec<cseq> f = filterbank_dtft( _f0, M );
+		vec<cseq> f = filterbank_dtft( _f0, M );
 		set_synthesis_fb( f );
 	}
 
@@ -256,16 +256,16 @@ public:
 	const cseq& f0() const { return _f0; }
 
 	/// Obtain the polyphase representation of the whole configuration
-	Mat<cseq> polyphase() const
+	mat<cseq> polyphase() const
 	{
-		Mat<cseq> X  = sbm.impulse_response();
+		mat<cseq> X  = sbm.impulse_response();
 		return FA * X * H;
 	}
 
 	/// Obtain the cyclic impulse responses
-	Vec<cseq> impulse_responses() const
+	vec<cseq> impulse_responses() const
 	{
-		Mat<cseq> Gh = polyphase();
+		mat<cseq> Gh = polyphase();
 		return pp2fb_system( Gh );
 	}
 };
@@ -281,7 +281,7 @@ struct matvar<signal::sbsysapp::sbindex> {
 	static
 	void* create( const string& varname, const signal::sbsysapp::sbindex& x )
 	{
-		Vec<void*> fields(5);
+		vec<void*> fields(5);
 		fields(0) = matvar<double>::create( "m",      x.m );
 		fields(1) = matvar<double>::create( "n",      x.n );
 		fields(2) = matvar<double>::create( "t",      x.t );
@@ -312,12 +312,12 @@ struct matvar<signal::sbsysapp::sbindex> {
 template<>
 struct matvar<signal::sbsysapp::sbmodel> {
 
-	typedef Vec<signal::sbsysapp::sbindex> sbivec;
+	typedef vec<signal::sbsysapp::sbindex> sbivec;
 
 	static
 	void* create( const string& varname, const signal::sbsysapp::sbmodel& x )
 	{
-		Vec<void*> fields(4);
+		vec<void*> fields(4);
 		fields(0) = matvar<double>::create( "real_target_f", x.real_target_f );
 		fields(1) = matvar<double>::create( "M", x.M );
 		fields(2) = matvar<sbivec>::create( "sbindexes", x.sbindexes );

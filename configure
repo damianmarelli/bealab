@@ -3655,6 +3655,47 @@ else
   echo "*** Library ginac not found. Symbolic module disabled."
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -leng" >&5
+$as_echo_n "checking for main in -leng... " >&6; }
+if ${ac_cv_lib_eng_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-leng  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_eng_main=yes
+else
+  ac_cv_lib_eng_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_eng_main" >&5
+$as_echo "$ac_cv_lib_eng_main" >&6; }
+if test "x$ac_cv_lib_eng_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBENG 1
+_ACEOF
+
+  LIBS="-leng $LIBS"
+
+else
+  echo "*** Matlab library libeng not found. Matlab interface disabled."
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lGClasses" >&5
 $as_echo_n "checking for main in -lGClasses... " >&6; }
 if ${ac_cv_lib_GClasses_main+:} false; then :

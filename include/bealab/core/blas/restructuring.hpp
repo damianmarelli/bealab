@@ -1,12 +1,3 @@
-// This software is licensed under the BSD 3-Clause License with the possibily to obtain a commercial license, if you cannot abide by the terms of the BSD 3-Clause license.
-// You may not use this work except in compliance with the License.
-// You may obtain a copy of the License at: http://opensource.org/licenses/BSD-3-Clause
-// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the file License for the specific language governing permissions and limitations under the License. 
-// If you wish to obtain a commercial license, please contact the authors via e-mail.
-//
-// Copyright (c) 2015, Damian Marelli (Damian.Marelli@newcastle.edu.au)
-
 /// @file bealab/core/blas/restructuring.hpp
 /// Operations for restructuring vectors and matrices.
 
@@ -32,12 +23,12 @@ vector_interface<ublas::matrix_vector_range<T>> diag( const matrix_interface<T>&
 
 /// Make a diagonal matrix with the elements of a vector
 template<class T>
-matrix_interface<ublas::banded_matrix<typename T::value_type>>
+banded_matrix<typename T::value_type>
 diag( const vector_interface<T>& x )
 {
 	typedef typename T::value_type R;
 	int N = x.size();
-	ublas::banded_matrix<R> rv(N,N,0,0);
+	banded_matrix<R> rv(N,N,0,0);
 	for( int n = 0; n < N; n++ )
 		rv(n,n) = x(n);
 	return rv;

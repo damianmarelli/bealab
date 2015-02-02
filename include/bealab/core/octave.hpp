@@ -1,12 +1,3 @@
-// This software is licensed under the BSD 3-Clause License with the possibily to obtain a commercial license, if you cannot abide by the terms of the BSD 3-Clause license.
-// You may not use this work except in compliance with the License.
-// You may obtain a copy of the License at: http://opensource.org/licenses/BSD-3-Clause
-// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the file License for the specific language governing permissions and limitations under the License. 
-// If you wish to obtain a commercial license, please contact the authors via e-mail.
-//
-// Copyright (c) 2015, Damian Marelli (Damian.Marelli@newcastle.edu.au)
-
 /// @file bealab/core/octave.hpp
 /// Interface to call Octave functions.
 
@@ -95,20 +86,6 @@ class functor {
 		return parse_output_<oargs...>( 0 );
 	}
 
-protected:
-
-	virtual
-	string call_prefix()
-	{
-		return "octave -q --eval";
-	}
-
-	virtual
-	string call_suffix()
-	{
-		return string();
-	}
-
 public:
 
 	/// Constructor
@@ -149,14 +126,14 @@ public:
 
 		// Octave command
 		ostringstream cmd;
-		cmd << call_prefix() << " '"
+		cmd << "octave -q --eval '"
 			<< "load " << matfilename << "; " ;
 		if( N > 0 )
 			cmd<< "[" << ovarlist << "] = ";
 		cmd << mfilename << "( " << ivarlist << " ); ";
 		if( N > 0 )
 			cmd << "save -v6 " << matfilename << " " << svarlist << ";";
-		cmd << "exit;' " << call_suffix();
+		cmd << "exit;' ";
 //		cout << cmd.str() << endl;
 		system(cmd.str());
 

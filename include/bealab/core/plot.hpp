@@ -1,12 +1,3 @@
-// This software is licensed under the BSD 3-Clause License with the possibily to obtain a commercial license, if you cannot abide by the terms of the BSD 3-Clause license.
-// You may not use this work except in compliance with the License.
-// You may obtain a copy of the License at: http://opensource.org/licenses/BSD-3-Clause
-// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the file License for the specific language governing permissions and limitations under the License. 
-// If you wish to obtain a commercial license, please contact the authors via e-mail.
-//
-// Copyright (c) 2015, Damian Marelli (Damian.Marelli@newcastle.edu.au)
-
 /// @file bealab/core/plot.hpp
 /// Plotting using Gnuplot.
 
@@ -635,7 +626,8 @@ class figure {
 		fflush( pgnuplot );
 
 		// Set the terminal
-		x11( false );
+//		x11( false );
+		qt();
 #endif
 	}
 
@@ -729,7 +721,7 @@ public:
 	/// Constructor
 	figure( const string& title="BeaLab" ) : pgnuplot(NULL), window_title(title)
 	{
-		terminal  = t_x11;
+		terminal  = t_qt;
 		overlap_f = false;
 		x_log     = false;
 		y_log     = false;
@@ -778,12 +770,12 @@ public:
 	}
 
 	/// Put a string in GNUPlot
-	figure& gnuplot( string cmd )
+	figure& gnuplot( const string& cmd_ )
 	{
 #ifndef BEALAB_NOGNUPLOT
 		if( pgnuplot == NULL )
 			_gnuplot_init();
-		cmd += "\n";
+		string cmd = cmd_ + "\n";
 		if(trace)
 			cout << cmd.data() << endl;
 		fputs( cmd.data(), pgnuplot );
@@ -791,7 +783,6 @@ public:
 #endif
 		return *this;
 	}
-
 
 	/// Set the overlap flag (to plot members of containers within the same frame)
 	figure& overlap() { overlap_f = true; return *this; }
@@ -863,14 +854,6 @@ public:
 		y_logbase = base;
 		return *this;
 	}
-
-//	/// Set a legend without a plot
-//	figure& legend( const string& text, plotstyle ps )
-//	{
-//		_gnuplot_put("replot NaN title " +
-//				text + " linecolor rgb '" + ps + "'");
-//		return *this;
-//	}
 	/// @}
 
 	/// @name Redirect the output

@@ -1,12 +1,13 @@
-// This software is licensed under the BSD 3-Clause License with the possibily to obtain a commercial license, if you cannot abide by the terms of the BSD 3-Clause license.
-// You may not use this work except in compliance with the License.
-// You may obtain a copy of the License at: http://opensource.org/licenses/BSD-3-Clause
-// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the file License for the specific language governing permissions and limitations under the License. 
-// If you wish to obtain a commercial license, please contact the authors via e-mail.
-//
-// Copyright (c) 2015, Damian Marelli (Damian.Marelli@newcastle.edu.au)
-
+/*******************************************************************************
+ * This software is licensed under the BSD 3-Clause License with the possibility to obtain a commercial license, if you cannot abide by the terms of the BSD 3-Clause license.
+ * You may not use this work except in compliance with the License.
+ * You may obtain a copy of the License at: http://opensource.org/licenses/BSD-3-Clause
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the file License for the specific language governing permissions and limitations under the License. 
+ * If you wish to obtain a commercial license, please contact the authors via e-mail.
+ *
+ * Copyright (c) 2015, Damian Marelli (Damian.Marelli@newcastle.edu.au)
+ *******************************************************************************/
 #include <bealab/core/gsl.hpp>
 #include <bealab/scilib/linalg.hpp>
 #include <bealab/scilib/optimization.hpp>
@@ -162,28 +163,17 @@ void base::test_derivatives( const rvec& x0 )
 //==============================================================================================
 // Quasi-Newton class
 //==============================================================================================
-//rmat quasinewton::inverse_hessian( const rmat& B, const rvec& x, const rvec& x0,
-//		const rvec& g, const rvec& g0 )
-//{
-//	rvec s   = x - x0;
-//	rvec q   = g - g0;
-//	rvec v   = B * q;
-//	rmat A   = outer_prod( v, s );
-//	double c = inner_prod(s,q);
-//	return B + ( 1 + inner_prod(q,v) / c ) * outer_prod(s,s) / c
-//			 - ( trans(A) + A ) / c;
-//}
 rmat quasinewton::inverse_hessian( const rmat& B, const rvec& x, const rvec& x0,
 		const rvec& g, const rvec& g0 )
 {
 	rvec s   = x - x0;
 	rvec q   = g - g0;
 	rvec v   = B * q;
-	auto A   = ublas::outer_prod( v, s );
+	rmat A   = outer_prod( v, s );
 	double c = inner_prod(s,q);
 	double d = sqrt( 1 + inner_prod(q,v) / c );
 	rvec ds  = d * s;
-	return B + ( ublas::outer_prod(ds,ds) - ( ublas::trans(A) + A ) ) / c;
+	return B + ( outer_prod(ds,ds) - ( trans(A) + A ) ) / c;
 }
 
 rvec quasinewton::linesearch( const rvec& x0, const rvec& g, const rmat& B )
@@ -293,22 +283,6 @@ rvec quasinewton::optimize()
 	// Initialization
 	int N  = guess.size();
 	rvec x = guess;
-//	while(true) {
-//		if( objective.function(guess) == inf )
-//			guess += eps* randn(guess.size());
-//		else
-//			break;
-//	}
-//	int count = 0;
-//	while(true) {
-//		if( objective.function(guess) == inf ) {
-//			guess += eps * max(abs(guess)) * randn(guess.size());
-//			if( count++ == 10 )
-//				return guess;
-//		}
-//		else
-//			break;
-//	}
 	rvec g = objective.gradient(guess);
 	rmat B = eye(N);
 
@@ -327,27 +301,12 @@ rvec quasinewton::optimize()
 		if( callback_function )
 			callback_function(x);
 
+		// Trace
 		if( trace >= 1 )
 			cout << "quasinewton: f(x) = " << f << endl;
 
 		// Update the inverse-Hessian
 		B = inverse_hessian( B, x, x0, g, g0 );
-
-//		//XXX
-//		if( isnan(norm(B)) ) {
-//			cout << "*** The inverse Hessian is nan ***" << endl;
-//			cout << "Delta X    = " << norm(x-x0) << endl;
-//			cout << "Delta grad = " << norm(g-g0) << endl;
-//		}
-//		else {
-//			rvec e    = real( diag( get<0>( eig(B) ) ) );
-//			double em = min( e );
-//			if( em <= 0 ) {
-//				cout << "*** The inverse Hessian has a non-positive eigenvalue. eigs = " << e << endl;
-//				cout << "Delta X    = " << norm(x-x0) << endl;
-//				cout << "Delta grad = " << norm(g-g0) << endl;
-//			}
-//		}
 
 		// Stopping condition
 		if( stopping_condition( x, x0, g ) )

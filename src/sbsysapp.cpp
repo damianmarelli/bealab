@@ -1,12 +1,13 @@
-// This software is licensed under the BSD 3-Clause License with the possibily to obtain a commercial license, if you cannot abide by the terms of the BSD 3-Clause license.
-// You may not use this work except in compliance with the License.
-// You may obtain a copy of the License at: http://opensource.org/licenses/BSD-3-Clause
-// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the file License for the specific language governing permissions and limitations under the License. 
-// If you wish to obtain a commercial license, please contact the authors via e-mail.
-//
-// Copyright (c) 2015, Damian Marelli (Damian.Marelli@newcastle.edu.au)
-
+/*******************************************************************************
+ * This software is licensed under the BSD 3-Clause License with the possibility to obtain a commercial license, if you cannot abide by the terms of the BSD 3-Clause license.
+ * You may not use this work except in compliance with the License.
+ * You may obtain a copy of the License at: http://opensource.org/licenses/BSD-3-Clause
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the file License for the specific language governing permissions and limitations under the License. 
+ * If you wish to obtain a commercial license, please contact the authors via e-mail.
+ *
+ * Copyright (c) 2015, Damian Marelli (Damian.Marelli@newcastle.edu.au)
+ *******************************************************************************/
 #include <bealab/extensions/signal/sbsysapp.hpp>
 
 namespace bealab
@@ -475,10 +476,10 @@ void logarithmic::plotfun()
 	rvec w = linspace( -pi, pi, N+1 );
 	w      = w( range( 0, w.size()-1 ) );
 	int i0 = find( w.begin(), w.end(), 0 ) - w.begin();
-	function<rvec(const rvec&)> centerphase = [i0](const rvec& x){ return x - x(i0)*ones(x.size()); };
-	function<cvec(const cvec&)> ftshift     = [](const cvec& x){ return bealab::ftshift(x); };
-	function<cvec(const cvec&)> dbspec      = [](const cvec& x ){ return 20*log10(x); };
-	function<cvec(const cseq&)> dtft        = [N](const cseq& x ){ return bealab::dtft(x,N); };
+	function<rvec(const rvec&)> centerphase = [i0](const rvec& x)->rvec{ return x - x(i0)*ones(x.size()); };
+	function<cvec(const cvec&)> ftshift     = [](const cvec& x)->cvec{ return bealab::ftshift(x); };
+	function<cvec(const cvec&)> dbspec      = [](const cvec& x )->cvec{ return 20*log10(x); };
+	function<cvec(const cseq&)> dtft        = [N](const cseq& x )->cvec{ return bealab::dtft(x,N); };
 
 	// Target frequency response
 	vec<cseq> g   = pp2fb_system( G );
@@ -648,8 +649,8 @@ void linear::plotfun( const ivec& idxs, const rvec& coeffs )
 	int N  = 1024;
 	rvec w = linspace( -pi, pi, N+1 );
 	w      = w( range( 0, w.size()-1 ) );
-	function<rvec(const rvec&)> ftshift = [](const rvec& x ){ return bealab::ftshift(x); };
-	function<rvec(const cseq&)> spec    = [N](const cseq& x ) { return abs( dtft(x,N) ); };
+	function<rvec(const rvec&)> ftshift = [](const rvec& x )->rvec{ return bealab::ftshift(x); };
+	function<rvec(const cseq&)> spec    = [N](const cseq& x )->rvec{ return abs( dtft(x,N) ); };
 
 	// Target frequency response
 	rvec gw = ftshift( spec( pp2fb_system(G)(0) ) );
@@ -885,8 +886,7 @@ frequency_domain::frequency_domain( int M, int D, int N ) :
 
 	fd2td = [this]( const vec<cmat>& Gf )
 	{
-		auto tmp = entrywise(this->idtft)( vm2mv(Gf) );
-		return tmp;
+		return entrywise(this->idtft)( vm2mv(Gf) );
 	};
 
 	// Functors of orthogonal_matching_pursuit

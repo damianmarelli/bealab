@@ -19,40 +19,9 @@ namespace bealab
 {
 namespace python
 {
-
 //------------------------------------------------------------
-// Expose
+// Object
 //------------------------------------------------------------
-
-//int damfun( int a )
-//{
-//	return 2*a;
-//}
-//
-//BOOST_PYTHON_MODULE( libbealab )
-//{
-//    using namespace boost::python;
-//    def( "damfun", damfun );
-//}
-
-//------------------------------------------------------------
-// Embed
-//------------------------------------------------------------
-
-static int py_init_flag = 0;
-
-void _init()
-{
-	if(!py_init_flag){
-		py_init_flag = 1;
-		Py_Initialize();
-		PyRun_SimpleString("import sys\n");
-		PyRun_SimpleString("sys.path.append('.')\n");
-		import_array();
-	}
-}
-
-// Class members of object -----------------------------------
 object::object( const object &o )
 {
 	pdata = o.pdata;
@@ -223,22 +192,24 @@ template object::operator mat<double>() const;
 template object::operator mat<complex>() const;
 /// @endcond
 
-// Class members of functor ---------------------------------------------------
+//------------------------------------------------------------
+// Function
+//------------------------------------------------------------
 
-functor::functor( const string& module, const string& function )
+int _function_handler::py_init_flag = 0;
+
+void _function_handler::init()
 {
-	// Get function
-    _init();
-    PyObject *pName   = PyString_FromString( module.data() );
-    PyObject *pModule = PyImport_Import( pName );
-	if( pModule == NULL )
-		error( "Cannot import module '" + module + "'" );
-    pFunc   = PyObject_GetAttrString( pModule, function.data() );
-	if( pFunc == NULL )
-		error( "Module '" + module + "' has no member called '" + function + "'" );
+	if(!py_init_flag){
+		py_init_flag = 1;
+		Py_Initialize();
+		PyRun_SimpleString("import sys\n");
+		PyRun_SimpleString("sys.path.append('.')\n");
+		import_array();
+	}
 }
 
-object functor::_fcall( const deque<object> &O )
+object _function_handler::fcall( const deque<object> &O )
 {
 	// Make arguments
 	int N = O.size();
@@ -259,6 +230,19 @@ object functor::_fcall( const deque<object> &O )
 	Py_DECREF(pArgs);
 
     return rv;
+}
+
+_function_handler::_function_handler( const string& module, const string& function )
+{
+	// Get function
+    init();
+    PyObject *pName   = PyString_FromString( module.data() );
+    PyObject *pModule = PyImport_Import( pName );
+	if( pModule == NULL )
+		error( "Cannot import module '" + module + "'" );
+    pFunc   = PyObject_GetAttrString( pModule, function.data() );
+	if( pFunc == NULL )
+		error( "Module '" + module + "' has no member called '" + function + "'" );
 }
 
 }

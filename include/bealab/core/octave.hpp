@@ -19,13 +19,12 @@ namespace octave
 /// Interface to call Octave functions.
 /// @{
 
-/// Functor holding an Octave function
+/// Functor handling an Octave function (for internal use)
 template<class... oargs>
-class functor {
+class _function_handler {
 
 	string mfilename;															///< Name of the *.m file to containing the Octave function
-	string tmpfilename;															///< Name of the associated temporary file
-	string matfilename;															///< Name of the *.mat file to exchange data
+	string matfilename;															///< Name of the mat-format file to exchange data
 	matfile mf;																	///< Handler of the *.mat file
 
 	/// Create a temporary filename
@@ -86,26 +85,11 @@ class functor {
 		return parse_output_<oargs...>( 0 );
 	}
 
-public:
+protected:
 
-	/// Constructor
-	functor( const string& funname ) :
-		mfilename(funname),
-		tmpfilename(create_tmpfile()),
-		matfilename(tmpfilename + ".mat"),
-		mf( matfilename, true )
-	{}
-
-	/// Destructor
-	~functor()
-	{
-		std::remove( tmpfilename.data() );
-		std::remove( matfilename.data() );
-	}
-
-	/// Constructor
+	/// Evaluation always returning a tuple
 	template<class... iargs>
-	tuple<oargs...> operator()( const iargs&... X )
+	tuple<oargs...> eval( const iargs&... X )
 	{
 		// Parse input parameters
 		string ivarlist = parse_input( X... );
@@ -133,12 +117,65 @@ public:
 		cmd << mfilename << "( " << ivarlist << " ); ";
 		if( N > 0 )
 			cmd << "save -v6 " << matfilename << " " << svarlist << ";";
-		cmd << "exit;' ";
+		cmd << "exit;' > /dev/null";
 //		cout << cmd.str() << endl;
 		system(cmd.str());
 
 		// Parse result
 		return parse_output();
+	}
+
+public:
+
+	/// Constructor
+	_function_handler( const string& funname ) :
+		mfilename(funname),
+		matfilename(create_tmpfile()),
+		mf( matfilename, true )
+	{}
+
+	/// Destructor
+	~_function_handler()
+	{
+		std::remove( matfilename.data() );
+	}
+};
+
+template<class... oargs>
+class function : public _function_handler<oargs...> {
+public:
+	using _function_handler<oargs...>::_function_handler;
+
+	template<class... iargs>
+	tuple<oargs...> operator()( const iargs&... X )
+	{
+		return _function_handler<oargs...>::eval( X... );
+	}
+};
+
+/// Evaluation specialization for one returned value
+template<class O>
+class function<O> : public _function_handler<O> {
+public:
+	using _function_handler<O>::_function_handler;
+
+	template<class... iargs>
+	O operator()( const iargs&... X )
+	{
+		return get<0>( _function_handler<O>::eval( X... ) );
+	}
+};
+
+/// Evaluation specialization for no returned value
+template<>
+class function<> : public _function_handler<> {
+public:
+	using _function_handler<>::_function_handler;
+
+	template<class... iargs>
+	void operator()( const iargs&... X )
+	{
+		_function_handler<>::eval( X... );
 	}
 };
 

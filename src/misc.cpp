@@ -108,7 +108,7 @@ mat<cseq> spectral_factorization( const mat<cseq>& X, double tol )
 #ifndef BEALAB_NOPYTHON
 control::transfer_function butter( int order, double bandwidth, bool analog )
 {
-	python::functor butter( "scipy.signal", "butter" );
+	python::function<rmat> butter( "scipy.signal", "butter" );
 	rmat r  = butter( order, bandwidth, "low", analog );
 	rvec b  = r.row(0);
 	rvec a  = r.row(1);
@@ -205,7 +205,7 @@ rseq root_raisedcosine( int N, double ws, double beta )
 #ifndef BEALAB_NOPYTHON
 rseq hamming( int N )
 {
-	python::functor hamming( "scipy", "hamming" );
+	python::function<rvec> hamming( "scipy", "hamming" );
 	rvec x = hamming( N );
 	int t1 = -(N-1)/2;
 	return rseq( x, t1 );

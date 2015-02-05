@@ -19,7 +19,7 @@ namespace python
 /// Interface to call Python functions.
 /// @{
 
-/// Interpreter class.
+/// Polymorphic Python object
 class object {
 	void *pdata;
 public:
@@ -48,42 +48,46 @@ public:
 	operator mat<T>() const;
 };
 
-/// @name Internal functions
-void _init();		///< Initializes the interface.
-/// @}
+/// Functor handling a Python function (for internal use)
+class _function_handler {
 
-/// Functor wrapper for python functions
-class functor {
-	void* pFunc;
-	object _fcall( const deque<object> &O );
+	void* pFunc;																///< Pointer to the python function handler
+	static int py_init_flag;													///< Flag to indicate if the interface has been initialized
+
+	/// Initializes the interface.
+	void init();
+
+protected:
+
+	/// Function call returning a polymorphic object
+	object fcall( const deque<object> &O );
+
 public:
-	functor( const string& module, const string& function );
+
+	/// Constructor
+	_function_handler( const string& module, const string& function );
+};
+
+/// Functor wrapper a Python function
+template<class R>
+class function : public _function_handler {
+public:
+
+	using _function_handler::_function_handler;
+
+	/// Template function call
 	template<class... T>
-	object operator()( const T&... argin )
+	R operator()( const T&... argin )
 	{
 	    // Parse parameters
 	    deque<object> O;
 	    O = parse_variadic_template<object>( argin... );
 
-	    return _fcall( O );
+	    // Function call
+	    R rv = fcall( O );
+	    return rv;
 	}
 };
-
-/// @name Plotting interface.
-//static functor show( "pylab", "show" );
-//static functor figure( "pylab", "figure" );
-//static functor close( "pylab", "close" );
-//static functor plot( "pylab", "plot" );
-//static functor hold( "pylab", "hold" );
-//static functor title( "pylab", "title" );
-//static functor axes( "pylab", "axes" );
-//static functor xlabel( "pylab", "xlabel" );
-//static functor ylabel( "pylab", "ylabel" );
-//static functor xlim( "pylab", "xlim" );
-//static functor ylim( "pylab", "ylim" );
-//static functor subplot( "pylab", "subplot" );
-//static functor legend( "pylab", "legend" );
-/// @}
 
 /// @}
 }

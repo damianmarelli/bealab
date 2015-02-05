@@ -19,11 +19,12 @@ namespace octave
 /// Interface to call Octave functions.
 /// @{
 
-/// Functor handling an Octave function (for internal use)
+/// Functor handler an Octave function (for internal use)
 template<class... oargs>
 class _function_handler {
 
 	string mfilename;															///< Name of the *.m file to containing the Octave function
+	string tmpfilename;															///< Name of the associated temporary file
 	string matfilename;															///< Name of the mat-format file to exchange data
 	matfile mf;																	///< Handler of the *.mat file
 
@@ -87,6 +88,14 @@ class _function_handler {
 
 protected:
 
+	/// Prefix to the shell command
+	virtual
+	string prefix() = 0;
+
+	/// Suffix to the shell command
+	virtual
+	string suffix() = 0;
+
 	/// Evaluation always returning a tuple
 	template<class... iargs>
 	tuple<oargs...> eval( const iargs&... X )
@@ -110,15 +119,14 @@ protected:
 
 		// Octave command
 		ostringstream cmd;
-		cmd << "octave -q --eval '"
+		cmd << prefix()
 			<< "load " << matfilename << "; " ;
 		if( N > 0 )
 			cmd<< "[" << ovarlist << "] = ";
 		cmd << mfilename << "( " << ivarlist << " ); ";
 		if( N > 0 )
 			cmd << "save -v6 " << matfilename << " " << svarlist << ";";
-		cmd << "exit;' > /dev/null";
-//		cout << cmd.str() << endl;
+		cmd << "exit;" << suffix();
 		system(cmd.str());
 
 		// Parse result
@@ -130,7 +138,8 @@ public:
 	/// Constructor
 	_function_handler( const string& funname ) :
 		mfilename(funname),
-		matfilename(create_tmpfile()),
+		tmpfilename(create_tmpfile()),
+		matfilename(tmpfilename + ".mat"),
 		mf( matfilename, true )
 	{}
 
@@ -142,7 +151,7 @@ public:
 };
 
 template<class... oargs>
-class function : public _function_handler<oargs...> {
+class _function : public _function_handler<oargs...> {
 public:
 	using _function_handler<oargs...>::_function_handler;
 
@@ -155,7 +164,7 @@ public:
 
 /// Evaluation specialization for one returned value
 template<class O>
-class function<O> : public _function_handler<O> {
+class _function<O> : public _function_handler<O> {
 public:
 	using _function_handler<O>::_function_handler;
 
@@ -168,7 +177,7 @@ public:
 
 /// Evaluation specialization for no returned value
 template<>
-class function<> : public _function_handler<> {
+class _function<> : public _function_handler<> {
 public:
 	using _function_handler<>::_function_handler;
 
@@ -177,6 +186,25 @@ public:
 	{
 		_function_handler<>::eval( X... );
 	}
+};
+
+/// Functor handler for an Octave function
+template<class... oargs>
+class function : public _function<oargs...> {
+
+	string prefix() override
+	{
+		return "octave -q --eval '";
+	}
+
+	/// Suffix to the shell command
+	string suffix() override
+	{
+		return "' > /dev/null";
+	}
+
+public:
+	using _function<oargs...>::_function;
 };
 
 /// @}

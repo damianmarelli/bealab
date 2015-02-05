@@ -52,10 +52,6 @@ endif
 # Detect Matlab interface
 ifeq (,$(findstring HAVE_MATLAB, $(DEFS)))
 	echo "#define BEALAB_NOMATLAB" >> $(config_hpp)
-else
-ifeq (,$(findstring HAVE_LIBENG, $(DEFS)))
-	echo "#define BEALAB_NOMATLAB" >> $(config_hpp)
-endif
 endif
 
 # Detect Ipopt

@@ -28,7 +28,7 @@ class function : public _function<oargs...> {
 	/// Suffix to the shell command
 	string suffix() override
 	{
-		return "' > /dev/null 2> /dev/null";
+		return "' > /dev/null";
 	}
 
 public:

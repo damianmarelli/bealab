@@ -46,8 +46,8 @@ $(OBJ:%=$(tempdir)/%): $(tempdir)/%.o: Makefile
 
 $(OBJc:%=$(tempdir)/%): $(tempdir)/%.o: Makefile
 	@mkdir -p $(tempdir)
-	@CC@ $(CFLAGS) -c @srcdir@/$*.c -o $@
-	@@CC@ $(CFLAGS) -MM @srcdir@/$*.c -MT $@ > $(tempdir)/$*.d
+	@CXX@ $(CFLAGS) -c @srcdir@/$*.c -o $@
+	@@CXX@ $(CFLAGS) -MM @srcdir@/$*.c -MT $@ > $(tempdir)/$*.d
 	@cp $(tempdir)/$*.d $(tempdir)/$*.d.tmp
 	@cat $(tempdir)/$*.d.tmp | sed -e 's/.*://' | sed -e 's/\\//' |\
 		fmt -1 | sed -e 's/ //' | sed -e 's/$$/:/' >> $(tempdir)/$*.d

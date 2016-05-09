@@ -29,9 +29,15 @@ public:
 
 	neural_network( const ivec& layer_nodes );
 
+	~neural_network();
+
 	void train( const vec<rvec>& input, const vec<rvec>& output );
 
 	rvec predict( const rvec& in );
+
+	void save( const string& fname, const string& vname="w" );
+
+	void load( const string& fname, const string& vname="w" );
 };
 
 /// @}

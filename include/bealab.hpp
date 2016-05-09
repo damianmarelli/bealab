@@ -10,8 +10,11 @@
 /// @defgroup scilib
 #include <bealab/scilib.hpp>
 
+/// @defgroup symbolic
+//#include <bealab/symbolic.hpp>
+
 /// @defgroup extensions
-#include <bealab/extensions.hpp>
+//#include <bealab/extensions.hpp>
 
 //------------------------------------------------------------------------------
 /// @mainpage

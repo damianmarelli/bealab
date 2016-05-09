@@ -200,8 +200,8 @@ zeros( int N ) { return ublas::zero_vector<int>(N); }
 
 /// N by M-dimensional matrix of zeros
 inline
-matrix_interface<ublas::zero_matrix<double>>
-zeros( int N, int M ) {return ublas::zero_matrix<double>(N,M); }
+matrix_interface<ublas::zero_matrix<int>>
+zeros( int N, int M ) {return ublas::zero_matrix<int>(N,M); }
 
 /// N-dimensional vector of ones
 inline
@@ -210,8 +210,8 @@ ones( int N ) { return ublas::scalar_vector<int>(N); }
 
 /// N by M-dimensional matrix of ones
 inline
-matrix_interface<ublas::scalar_matrix<double>>
-ones( int N, int M ) {return ublas::scalar_matrix<double>(N,M); }
+matrix_interface<ublas::scalar_matrix<int>>
+ones( int N, int M ) {return ublas::scalar_matrix<int>(N,M); }
 
 /// N-dimensional vector of zeros with a one in the i-th entry
 inline
@@ -220,8 +220,8 @@ unit( int N, int i ) { return ublas::unit_vector<int>(N,i); }
 
 /// N by M-dimensional identity matrix
 inline
-matrix_interface<ublas::identity_matrix<double>>
-eye( int N ) {return ublas::identity_matrix<double>(N); }
+matrix_interface<ublas::identity_matrix<int>>
+eye( int N ) {return ublas::identity_matrix<int>(N); }
 
 /// Vector with values from 'from' to 'to_plus_1 - 1'
 ivec vrange( int from, int to_plus_1 );

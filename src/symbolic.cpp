@@ -12,7 +12,7 @@
 #ifndef BEALAB_NOSYMBOLIC
 
 #include <bealab/core/prelim.hpp>
-#include <bealab/scilib/symbolic.hpp>
+#include <bealab/symbolic.hpp>
 
 namespace bealab
 {

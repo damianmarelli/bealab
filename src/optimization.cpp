@@ -250,26 +250,26 @@ bool quasinewton::stopping_condition( const rvec& x, const rvec& x0, const rvec&
 	}
 
 	// Relative X-increment condition
-	if( xrinc <= stop_xincrement_relative ) {
+	if( xrinc < stop_xincrement_relative ) {
 		if( trace >= 2 )
 			cout << "quasinewton: stopping because of relative increment in the parameters = " << xrinc << endl;
 		return true;
 	}
 
 	// Gradient condition
-	if( gn <= stop_gradient ) {
+	if( gn < stop_gradient ) {
 		if( trace >= 2 )
 			cout << "quasinewton: stopping because of gradient = " << gn << endl;
 		return true;
 	}
 
 	// F-increment conditions
-	if( frel <= stop_fincrement_relative ) {
+	if( frel < stop_fincrement_relative ) {
 		if( trace >= 2 )
 			cout << "quasinewton: stopping because of relative decrement in the function = " << frel << endl;
 		return true;
 	}
-	if( fabs <= stop_fincrement_absolute ) {
+	if( fabs < stop_fincrement_absolute ) {
 		if( trace >= 2 )
 			cout << "quasinewton: stopping because of absolute decrement in the function = " << fabs << endl;
 		return true;
@@ -489,7 +489,7 @@ bool gsl::check_stopping_condition()
 	}
 
 	// Stop if gradient
-	if( norm(grad) <= stop_gradient ) {
+	if( norm(grad) < stop_gradient ) {
 		stopreason = gradient;
 		if(trace) cout << "GSLOPT: Stopping because of gradient condition. Gradient norm = " << norm(grad) << endl;
 		return true;

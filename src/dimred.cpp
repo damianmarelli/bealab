@@ -21,9 +21,9 @@ namespace bealab
 namespace dimred
 {
 //------------------------------------------------------------------------------
-// Function multidimensional_scaling()
+// Function multidimensional_scaling() (GClasses version)
 //------------------------------------------------------------------------------
-vec<rvec> multidimensional_scaling( const rmat& distances, int target_dimensions )
+vec<rvec> multidimensional_scaling_gc( const rmat& distances, int target_dimensions )
 {
 	assert( distances.size1() == distances.size2() );
 
@@ -48,6 +48,41 @@ vec<rvec> multidimensional_scaling( const rmat& distances, int target_dimensions
 		for( int j = 0; j < target_dimensions; j++ )
 			rv(i)(j) = B[i][j];
 	}
+	return rv;
+}
+
+//------------------------------------------------------------------------------
+// Class multidimensional_scaling
+//------------------------------------------------------------------------------
+multidimensional_scaling::multidimensional_scaling( const rmat& distances, int target_dimensions ) :
+	D(distances), dim(target_dimensions) {}
+
+vec<rvec> multidimensional_scaling::run()
+{
+	// Eigenvalue decomposition
+	int N    = D.size1();
+	rmat D2  = element_prod(D,D);
+	rmat H   = eye(N) - ones(N,N)/(double)N;
+	rmat B   = -1./2 * H * rmat(D2 * H);
+	cmat M, E;
+	tie(E,M) = eig( B );
+
+	// Choose indexes
+	rvec e     = real(diag(E));
+	rvec e0    = element_prod( e, ( e > 0 ) );
+	ivec sidxs = flip( sort_indices( e0 ) );
+	ivec idxs  = sidxs( range(0,dim) );
+
+	// Prepare output
+	rmat X = real( M * diag(sqrt(e0)) );
+	vec<rvec> rv(N);
+	for( int n = 0; n < N; n++ )
+		rv(n) = X.row(n)( indirect(idxs) );
+
+	// Store eigenvalues
+	eigenvalues = e;
+	ordered_eigenvalues = e0(indirect(sidxs));
+
 	return rv;
 }
 

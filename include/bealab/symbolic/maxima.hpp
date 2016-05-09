@@ -1,4 +1,4 @@
-///@file bealab/scilib/symbolic/maxima.hpp
+///@file bealab/symbolic/maxima.hpp
 /// Interface to call Maxima functions.
 
 #include <bealab/core/prelim/config.hpp>

@@ -1,4 +1,4 @@
-///@file bealab/scilib/symbolic.hpp
+///@file bealab/symbolic.hpp
 /// Symbolic computations.
 
 #ifndef _BEALAB_SYMBOLIC_
@@ -9,10 +9,10 @@
 /// @{
 
 /// @defgroup symbolic_maxima
-#include<bealab/scilib/symbolic/maxima.hpp>
+#include<bealab/symbolic/maxima.hpp>
 
 /// @defgroup symbolic_symbolic
-#include<bealab/scilib/symbolic/symbolic.hpp>
+#include<bealab/symbolic/symbolic.hpp>
 
 /// @}
 

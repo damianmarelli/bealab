@@ -8,6 +8,7 @@ otherdirs  = doc
 # Automatic variables
 distname = @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 ncores   = $(shell grep -c processor /proc/cpuinfo)
+#ncores   = 1
 
 # Targets
 all:

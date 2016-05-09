@@ -11,8 +11,12 @@
 
 namespace bealab
 {
+/// Matlab interface
 namespace matlab
 {
+/// @defgroup interfaces_matlab Matlab interface
+/// Interface to call Matlab functions.
+/// @{
 
 using bealab::octave::_function;
 

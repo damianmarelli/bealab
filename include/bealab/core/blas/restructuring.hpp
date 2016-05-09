@@ -72,6 +72,27 @@ circshift( const matrix_interface<T> &A, int m, int n )
 	return { const_cast<T&>(A), indirect(idxsm), indirect(idxsn) };
 }
 
+/// Return the indices that sort a vector
+template <class T>
+ivec sort_indices( const vector_interface<T>& values )
+{
+    ivec indices = vrange( 0, values.size() );
+    sort(
+        indices.begin(), indices.end(),
+        [&](int a, int b) { return values(a) < values(b); }
+    );
+    return indices;
+}
+
+/// Sort a vector
+template <class T>
+vector_interface<T> sort( const vector_interface<T>& values )
+{
+	vector_interface<T> rv = values;
+	std::sort( rv.begin(), rv.end() );
+    return rv;
+}
+
 /// @}
 }
 #endif

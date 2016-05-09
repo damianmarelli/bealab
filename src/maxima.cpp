@@ -12,7 +12,7 @@
 #ifndef BEALAB_NOSYMBOLIC
 
 #include <bealab/core/prelim.hpp>
-#include <bealab/scilib/symbolic/maxima.hpp>
+#include <bealab/symbolic/maxima.hpp>
 #include <ginac/ginac.h>
 
 namespace bealab

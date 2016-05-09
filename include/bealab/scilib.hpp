@@ -45,8 +45,5 @@
 /// @defgroup stats
 #include <bealab/scilib/stats.hpp>
 
-/// @defgroup symbolic
-//#include <bealab/scilib/symbolic.hpp>
-
 /// @}
 #endif

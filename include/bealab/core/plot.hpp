@@ -613,11 +613,27 @@ class figure {
 		return &frames[i*J+j];
 	}
 
+	void _gnuplot_set_terminal()
+	{
+		switch( terminal ) {
+		case t_null:
+			null();
+			break;
+		case t_x11:
+			x11(false);
+			break;
+		case t_qt:
+			qt();
+			break;
+		}
+	}
+
 	void _gnuplot_init()
 	{
 #ifndef BEALAB_NOGNUPLOT
 		// Open pipe
 		pgnuplot = popen( "gnuplot 2> /dev/null", "w" );
+//		pgnuplot = popen( "gnuplot", "w" );
 		if( pgnuplot == NULL )
 			error("figure::figure() - Cannot open pipe to gnuplot");
 
@@ -626,8 +642,7 @@ class figure {
 		fflush( pgnuplot );
 
 		// Set the terminal
-//		x11( false );
-		qt();
+		_gnuplot_set_terminal();
 #endif
 	}
 
@@ -721,7 +736,7 @@ public:
 	/// Constructor
 	figure( const string& title="BeaLab" ) : pgnuplot(NULL), window_title(title)
 	{
-		terminal  = t_qt;
+		terminal  = t_x11;
 		overlap_f = false;
 		x_log     = false;
 		y_log     = false;
@@ -773,6 +788,8 @@ public:
 	figure& gnuplot( const string& cmd_ )
 	{
 #ifndef BEALAB_NOGNUPLOT
+		if( terminal == t_null )
+			return *this;
 		if( pgnuplot == NULL )
 			_gnuplot_init();
 		string cmd = cmd_ + "\n";
@@ -794,8 +811,7 @@ public:
 		_frames_clear();
 
 		// Clear the gnuplot window
-		if( terminal != t_null )
-			gnuplot( "clear" );
+		gnuplot( "clear" );
 
 		return *this;
 	}
@@ -861,8 +877,8 @@ public:
 	/// Redirect the output to /dev/null
 	figure& null()
 	{
-		string output = "set terminal svg; set output '/dev/null'";
-		gnuplot( output );
+//		string output = "set terminal svg; set output '/dev/null'";
+//		gnuplot( output );
 		terminal = t_null;
 		return *this;
 	}

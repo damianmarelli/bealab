@@ -1,4 +1,4 @@
-///@file bealab/scilib/symbolic/symbolic.hpp
+///@file bealab/symbolic/symbolic.hpp
 /// Definitions and methods for symbolic computations.
 
 #include <bealab/core/prelim/config.hpp>
@@ -7,7 +7,7 @@
 #ifndef _BEALAB_SYMBOLIC_SYMBOLIC_
 #define	_BEALAB_SYMBOLIC_SYMBOLIC_
 
-#include <bealab/scilib/symbolic/maxima.hpp>
+#include <bealab/symbolic/maxima.hpp>
 
 namespace bealab
 {

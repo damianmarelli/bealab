@@ -18,6 +18,25 @@ namespace dimred
 /// Dimensionality reduction methods.
 /// @{
 
+/// Multi-dimensional scaling method (GClasses vesion)
+vec<rvec> multidimensional_scaling_gc( const rmat& distances, int target_dimensions );
+
+/// Multidimensional scaling method
+class multidimensional_scaling {
+
+	rmat D;
+	int dim;
+
+public:
+
+	rvec eigenvalues;
+	rvec ordered_eigenvalues;
+
+	multidimensional_scaling( const rmat& distances, int target_dimensions );
+
+	vec<rvec> run();
+};
+
 /// Compute the N principal components of the vectors in V
 template<class T=double>
 class principal_component_analysis {
@@ -127,9 +146,6 @@ struct breadth_first_unfolding : public manifold_learning_b
 	~breadth_first_unfolding();
 	void* run_mlearning( const void* cvpA );
 };
-
-/// Multi-dimensional scaling method
-vec<rvec> multidimensional_scaling( const rmat& distances, int target_dimensions );
 
 /// @}
 }
